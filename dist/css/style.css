@@ -25,21 +25,21 @@
 }
 
 @media only screen and (min-width: 1025px) {
-    #axCanvas {
+    #canvas {
         height: calc((100vw - 360px) / 1.6);
         width: calc(100vw - 360px);
     }
 }
 
 @media only screen and (min-width: 1200px) {
-    #axCanvas {
+    #canvas {
         height: calc((100vw - 520px) / 1.6);
         width: calc(100vw - 520px);
     }
 }
 
 @media only screen and (min-width: 1400px) {
-    #axCanvas {
+    #canvas {
         height: calc((100vw - 820px) / 1.6);
         width: calc(100vw - 820px);
     }
