@@ -5,12 +5,14 @@
     "main": "index.js",
     "scripts": {
         "build": "rollup -c",
-        "dev": "rollup -cw --nollup"
+        "dev": "rollup -cw"
     },
     "author": "Mark van Wyk",
     "license": "ISC",
     "dependencies": {
         "@rollup/plugin-typescript": "^8.2.0",
+        "js-dos": "^6.22.59",
+        "purgecss": "^4.0.3",
         "rollup": "^2.42.3",
         "rollup-plugin-serve": "^1.1.0",
         "rollup-plugin-terser": "^7.0.2",

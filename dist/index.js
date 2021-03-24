@@ -1,1 +1,1 @@
-var o=function(){console.log("Hello!")};export{o as sayHello};
+var o=function(o,n,c){o(c,{cycles:n.cycles,wdosboxUrl:"/dosbox/wdosbox.js",onprogress:function(){},log:function(){}}).ready((function(o,c){o.extract(n.zipFile).then((function(){c(["-c",n.execCmd]).then((function(o){}))}))}))};export{o as DosGame};
