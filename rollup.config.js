@@ -8,6 +8,7 @@ export default {
         dir: 'dist',
         format: 'esm',
         preferConst: true,
+        sourcemap: true,
     },
-    plugins: [typescript(), terser(), serve({contentBase:'dist', port:8080})],
+    plugins: [typescript({sourceMap:true, inlineSources:true}), terser(), serve({contentBase:'dist', port:8080})],
 };

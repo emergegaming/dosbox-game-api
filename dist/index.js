@@ -1,1 +1,2 @@
-var o=function(o,n,c){o(c,{cycles:n.cycles,wdosboxUrl:"/dosbox/wdosbox.js",onprogress:function(){},log:function(){}}).ready((function(o,c){o.extract(n.zipFile).then((function(){c(["-c",n.execCmd]).then((function(o){}))}))}))};export{o as DosGame};
+var o=function(o,n,s){var t=this;this.start=function(){return new Promise((function(o,n){console.log("b",t.options),t.dosRef(t.canvas,{cycles:t.options.cycles,wdosboxUrl:"/dosbox/wdosbox.js",onprogress:function(){},log:function(){}}).ready((function(n,s){n.extract(t.options.zipFile).then((function(){s(["-c",t.options.execCmd]).then((function(n){t.ci=n,o(n)}))}))}))}))},this.dosRef=o,this.options=n,this.canvas=s,console.log("a",this.options)};export{o as DosGame};
+//# sourceMappingURL=index.js.map
