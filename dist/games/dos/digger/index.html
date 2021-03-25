@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Digger</title>
-    <link rel="stylesheet" type="text/css" href="/css/tailwindpurged.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/tailwind.min.css"/>
     <link rel="stylesheet" type="text/css" href="/css/style.css"/>
 </head>
 <body>
@@ -38,7 +38,11 @@
 
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
-            <button id="startButton" class="text-white border border-white p-2 rounded-lg bg-red-900 cursor-pointer z-40">Load & Start!</button>
+            <form id="startButtonForm" onsubmit="return false">
+                <input type="submit" id="startButton"
+                       class="text-md text-white border border-white p-2 rounded-lg bg-red-900 cursor-pointer z-40"
+                       value="Load & Start!"/>
+            </form>
         </div>
 
         <!-- Overlay to: Show when orientation is portrait -->
@@ -50,17 +54,21 @@
     <script type="module">
 
         import {DosGame} from "/index.js";
-        import {baseConfig} from "/baseConfig.js";
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay')
+        let startButton = document.getElementById('startButton')
+        let startButtonForm = document.getElementById('startButtonForm')
         let loadingOverlay = document.getElementById('loadingOverlay');
 
-        baseConfig.zipFile = 'digger.zip'
-        baseConfig.execCmd = 'DIGGER.COM'
-        baseConfig.cycles = 500
+        let baseConfig = {
+            zipFile : 'digger.zip',
+            execCmd : 'DIGGER.COM',
+            cycles : 500,
+        }
 
         const init = () => {
+            startButtonOverlay.remove();
             startButtonOverlay.style.visibility = 'hidden';
             let dosGame = new DosGame(window.Dos, baseConfig, canvas);
             dosGame.start().then(() => {
@@ -68,7 +76,10 @@
             });
             dosGame.overrideKey(' ', 112);
         }
+
+        startButton.focus();
         startButtonOverlay.addEventListener('click', init);
+        startButtonForm.addEventListener('submit', init)
 
     </script>
     <script src="/dosbox/js-dos.js"></script>

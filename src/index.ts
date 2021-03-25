@@ -12,15 +12,15 @@ interface KeyMapping {
 export class DosGame {
 
     private dosRef: any;
-    private options: GameOptions;
+    private options: GameOptions
     private canvas: HTMLCanvasElement
     private ci: any
-    private keysToReplace:any[] = [];
+    private keysToReplace:KeyMapping[] = []
 
     constructor(dosRef, options, canvas) {
-        this.dosRef = dosRef;
+        this.dosRef = dosRef
         this.options = options
-        this.canvas = canvas;
+        this.canvas = canvas
     }
 
     start() {
@@ -33,9 +33,9 @@ export class DosGame {
             }).ready((fs, main) => {
                 fs.extract(this.options.zipFile).then(() => {
                     main(["-c", this.options.execCmd]).then((ci) => {
-                        this.ci = ci;
-                        resolve(ci);
-                        window.addEventListener('unload', this.unload);
+                        this.ci = ci
+                        resolve(ci)
+                        window.addEventListener('unload', this.unload)
                     })
                 })
             })
@@ -48,34 +48,32 @@ export class DosGame {
      * @param replacementKeyCode
      */
     overrideKey(targetKey:string, replacementKeyCode:number): void {
-        if (this.keysToReplace.length === 0) this.addKeyEventListeners();
-        this.keysToReplace.push({targetKey:targetKey, replacementKeyCode:replacementKeyCode});
+        if (this.keysToReplace.length === 0) this.addKeyEventListeners()
+        this.keysToReplace.push({targetKey:targetKey, replacementKeyCode:replacementKeyCode})
     }
 
     /** Private Methods **/
 
     private addKeyEventListeners() {
-        window.addEventListener('keypress', this.handleKeyEvent.bind(this))
         window.addEventListener('keyup', this.handleKeyEvent.bind(this))
+        window.addEventListener('keydown', this.handleKeyEvent.bind(this))
     }
 
     /** Needs work **/
     private handleKeyEvent(event:KeyboardEvent) {
-        console.log('poo')
         if (event.key) {
-            this.keysToReplace.filter(item => {
-                if (item.targetKey == event.key) {
-                    event.preventDefault();
+            for (let i: number = 0; i < this.keysToReplace.length; i++) {
+                let keyMapping:KeyMapping = this.keysToReplace[i]
+                if (event.key == keyMapping.targetKey) {
+                    event.preventDefault()
                     event.stopImmediatePropagation()
-                    console.log(event.type);
-                    this.ci.simulateKeyPress(item.replacementKeyCode)
-
+                    this.ci.simulateKeyEvent(keyMapping.replacementKeyCode, event.type == 'keydown')
                 }
-            })
+            }
         }
     }
 
     private unload() {
-        this.ci.exit();
+        this.ci.exit()
     }
 }
