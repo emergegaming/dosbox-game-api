@@ -67,7 +67,7 @@
         let gameConfig = {
             zipFile : 'digger.zip',
             execCmd : 'DIGGER.COM',
-            cycles : 600,
+            cycles : 550,
         }
 
         const startButtonClicked = () => {
@@ -91,7 +91,7 @@
                         processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
                             console.log ("SCORE: " + _score)
                             emergeGamingSDK.endLevel(_score);
-                            setTimeout(() => location.reload(), 5000)
+                            setTimeout(() => location.reload(), 750)
                         });
                         break;
                         default:
