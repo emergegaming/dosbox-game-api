@@ -9,9 +9,32 @@ interface KeyMapping {
     replacementKeyCode: number
 }
 
+interface Directions {
+    directions: number
+}
+
+interface ButtonMapping {
+    element:HTMLElement
+    asciiCode:number
+}
+
+interface PressedButton {
+    id: number,
+    elem: HTMLElement,
+    x: number
+    y: number
+}
+
+interface Origin {
+    x: number
+    y: number
+    id: number
+}
+
 /**
  * DosGame. Object and helper methods to make it easier to run DOS games in a browser using DOSBox
  * @Author Mark van Wyk
+ * @copyright Emerge Gaming @copy; 2021
  */
 export class DosGame {
 
@@ -20,16 +43,23 @@ export class DosGame {
     private canvas: HTMLCanvasElement
     private ci: any
     private keysToReplace:KeyMapping[] = []
+    private directions:Directions
+    private buttons:ButtonMapping[] = []
+    private pressedButtons:PressedButton[] = []
+    private origin:Origin = {x:null, y:null, id:null}
+    private lastDirection:any[] = []
 
     /**
      * Create a new DosGame object.
-     * Note that this object requires the JSDos script to be loaded by the page.
-     * <pre><code>
-     *   <script src="/dosbox/js-dos.js"></script>
-     * </code></pre>
+     * that this object requires the JSDos script to be loaded by the page.
+     *
+     * eg: <script src="/dosbox/js-dos.js"></script>
+     *
      * @param dosRef a reference to window.DOS created by the included JavaScript file
      * @param options {cycles:number, zipFile:string, execCmd:string}
      * @param canvas reference to the HTMLCanvasElement DOSBox is being rendered on
+     *
+     * @see https://js-dos.com/
      */
     constructor(dosRef:any, options:GameOptions, canvas:HTMLCanvasElement) {
         this.dosRef = dosRef
@@ -37,8 +67,8 @@ export class DosGame {
         this.canvas = canvas
     }
 
-    start() {
-        return new Promise((resolve, reject):any => {
+    public start():Promise<any> {
+        return new Promise((resolve) => {
             this.dosRef(this.canvas, {
                 cycles: this.options.cycles,
                 wdosboxUrl: '/dosbox/wdosbox.js',
@@ -62,12 +92,35 @@ export class DosGame {
      * @param replacementKeyCode the ASCII key to send to DOSBox
      * @see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
      */
-    overrideKey(targetKey:string, replacementKeyCode:number): void {
+    public overrideKey(targetKey:string, replacementKeyCode:number):void {
         if (this.keysToReplace.length === 0) this.addKeyEventListeners()
         this.keysToReplace.push({targetKey:targetKey, replacementKeyCode:replacementKeyCode})
     }
 
-    /** Private Methods **/
+    /**
+     * Convert touch dragging to
+     * @param directions
+     */
+    public mapTouchToArrowKeys(directions:Directions):void {
+        this.directions = directions
+        if (this.buttons.length == 0) {
+            this.addTouchEventListeners()
+        }
+    }
+
+    /**
+     *
+     * @param buttonMapping
+     */
+    public mapButtonToKey(buttonMapping:ButtonMapping):void {
+        this.buttons.push(buttonMapping)
+        if (!this.directions) {
+            this.addTouchEventListeners()
+        }
+
+    }
+
+    /***** P R I V A T E   M E T H O D S *****/
 
     /**
      * Create key event listeners
@@ -76,6 +129,15 @@ export class DosGame {
     private addKeyEventListeners() {
         window.addEventListener('keyup', this.handleKeyEvent.bind(this))
         window.addEventListener('keydown', this.handleKeyEvent.bind(this))
+    }
+
+    /**
+     * Create touch listeners
+     */
+    addTouchEventListeners() {
+        document.addEventListener('touchstart', this.handleTouchEvent.bind(this))
+        document.addEventListener('touchend', this.handleTouchEvent.bind(this))
+        document.addEventListener('touchmove', this.handleTouchEvent.bind(this))
     }
 
     /**
@@ -95,6 +157,142 @@ export class DosGame {
                 }
             }
         }
+    }
+
+    /**
+     * Handle the touch events
+     * @private
+     * @param event
+     */
+    private handleTouchEvent(event:TouchEvent) {
+        if (event.type == 'touchstart') {
+            for (let i:number = 0; i < event.changedTouches.length; i++) {
+                let startingTouch = event.changedTouches[i]
+                if (startingTouch.clientX < 200) {
+                    this.setOrigin(startingTouch)
+                }  else {
+                    for (let j:number = 0; j < this.buttons.length; j++) {
+                        let mapping:ButtonMapping = this.buttons[j]
+                        let rect = mapping.element.getBoundingClientRect()
+                        let x1 = rect.x, x2 = rect.x + rect.width, y1 = rect.y, y2 = rect.y + rect.height;
+                        if (startingTouch.clientX > x1 && startingTouch.clientX < x2 && startingTouch.clientY > y1 && startingTouch.clientY < y2) {
+                            this.pressedButtons.push({id:startingTouch.identifier, x:startingTouch.clientX, y:startingTouch.clientY, elem: mapping.element});
+                            this.ci.simulateKeyPress(mapping.asciiCode, true)
+                        }
+                    }
+                }
+            }
+
+        } else if (event.type == 'touchmove') {
+            for (let i:number = 0; i < event.changedTouches.length; i++) {
+                let movingTouch:Touch = event.changedTouches[i]
+                if (movingTouch.clientX < 200) {
+                    let control = []
+                    let dx = movingTouch.clientX - this.origin.x;
+                    let dy = movingTouch.clientY - this.origin.y;
+                    if (dx === 0 && dy === 0) return
+                    let r = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))
+                    let angle = this.radToDeg(Math.asin(dy/r)) + 90
+                    if (dx < 0) angle = (180 - angle) + 180
+
+                    if (this.directions.directions === 4) {
+                        if (angle >= 315 || angle < 45) control=['up']
+                        else if (angle >= 45 && angle < 135) control=['right']
+                        else if (angle >= 135 && angle < 225) control = ['down']
+                        else if (angle >= 225 && angle < 315) control = ['left']
+                        else {
+                            console.error ('unknown angle ' + angle);
+                        }
+                    } else if (this.directions.directions === 8) {
+                        if (angle >= 338 || angle < 23) control = ['up']
+                        else if (angle >= 23 && angle < 68) control = ['up', 'right']
+                        else if (angle >= 68 && angle < 113) control = ['right']
+                        else if (angle >= 113 && angle < 158) control = ['down', 'right']
+                        else if (angle >= 158 && angle < 203) control = ['down']
+                        else if (angle >= 203 && angle < 248) control = ['down', 'left']
+                        else if (angle >= 248 && angle < 293) control = ['left']
+                        else if (angle >= 293 && angle < 338) control = ['up', 'left']
+                        else {
+                            console.error ('unknown angle '+ angle);
+                        }
+                    } else {
+                        console.error('directions need to be 4 or 8')
+                    }
+
+                    this.processDirectionChange(this.lastDirection, control)
+                    this.lastDirection = control;
+                }
+
+            }
+        } else if (event.type == 'touchend') {
+            for (let i = 0; i < event.changedTouches.length; i++) {
+                let endingTouch:Touch = event.changedTouches[i];
+                if (endingTouch.identifier === this.origin.id) {
+                    this.origin.x = null;
+                    this.origin.y = null;
+                    this.origin.id = null;
+                    if (this.lastDirection.length > 0) {
+                        this.processDirectionChange(this.lastDirection, [])
+                    }
+                    this.lastDirection = [];
+                }
+                // } else {
+                //     let released = this.pressedButtons.find(item => item.id === endingTouch.identifier)
+                //     if (released) {
+                //         this.ci.simulateKeyPress(released.id, false)
+                //         this.pressedButtons = this.pressedButtons.filter(item => item.id !== endingTouch.identifier)
+                //     }
+                // }
+            }
+        }
+    }
+
+    private processDirectionChange = (was, is) => {
+        console.log ("was ", was)
+        console.log ("is ", is)
+        console.log ("---")
+
+        let turnOff = was.filter(w => is.indexOf(w) === -1)
+        let turnOn = is.filter(i => was.indexOf(i) === -1)
+        turnOff.forEach((direction) => {
+            console.log("ending " + direction)
+            this.ci.simulateKeyEvent(this.getDirectionAscii(direction), false);
+        });
+        turnOn.forEach((direction) => {
+            console.log ("starting " + direction)
+            this.ci.simulateKeyEvent(this.getDirectionAscii(direction), true)
+        });
+    }
+
+    /**
+     * Returns the ascii code for the corresponding arrow key
+     * @param direction
+     * @private
+     */
+    private getDirectionAscii(direction:string):number {
+        switch (direction) {
+            case 'up'  : return 38;
+            case 'down': return 40;
+            case 'left': return 37;
+            case 'right': return 39;
+        }
+    }
+
+    /**
+     * Convert radians tp degrees
+     * @param rad the angle in radians
+     */
+    private radToDeg = (rad) => {
+        return Math.round(rad * 180 / Math.PI);
+    }
+
+    /**
+     * Set the starting point (touch)
+     * @param touchEvent the touch event where the movement started
+     * @private
+     */
+    private setOrigin(touchEvent:Touch) {
+        this.origin = {x:touchEvent.clientX, y:touchEvent.clientY, id:touchEvent.identifier}
     }
 
     /**

@@ -1,11 +1,12 @@
 # Implementing DOS Games
 This is a hacked together API. This is how to do it.
 
-1. Create a folder (`/dist/games/dos/my-game-name-here`)
-2. Copy `/games/dos/digger/index.html` into the new folder
-3. Pop your DOS GAME zip file (they come in zips) into the same folder
-4. Edit the JavaScript in `index.html` as required for your new game
-5. Run `npm run dev` (Hot Module Replacement not implemented - i.e. manual refresh)
+1. Clone the repository
+2. Create a folder (`/dist/games/dos/my-game-name-here`)
+3. Copy `/games/dos/digger/index.html` into the new folder
+4. Pop your DOS GAME zip file (they come in zips) into the same folder
+5. Edit the JavaScript in `index.html` as required for your new game
+6. Run `npm run dev` (Hot Module Replacement not implemented - i.e. manual refresh)
 
 ## UI Notes
  * The User Interface uses TailwindCSS (www.tailwindcss.com)

@@ -12,7 +12,7 @@
         <div id="background" class="fixed w-full h-full opacity-50 z-10 bg-cover"></div>
         <div ref="gameScreen" id="gameScreen" class="fixed flex flex-row w-full h-full flex-grow items-center justify-center z-20">
             <!-- Left Column (Directional Control) -->
-            <div class="flex flex-col flex-grow items-center justify-center pointer-events-none" v-if="isTouch">
+            <div class="flex flex-col flex-grow items-center justify-center pointer-events-none">
                 <div class="relative flex w-32 h-32 items-center justify-center pointer-events-none">
                     <img class="absolute w-24 h-24 pointer-events-none" src="/images/JoystickSurround.svg">
                     <img class="absolute w-32 h-32 pointer-events-none" src="/images/Joystick.svg">
@@ -26,8 +26,8 @@
 
             <!-- Right Column (Buttons) -->
             <div class="flex flex-col flex-grow items-center justify-center" v-if="isTouch">
-                <img id="ctlButtonA" src="/images/BTN-A.svg" class="axControl w-24 h-24 pointer-events-none" v-if="game.keys.ctlButtonA">
-                <img id="ctlButtonB" src="/images/BTN-B.svg" class="axControl w-24 h-24 pointer-events-none" v-if="game.keys.ctlButtonB">
+                <img id="ctlButtonA" src="/images/BTN-A.svg" class="axControl w-24 h-24 pointer-events-none">
+                <img id="ctlButtonB" src="/images/BTN-B.svg" class="axControl w-24 h-24 pointer-events-none">
             </div>
         </div>
 
@@ -40,7 +40,7 @@
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="return false">
                 <input type="submit" id="startButton"
-                       class="text-md text-white border border-white p-2 rounded-lg bg-red-900 cursor-pointer z-40"
+                       class="text-xl text-white border border-white p-2 rounded-lg bg-red-900 cursor-pointer z-40"
                        value="Load & Start!"/>
             </form>
         </div>
@@ -56,30 +56,34 @@
         import {DosGame} from "/index.js";
 
         let canvas = document.getElementById('canvas');
-        let startButtonOverlay = document.getElementById('startButtonOverlay')
-        let startButton = document.getElementById('startButton')
-        let startButtonForm = document.getElementById('startButtonForm')
+        let startButtonOverlay = document.getElementById('startButtonOverlay');
+        let startButton = document.getElementById('startButton');
+        let startButtonForm = document.getElementById('startButtonForm');
         let loadingOverlay = document.getElementById('loadingOverlay');
+        let buttonA = document.getElementById('ctlButtonA');
+        let buttonB = document.getElementById('ctlButtonB');
 
-        let baseConfig = {
+        let gameConfig = {
             zipFile : 'digger.zip',
             execCmd : 'DIGGER.COM',
             cycles : 500,
         }
 
-        const init = () => {
+        const startButtonClicked = () => {
             startButtonOverlay.remove();
-            startButtonOverlay.style.visibility = 'hidden';
-            let dosGame = new DosGame(window.Dos, baseConfig, canvas);
+            let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
-                loadingOverlay.style.visibility = 'hidden';
+                loadingOverlay.remove();
             });
             dosGame.overrideKey(' ', 112);
+            dosGame.mapTouchToArrowKeys({directions:4});
+            dosGame.mapButtonToKey({element:buttonA, asciiCode:112});
+            dosGame.mapButtonToKey({element:buttonB, asciiCode:13});
         }
 
+        startButtonOverlay.addEventListener('click', startButtonClicked);
         startButton.focus();
-        startButtonOverlay.addEventListener('click', init);
-        startButtonForm.addEventListener('submit', init)
+        startButtonForm.addEventListener('submit', startButtonClicked)
 
     </script>
     <script src="/dosbox/js-dos.js"></script>
