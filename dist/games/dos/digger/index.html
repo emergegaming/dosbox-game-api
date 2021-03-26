@@ -39,9 +39,7 @@
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="return false">
-                <input type="submit" id="startButton"
-                       class="text-xl text-white border border-white p-2 rounded-lg bg-red-900 cursor-pointer z-40"
-                       value="Load & Start!"/>
+                <input type="image" src="start-image.png" id="startButton" class="h-96"/>
             </form>
         </div>
 
@@ -54,6 +52,9 @@
     <script type="module">
 
         import {DosGame} from "/index.js";
+        import {emergeGamingSDK} from '/lib/emergamingSDK.js'
+        import {processScreenshot, setupOcr} from "/lib/ocr.js";
+        import {digger_digits} from "/games/dos/digger/digits.js";
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
@@ -66,7 +67,7 @@
         let gameConfig = {
             zipFile : 'digger.zip',
             execCmd : 'DIGGER.COM',
-            cycles : 500,
+            cycles : 600,
         }
 
         const startButtonClicked = () => {
@@ -74,16 +75,38 @@
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
                 loadingOverlay.remove();
+                ocrSetup();
             });
             dosGame.overrideKey(' ', 112);
             dosGame.mapTouchToArrowKeys({directions:4});
             dosGame.mapButtonToKey({element:buttonA, asciiCode:112});
             dosGame.mapButtonToKey({element:buttonB, asciiCode:13});
+            dosGame.setPixelListener(65, 0, (hexValue) => {
+                switch(hexValue) {
+                    case '#55ffff':
+                        emergeGamingSDK.startLevel();
+                        break;
+                    case '#ffffff':
+                        processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
+                            console.log ("SCORE: " + _score)
+                            emergeGamingSDK.endLevel(_score);
+                            setTimeout(() => location.reload(), 5000)
+                        });
+                        break;
+                        default:
+                            console.debug('Colour from another mother')
+                }
+            })
         }
 
         startButtonOverlay.addEventListener('click', startButtonClicked);
         startButton.focus();
         startButtonForm.addEventListener('submit', startButtonClicked)
+
+        function ocrSetup() {
+            let startX = 12; let startY = 0; let charWidth = 10; let charHeight = 12; let charSpacing = 2; let numChars = 5;
+            setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, digger_digits);
+        }
 
     </script>
     <script src="/dosbox/js-dos.js"></script>

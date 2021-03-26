@@ -18,17 +18,16 @@ interface ButtonMapping {
     asciiCode:number
 }
 
-interface PressedButton {
-    id: number,
-    elem: HTMLElement,
-    x: number
-    y: number
-}
-
 interface Origin {
     x: number
     y: number
     id: number
+}
+
+interface PixelListener {
+    x: number
+    y: number
+    callback: (string) => void
 }
 
 /**
@@ -45,9 +44,12 @@ export class DosGame {
     private keysToReplace:KeyMapping[] = []
     private directions:Directions
     private buttons:ButtonMapping[] = []
-    private pressedButtons:PressedButton[] = []
     private origin:Origin = {x:null, y:null, id:null}
-    private lastDirection:any[] = []
+    private lastDirection:string[] = []
+    private canvasContext:CanvasRenderingContext2D
+    private interval:number
+    private pixelListener:PixelListener
+    private lastPixelValue:string
 
     /**
      * Create a new DosGame object.
@@ -109,18 +111,44 @@ export class DosGame {
     }
 
     /**
-     *
-     * @param buttonMapping
+     * Map an on-screen button to a keypress.
+     * @param buttonMapping the keyCode and asciiCode mapping.
      */
     public mapButtonToKey(buttonMapping:ButtonMapping):void {
         this.buttons.push(buttonMapping)
         if (!this.directions) {
             this.addTouchEventListeners()
         }
+    }
 
+    /**
+     * Give the x y coordinate of a pixel with a callback to be called when the colour changes
+     * @param x
+     * @param y
+     * @param callback
+     * @todo: This should really be called addPixelListener (i.e. more than one)
+     */
+    public setPixelListener(x:number, y:number, callback) {
+        this.pixelListener = {x:x, y:y, callback:callback}
+        this.canvasContext = this.canvas.getContext('2d');
+        this.interval = window.setInterval(this.doIntervalPoll.bind(this), 1000)
     }
 
     /***** P R I V A T E   M E T H O D S *****/
+
+    private doIntervalPoll() {
+        let pixelColor:ImageData = this.canvasContext.getImageData(this.pixelListener.x, this.pixelListener.y, 1, 1);
+        let colorValue:string = '#' + this.getHexValue(pixelColor.data[0]) + this.getHexValue(pixelColor.data[1]) + this.getHexValue(pixelColor.data[2]);
+        if (colorValue != this.lastPixelValue) {
+            this.pixelListener.callback(colorValue);
+            this.lastPixelValue = colorValue;
+        }
+
+    }
+
+    private getHexValue(number:number):string {
+        return ("00" + number.toString(16)).slice(-2)
+    }
 
     /**
      * Create key event listeners
@@ -163,6 +191,7 @@ export class DosGame {
      * Handle the touch events
      * @private
      * @param event
+     * @todo THIS NEEDS TO BE SIMPLIFIED AND EITHER MOVED TO A DIFFERENT CLASS OR BECOME PART OF A SUPERCLASS
      */
     private handleTouchEvent(event:TouchEvent) {
         if (event.type == 'touchstart') {
@@ -176,7 +205,6 @@ export class DosGame {
                         let rect = mapping.element.getBoundingClientRect()
                         let x1 = rect.x, x2 = rect.x + rect.width, y1 = rect.y, y2 = rect.y + rect.height;
                         if (startingTouch.clientX > x1 && startingTouch.clientX < x2 && startingTouch.clientY > y1 && startingTouch.clientY < y2) {
-                            this.pressedButtons.push({id:startingTouch.identifier, x:startingTouch.clientX, y:startingTouch.clientY, elem: mapping.element});
                             this.ci.simulateKeyPress(mapping.asciiCode, true)
                         }
                     }
@@ -236,31 +264,27 @@ export class DosGame {
                     }
                     this.lastDirection = [];
                 }
-                // } else {
-                //     let released = this.pressedButtons.find(item => item.id === endingTouch.identifier)
-                //     if (released) {
-                //         this.ci.simulateKeyPress(released.id, false)
-                //         this.pressedButtons = this.pressedButtons.filter(item => item.id !== endingTouch.identifier)
-                //     }
-                // }
             }
         }
     }
 
+    /**
+     * Looks for differences between the two arrays and turns on or off new directions
+     * eg: The examples in the parameters below will send a key event to the emulator with keyup for left
+     * @param was the array from the previous iteration (eg: ['left', 'up'])
+     * @param is the array from the previous iteration (eg: ['up'])
+     */
     private processDirectionChange = (was, is) => {
-        console.log ("was ", was)
-        console.log ("is ", is)
-        console.log ("---")
 
         let turnOff = was.filter(w => is.indexOf(w) === -1)
         let turnOn = is.filter(i => was.indexOf(i) === -1)
         turnOff.forEach((direction) => {
             console.log("ending " + direction)
-            this.ci.simulateKeyEvent(this.getDirectionAscii(direction), false);
+            this.ci.simulateKeyEvent(DosGame.getDirectionAscii(direction), false);
         });
         turnOn.forEach((direction) => {
             console.log ("starting " + direction)
-            this.ci.simulateKeyEvent(this.getDirectionAscii(direction), true)
+            this.ci.simulateKeyEvent(DosGame.getDirectionAscii(direction), true)
         });
     }
 
@@ -269,7 +293,7 @@ export class DosGame {
      * @param direction
      * @private
      */
-    private getDirectionAscii(direction:string):number {
+    private static getDirectionAscii(direction:string):number {
         switch (direction) {
             case 'up'  : return 38;
             case 'down': return 40;
