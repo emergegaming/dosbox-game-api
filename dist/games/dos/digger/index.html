@@ -75,7 +75,8 @@
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
                 loadingOverlay.remove();
-                ocrSetup();
+                let startX = 12; let startY = 0; let charWidth = 10; let charHeight = 12; let charSpacing = 2; let numChars = 5;
+                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, digger_digits);
             });
             dosGame.overrideKey(' ', 112);
             dosGame.mapTouchToArrowKeys({directions:4});
@@ -98,15 +99,11 @@
                 }
             })
         }
-
+        
         startButtonOverlay.addEventListener('click', startButtonClicked);
         startButton.focus();
         startButtonForm.addEventListener('submit', startButtonClicked)
 
-        function ocrSetup() {
-            let startX = 12; let startY = 0; let charWidth = 10; let charHeight = 12; let charSpacing = 2; let numChars = 5;
-            setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, digger_digits);
-        }
 
     </script>
     <script src="/dosbox/js-dos.js"></script>
