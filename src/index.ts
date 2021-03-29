@@ -1,7 +1,7 @@
 interface GameOptions {
     cycles: number
     zipFile: string
-    execCmd: string
+    execCmdArray: string[]
 }
 
 interface KeyMapping {
@@ -78,7 +78,8 @@ export class DosGame {
                 log: () => {}
             }).ready((fs, main) => {
                 fs.extract(this.options.zipFile).then(() => {
-                    main(["-c", this.options.execCmd]).then((ci) => {
+                    console.log (this.options.execCmdArray)
+                    main(this.options.execCmdArray).then((ci) => {
                         this.ci = ci
                         resolve(ci)
                         window.addEventListener('unload', this.unload)
@@ -181,7 +182,8 @@ export class DosGame {
                 if (event.key == keyMapping.targetKey) {
                     event.preventDefault()
                     event.stopImmediatePropagation()
-                    this.ci.simulateKeyEvent(keyMapping.replacementKeyCode, event.type == 'keydown')
+                    if (keyMapping.replacementKeyCode)
+                        this.ci.simulateKeyEvent(keyMapping.replacementKeyCode, event.type == 'keydown');
                 }
             }
         }

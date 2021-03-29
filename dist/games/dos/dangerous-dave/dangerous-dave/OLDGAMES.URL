@@ -1,0 +1,6 @@
+[DEFAULT]
+BASEURL=https://www.oldgames.sk/
+[InternetShortcut]
+URL=https://www.oldgames.sk/
+IconFile=https://www.oldgames.sk/favicon.ico
+IconIndex=1
