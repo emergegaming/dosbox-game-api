@@ -78,7 +78,7 @@ export class DosGame {
                 log: () => {}
             }).ready((fs, main) => {
                 fs.extract(this.options.zipFile).then(() => {
-                    console.log (this.options.execCmdArray)
+
                     main(this.options.execCmdArray).then((ci) => {
                         this.ci = ci
                         resolve(ci)
@@ -123,6 +123,22 @@ export class DosGame {
     }
 
     /**
+     * Automatically press a key after a certain period of time
+     * @param asciiCode the asciiCode of the key to press
+     * @param wait the wait period in milliseconds
+     */
+    public autoKeyPress(asciiCode:number, wait:number):Promise<any> {
+        return new Promise<unknown>((resolve, reject) =>
+            setTimeout (() => {
+                this.ci.simulateKeyPress(asciiCode);
+                resolve(null);
+            }, wait)
+        )
+
+
+    }
+
+    /**
      * Give the x y coordinate of a pixel with a callback to be called when the colour changes
      * @param x
      * @param y
@@ -139,15 +155,14 @@ export class DosGame {
 
     private doIntervalPoll() {
         let pixelColor:ImageData = this.canvasContext.getImageData(this.pixelListener.x, this.pixelListener.y, 1, 1);
-        let colorValue:string = '#' + this.getHexValue(pixelColor.data[0]) + this.getHexValue(pixelColor.data[1]) + this.getHexValue(pixelColor.data[2]);
+        let colorValue:string = '#' + DosGame.getHexValue(pixelColor.data[0]) + DosGame.getHexValue(pixelColor.data[1]) + DosGame.getHexValue(pixelColor.data[2]);
         if (colorValue != this.lastPixelValue) {
             this.pixelListener.callback(colorValue);
             this.lastPixelValue = colorValue;
         }
-
     }
 
-    private getHexValue(number:number):string {
+    private static getHexValue(number:number):string {
         return ("00" + number.toString(16)).slice(-2)
     }
 

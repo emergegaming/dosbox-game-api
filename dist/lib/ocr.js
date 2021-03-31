@@ -1,4 +1,4 @@
-let charData = [], numChars = 0, startX = 0, startY = 0, charWidth = 0, charHeight = 0
+let charData = [], numChars = 0, startX = 0, startY = 0, charWidth = 0, charHeight = 0, charSpacing = 0;
 
 export const setupOcr = (_startX, _startY, _charWidth, _charHeight, _charSpacing, _numChars, _referenceChars) => {
 
@@ -7,6 +7,7 @@ export const setupOcr = (_startX, _startY, _charWidth, _charHeight, _charSpacing
     startY = _startY;
     charWidth = _charWidth;
     charHeight = _charHeight;
+    charSpacing = _charSpacing
 
     for (let charNo = 0; charNo < 10; charNo++) {
         getImageSignature(_referenceChars[charNo], 0, 0, _charWidth, _charHeight).then((data) => {
@@ -23,7 +24,7 @@ export const processScreenshot = (_imageData) => {
         let scoreString = '';
 
         for (let charNo = 0; charNo < numChars; charNo++) {
-            stack.push(getImageSignature(_imageData, startX + (charNo * 12), startY, charWidth, charHeight).then((data) => {
+            stack.push(getImageSignature(_imageData, startX + (charNo * (charWidth + charSpacing)), startY, charWidth, charHeight).then((data) => {
                 scoreChars[charNo] = data;
             }));
         }

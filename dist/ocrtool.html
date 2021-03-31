@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OCR tool</title>
+</head>
+<body>
+    <h1>OCR Tool</h1>
+    <p>
+        Select PNG Screenshot: <input type="file" id="input">
+    </p>
+    <img id="img" width="320" height="200" border="1">
+    <h2>Parameters</h2>
+    <table>
+        <form id="form">
+            <tr>
+                <td>Num Digits</td><td><input name="numDigits" type="number" value="5"></td>
+            </tr>
+            <tr>
+                <td>Start X</td><td><input name="startX" type="number" value="64"></td>
+            </tr>
+            <tr>
+                <td>Start Y</td><td><input name="startY" type="number" value="2"></td>
+            </tr>
+            <tr>
+                <td>Digit Width</td><td><input name="digitWidth" type="number" value="7"></td>
+            </tr>
+            <tr>
+                <td>Digit Height</td><td><input name="digitHeight" type="number" value="8"></td>
+            </tr>
+            <tr>
+                <td>Digit Spacing</td><td><input name="digitSpacing" type="number" value="1"></td>
+            </tr>
+            <tr>
+                <td>Extract Digits</td><td><input type="button" value="Extract Digits" onclick="extractDigits()"></td>
+            </tr>
+        </form>
+    </table>
+    <h2>Extracted Images</h2>
+    <p>See console log for data Url's</p>
+    <div id="extractedImages"></div>
+    <script>
+
+        let inputElement = document.getElementById("input");
+        let img = document.getElementById("img")
+        let extractedImages = document.getElementById("extractedImages");
+
+        inputElement.addEventListener("change", handleFiles, false);
+
+        function handleFiles() {
+            const file = this.files[0];
+
+            img.classList.add("obj");
+            img.file = file;
+
+            const reader = new FileReader();
+            reader.onload = (function(aImg) { return function(e) { aImg.src = e.target.result; }; })(img);
+            reader.readAsDataURL(file);
+        }
+
+        function extractDigits() {
+
+            let numDigits = parseInt(document.forms[0].numDigits.value);
+            let startX = parseInt(document.forms[0].startX.value);
+            let startY = parseInt(document.forms[0].startY.value);
+            let digitWidth = parseInt(document.forms[0].digitWidth.value);
+            let digitHeight = parseInt(document.forms[0].digitHeight.value);
+            let digitSpacing = parseInt(document.forms[0].digitSpacing.value);
+
+            extractedImages.innerHTML = '';
+
+            for (let i = 0; i < numDigits; i++) {
+
+                let digitCanvas = document.createElement("canvas")
+                let digitContext = digitCanvas.getContext('2d')
+                digitCanvas.width = digitWidth;
+                digitCanvas.height = digitHeight;
+
+                digitContext.drawImage(document.getElementById('img'), startX + ((digitWidth + digitSpacing) * i), startY, digitWidth, digitHeight, 0, 0, digitWidth, digitHeight);
+                let newImage = new Image(digitWidth, digitHeight);
+                newImage.classList.add('extractedImage')
+                let imageUrl = digitCanvas.toDataURL();
+                newImage.src = imageUrl;
+                extractedImages.appendChild(newImage);
+                console.log (imageUrl);
+            }
+
+        }
+    </script>
+</body>
+<style>
+    img.extractedImage {
+        image-rendering: optimizeSpeed;             /* STOP SMOOTHING, GIVE ME SPEED  */
+        image-rendering: -moz-crisp-edges;          /* Firefox                        */
+        image-rendering: -o-crisp-edges;            /* Opera                          */
+        image-rendering: -webkit-optimize-contrast; /* Chrome (and eventually Safari) */
+        image-rendering: pixelated; /* Chrome */
+        image-rendering: optimize-contrast;         /* CSS3 Proposed                  */
+        -ms-interpolation-mode: nearest-neighbor;   /* IE8+                           */
+        transform: scale(10);
+        margin-left:100px;
+        margin-top:20px;
+        margin-right:100px;
+    }
+
+</style>
+</html>

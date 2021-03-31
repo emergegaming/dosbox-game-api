@@ -54,7 +54,7 @@
         import {DosGame} from "/index.js";
         import {emergeGamingSDK} from '/lib/emergamingSDK.js'
         import {processScreenshot, setupOcr} from "/lib/ocr.js";
-        import {digger_digits} from "/games/dos/digger/digits.js";
+        import {dave_digits} from "/games/dos/dangerous-dave/digits.js";
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
@@ -75,8 +75,9 @@
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
                 loadingOverlay.remove();
-                let startX = 12; let startY = 0; let charWidth = 10; let charHeight = 12; let charSpacing = 2; let numChars = 5;
-                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, digger_digits);
+                let startX = 64; let startY = 2; let charWidth = 7; let charHeight = 8; let charSpacing = 1; let numChars = 5;
+                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, dave_digits);
+                dosGame.autoKeyPress(17, 1000).then(() => emergeGamingSDK.startLevel());
             });
             dosGame.overrideKey(' ', null);
             dosGame.overrideKey('Enter', null);
@@ -86,21 +87,14 @@
             dosGame.mapTouchToArrowKeys({directions:8});
             dosGame.mapButtonToKey({element:buttonA, asciiCode:17});
             dosGame.mapButtonToKey({element:buttonB, asciiCode:18});
-            dosGame.setPixelListener(65, 0, (hexValue) => {
-                switch(hexValue) {
-                    case '#55ffff':
-                        emergeGamingSDK.startLevel();
-                        break;
-                    case '#ffffff':
-                        processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
-                            console.log ("SCORE: " + _score);
-                            emergeGamingSDK.endLevel(_score);
-                            setTimeout(() => location.reload(), 750);
-                        });
-                        break;
-                        default:
-                            console.debug('Colour from another mother');
-                }
+            dosGame.setPixelListener(40, 190, (hexValue) => {
+                processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
+                    if (hexValue === '#ffffff') {
+                        console.log ("SCORE: " + _score);
+                        emergeGamingSDK.endLevel(_score);
+                        setTimeout(() => location.reload(), 750);
+                    }
+                })
             })
         }
 
