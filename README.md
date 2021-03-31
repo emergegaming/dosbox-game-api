@@ -19,9 +19,7 @@ This is a hacked together API. This is how to do it.
 3. Recreate a new `/css/tailwindpurged.min.css` by using the `purgecss` commandline interface.
 
 ```bash
-npx purgecss --css tailwind.min.css --content games/dos/digger/index.html --output dangerous-dave-tailwind.css
-```
-**IMPORTANT:** You need to use the source of all the index.html's as inputs to purgecss so that you don't accidentally remove the classes they use. In the above example you can see the `/**/index.html` that caters for this.
+npx purgecss --css ./css/tailwind.min.css --content ./games/dos/digger/index.html games/dos/dangerous-dave/index.html --output css/tailwind-purged.css```
 
 
 

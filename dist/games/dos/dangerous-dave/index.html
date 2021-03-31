@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Dangerous Dave</title>
-    <link rel="stylesheet" type="text/css" href="/css/tailwind.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/tailwind-purged.css"/>
     <link rel="stylesheet" type="text/css" href="/css/style.css"/>
 </head>
 <body>
@@ -74,10 +74,13 @@
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
-                loadingOverlay.remove();
+
                 let startX = 64; let startY = 2; let charWidth = 7; let charHeight = 8; let charSpacing = 1; let numChars = 5;
                 setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, dave_digits);
-                dosGame.autoKeyPress(17, 1000).then(() => emergeGamingSDK.startLevel());
+                dosGame.autoKeyPress(17, 1000).then(() => {
+                    emergeGamingSDK.startLevel();
+                    loadingOverlay.remove();
+                });
             });
             dosGame.overrideKey(' ', null);
             dosGame.overrideKey('Enter', null);
