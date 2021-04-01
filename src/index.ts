@@ -151,6 +151,13 @@ export class DosGame {
         this.interval = window.setInterval(this.doIntervalPoll.bind(this), 1000)
     }
 
+    public consoleScreenshots() {
+        setInterval(() => {
+            console.log (this.canvas.toDataURL('img/png'));
+        }, 1500)
+
+    }
+
     /***** P R I V A T E   M E T H O D S *****/
 
     private doIntervalPoll() {

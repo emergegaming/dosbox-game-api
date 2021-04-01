@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
-    <title>Dangerous Dave</title>
+    <title>Froggy</title>
     <link rel="stylesheet" type="text/css" href="/css/tailwind-purged.css"/>
     <link rel="stylesheet" type="text/css" href="/css/style.css"/>
 </head>
@@ -54,7 +54,7 @@
         import {DosGame} from "/index.js";
         import {emergeGamingSDK} from '/lib/emergamingSDK.js'
         import {processScreenshot, setupOcr} from "/lib/ocr.js";
-        import {dave_digits} from "/games/dos/dangerous-dave/digits.js";
+        import {froggy_digits} from "/games/dos/froggy/digits.js";
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
@@ -65,40 +65,48 @@
         let buttonB = document.getElementById('ctlButtonB');
 
         let gameConfig = {
-            zipFile : 'dangerous-dave.zip',
-            execCmdArray : ['-c','cd DAVE','-c','DAVE.EXE'],
-            cycles : 3000,
+            zipFile : 'rof.zip',
+            execCmdArray : ['-c','ROF.EXE'],
+            cycles : 'max',
         }
 
         const startButtonClicked = () => {
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
+                let startX = 96; let startY = 32; let charWidth = 5; let charHeight = 7; let charSpacing = 1; let numChars = 6;
+                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, froggy_digits);
+                dosGame.overrideKey('p', 80);
+                dosGame.overrideKey('F1', 112);
+                dosGame.overrideKey('27', 27);
+                dosGame.mapTouchToArrowKeys({directions:8});
+                dosGame.mapButtonToKey({element:buttonA, asciiCode:13});
+                //dosGame.consoleScreenshots();
 
-                let startX = 64; let startY = 2; let charWidth = 7; let charHeight = 8; let charSpacing = 1; let numChars = 5;
-                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, dave_digits);
-                dosGame.autoKeyPress(17, 1000).then(() => {
-                    emergeGamingSDK.startLevel();
-                    loadingOverlay.remove();
-                });
-            });
-            dosGame.overrideKey(' ', null);
-            dosGame.overrideKey('Enter', null);
-            dosGame.overrideKey('F1', null);
-            dosGame.overrideKey('F2', null);
-            dosGame.overrideKey('F3', null);
-            dosGame.mapTouchToArrowKeys({directions:8});
-            dosGame.mapButtonToKey({element:buttonA, asciiCode:17});
-            dosGame.mapButtonToKey({element:buttonB, asciiCode:18});
-            dosGame.setPixelListener(40, 190, (hexValue) => {
-                processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
-                    if (hexValue === '#ffffff') {
-                        console.log ("SCORE: " + _score);
-                        emergeGamingSDK.endLevel(_score);
-                        setTimeout(() => location.reload(), 750);
+                dosGame.setPixelListener(40, 190, (hexValue) => {
+                    switch (hexValue) {
+                        case '#281810':
+                            console.log ("READY")
+                            dosGame.autoKeyPress(80, 1500).then(() => {
+                                loadingOverlay.remove();
+                                emergeGamingSDK.startLevel();
+                            });
+                            break;
+                        case '#aa0000':
+                            setTimeout(() => {
+                                processScreenshot(canvas.toDataURL('img/pmg')).then((_score) => {
+                                    console.log ("YOUR SCORE" + _score);
+                                    emergeGamingSDK.endLevel(_score)
+                                    setTimeout(() => location.reload(), 750);
+                                })
+                            }, 3500);
+                            break;
+                        case '#0000aa':
+                            emergeGamingSDK.endLevel(0);
+                            setTimeout(() => location.reload(), 750)
                     }
                 })
-            })
+            });
         }
 
         startButtonOverlay.addEventListener('click', startButtonClicked);

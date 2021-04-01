@@ -34,6 +34,7 @@ export const processScreenshot = (_imageData) => {
                 for (let i = 0; i < 10; i++) {
                     if (scoreChar === charData[i]) {
                         scoreString += i;
+                        break;
                     }
                 }
             })
