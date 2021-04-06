@@ -146,6 +146,7 @@ export class DosGame {
      * @todo: This should really be called addPixelListener (i.e. more than one)
      */
     public setPixelListener(x:number, y:number, callback) {
+        window.clearInterval(this.interval);
         this.pixelListener = {x:x, y:y, callback:callback}
         this.canvasContext = this.canvas.getContext('2d');
         this.interval = window.setInterval(this.doIntervalPoll.bind(this), 1000)
