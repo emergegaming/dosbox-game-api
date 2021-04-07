@@ -88,7 +88,6 @@
                         emergeGamingSDK.startLevel()
                         let startX = 265; let startY = 72; let charWidth = 7; let charHeight = 7; let charSpacing = 1; let numChars = 7;
 
-                        console.log("Setting score interval")
                         if (!scoreInterval) {
                             setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, bubble_digits);
                             scoreInterval = setInterval(() => {
@@ -101,13 +100,6 @@
                                         window.clearInterval(scoreInterval);
                                         setTimeout(()=> location.reload(), 750);
                                     }
-                                        console.log (_score);
-                                    // if (typeof _score == 'number')
-                                    // if (lastScore > _score) {
-                                    //     lastScore = _score;
-                                    // } else if (isNaN(_score) && lastScore > 0) {
-                                    // }
-
                                 });
                             }, 2000)
                         }
