@@ -142,7 +142,7 @@ export class DosGame {
      * Give the x y coordinate of a pixel with a callback to be called when the colour changes
      * @param x coord of pixel
      * @param y coord of pixel
-     * @param callback 
+     * @param callback
      * @param delay the number of ms to wait
      * @todo: This should really be called addPixelListener (i.e. more than one)
      */
