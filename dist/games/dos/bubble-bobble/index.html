@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Bubble Bobble</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="stylesheet" type="text/css" href="/css/tailwind-purged.css"/>
     <link rel="stylesheet" type="text/css" href="/css/style.css"/>
 </head>
@@ -54,7 +55,7 @@
         import {DosGame} from "/index.js";
         import {emergeGamingSDK} from '/lib/emergamingSDK.js'
         import {processScreenshot, setupOcr} from "/lib/ocr.js";
-        import {froggy_digits} from "/games/dos/froggy/digits.js";
+        import {bubble_digits} from "/games/dos/bubble-bobble/digits.js";
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
@@ -63,32 +64,57 @@
         let loadingOverlay = document.getElementById('loadingOverlay');
         let buttonA = document.getElementById('ctlButtonA');
         let buttonB = document.getElementById('ctlButtonB');
+        let lastScore = -1;
+        let scoreInterval = null;
 
         let gameConfig = {
             zipFile : 'bubble-bobble.zip',
-            execCmdArray : ['-c', 'cd BUBBLE~1', '-c','BUBBLE.EXE'],
+            execCmdArray : ['-c', 'cd BUBBLE~1', '-c','BBFAST.EXE'],
             cycles : 'max',
         }
 
         const startButtonClicked = () => {
             startButtonOverlay.remove();
+
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
                 dosGame.setPixelListener(160,100, (colour) => {
-                    console.log (colour)
                     if (colour === "#0000aa") {
-                        console.log ("PRESSING NO")
-                        dosGame.autoKeyPress(78, 1000).then(() => {
-                            console.log ("PRESSING SPACE")
-                            dosGame.autoKeyPress(32, 1000)
-                            dosGame.autoKeyPress(32, 3000)
-                            dosGame.autoKeyPress(32, 5000).then(() => loadingOverlay.remove());
-                        }); // n
+                        dosGame.autoKeyPress(78, 100);
+                    }
+                    if (colour === "#920092") {
+                        loadingOverlay.remove()
+                        dosGame.autoKeyPress(32, 100);
+                        emergeGamingSDK.startLevel()
+                        let startX = 265; let startY = 72; let charWidth = 7; let charHeight = 7; let charSpacing = 1; let numChars = 7;
 
+                        console.log("Setting score interval")
+                        if (!scoreInterval) {
+                            setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, bubble_digits);
+                            scoreInterval = setInterval(() => {
+                                processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
+                                    if (!isNaN(_score)) {
+                                        lastScore = _score
+                                    } else if (lastScore > -1) {
+                                        console.log("Ending with: " + lastScore)
+                                        emergeGamingSDK.endLevel(lastScore);
+                                        window.clearInterval(scoreInterval);
+                                        setTimeout(()=> location.reload(), 750);
+                                    }
+                                        console.log (_score);
+                                    // if (typeof _score == 'number')
+                                    // if (lastScore > _score) {
+                                    //     lastScore = _score;
+                                    // } else if (isNaN(_score) && lastScore > 0) {
+                                    // }
+
+                                });
+                            }, 2000)
+                        }
                     }
                 })
-
                 dosGame.mapTouchToArrowKeys({directions:8});
+                dosGame.mapButtonToKey({element:buttonA, asciiCode:32})
             });
         }
 
