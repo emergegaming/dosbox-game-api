@@ -82,15 +82,18 @@ dosGame.overrideKey(' ', 112);  // Replaces SPACE (event.key) with F1 (ASCII 112
 ### Scoring
 Scoring is performed by a separate API (ocr2.js) also written internally but not yet integrated into the TypeScript API (dosGame). The OCR-like process works as follows:
 1. Use the OCR tool (visit /ocrtool.html) to "extract" digits from various PNG screenshots
+   
    * The OCR tool will print base64 png data url's to the console for each digit. Copy these strings into an array for digits [0 to 9] (see each games digits.js for an example)
-   * Also record the position of the score, the character width and height, number of digits and spacing between each score (from the form you filled in, in ocrtool.html).
-2. At any point in the start-up process for your game, set up the OCR (from the data in the form)
+   * Also record the position of the score, the character width and height, number of digits and spacing between each score (from the form you filled in, in ocrtool.html).<br/><br/>
+    
+2. At any point in the start-up process for your game, set up the OCR (from the data in the form)<br/>
     ```javascript
     import {dave_digits} from "/games/dos/dangerous-dave/digits.js";
     let startX = 64; let startY = 2; let charWidth = 7; let charHeight = 8; let charSpacing = 1; let numChars = 5;
     setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, dave_digits);
     ```
-3. When you're ready, use the `processScreenshot` function to extract the score It (the promise will return a NaN if it can't find a score)
+3. When you're ready, use the `processScreenshot` function to extract the score It (the promise will return a NaN if it can't find a score)<br/>
+   
     ```javascript
     processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
         console.log ("SCORE: " + _score);
