@@ -1,14 +1,15 @@
 # Implementing DOS Games
 This is a hacked together API. This is how to do it.
 
-1. Clone the repository
-2. Create a folder (`/dist/games/dos/my-game-name-here`)
-3. Copy `/games/dos/digger/index.html` into the new folder
-4. Pop your DOS GAME zip file (they come in zips) into the same folder
-5. Edit the JavaScript in `index.html` as required for your new game (see: ***Techniques*** below)
-6. The UI makes use of tailwindCSS. Use the full tailwind set for development, then remove unused utility classes (see: ***Using tailwind*** below)
-7. Run `npm run dev` (Hot Module Replacement not implemented - i.e. manual refresh)
-8. Zip up the DIST folder and upload. Have the tournament team link the game URL in a IFRAME.
+1. Clone the repository (`git clone https://github.com/emergegaming/dosbox-game-api.git`)
+2. Install dependencies (from within the folder `npm i`)   
+3. Create a folder (`/dist/games/dos/my-game-name-here`)
+4. Copy `/games/dos/digger/index.html` into the new folder
+5. Pop your DOS GAME zip file (they come in zips) into the same folder
+6. Edit the JavaScript in `index.html` as required for your new game (see: ***Techniques*** below)
+7. The UI makes use of tailwindCSS. Use the full tailwind set for development, then remove unused utility classes (see: ***Using tailwind*** below)
+8. Run `npm run dev` (Hot Module Replacement not implemented - i.e. manual refresh)
+9. Zip up the DIST folder and upload. Have the tournament team link the game URL in a IFRAME.
 ## Using Tailwind
    * The User Interface uses TailwindCSS (www.tailwindcss.com)
    * The full tailwind utility classes file is in `/css/tailwind.min.css`
@@ -99,6 +100,8 @@ Scoring is performed by a separate API (ocr2.js) also written internally but not
         console.log ("SCORE: " + _score);
     })
     ```
+   
+PS: You get get screenshots in the console by using the command `dosGame.consoleScreenshots()`
 
 ### Ending the game
 The simplest way to end a game is to end the level and refresh the iframe. In tournaments, EMERGE will bring up a pop-up overlay and the "load game" splash screen will wait be  
