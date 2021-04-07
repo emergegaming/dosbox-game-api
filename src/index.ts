@@ -140,16 +140,17 @@ export class DosGame {
 
     /**
      * Give the x y coordinate of a pixel with a callback to be called when the colour changes
-     * @param x
-     * @param y
-     * @param callback
+     * @param x coord of pixel
+     * @param y coord of pixel
+     * @param callback 
+     * @param delay the number of ms to wait
      * @todo: This should really be called addPixelListener (i.e. more than one)
      */
-    public setPixelListener(x:number, y:number, callback) {
+    public setPixelListener(x:number, y:number, callback, delay:number = 1000) {
         window.clearInterval(this.interval);
         this.pixelListener = {x:x, y:y, callback:callback}
         this.canvasContext = this.canvas.getContext('2d');
-        this.interval = window.setInterval(this.doIntervalPoll.bind(this), 1000)
+        this.interval = window.setInterval(this.doIntervalPoll.bind(this), delay)
     }
 
     public consoleScreenshots() {
