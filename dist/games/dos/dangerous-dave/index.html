@@ -119,7 +119,7 @@
                     dosGame.stopPixelListener();
                     processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
                         console.log("Ending game with " + _score);
-                        emergeGamingSDK.endLevel(lastScore);
+                        emergeGamingSDK.endLevel(_score);
                         setTimeout(()=> location.reload(), 750);
                     });
                 }
