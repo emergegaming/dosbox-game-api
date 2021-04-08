@@ -151,6 +151,10 @@ export class DosGame {
         this.interval = window.setInterval(this.doIntervalPoll.bind(this), delay)
     }
 
+    public stopPixelListener() {
+        window.clearInterval(this.interval);
+    }
+
     public consoleScreenshots() {
         setInterval(() => {
             console.log (this.canvas.toDataURL('img/png'));

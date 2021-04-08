@@ -64,6 +64,10 @@
         let buttonA = document.getElementById('ctlButtonA');
         let buttonB = document.getElementById('ctlButtonB');
 
+        let lastScore = -1;
+        let scoreInterval = null;
+
+
         let gameConfig = {
             zipFile : 'dangerous-dave.zip',
             execCmdArray : ['-c','cd DAVE','-c','DAVE.EXE'],
@@ -74,9 +78,6 @@
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
-
-                let startX = 64; let startY = 2; let charWidth = 7; let charHeight = 8; let charSpacing = 1; let numChars = 5;
-                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, dave_digits);
                 dosGame.autoKeyPress(17, 1000).then(() => {
                     emergeGamingSDK.startLevel();
                     loadingOverlay.remove();
@@ -90,15 +91,33 @@
             dosGame.mapTouchToArrowKeys({directions:8});
             dosGame.mapButtonToKey({element:buttonA, asciiCode:17});
             dosGame.mapButtonToKey({element:buttonB, asciiCode:18});
+
+            if (!scoreInterval) {
+                let startX = 64; let startY = 2; let charWidth = 7; let charHeight = 8; let charSpacing = 1; let numChars = 5;
+                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, dave_digits);
+                scoreInterval = setInterval(() => {
+                    processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
+                        if (!isNaN(_score) && _score !== lastScore) {
+                            if (_score < lastScore) {
+                                clearInterval(scoreInterval)
+                                console.log("Ending game with " + lastScore);
+                                emergeGamingSDK.endLevel(lastScore);
+                                setTimeout(()=> location.reload(), 750);
+                            }
+                            lastScore = _score
+                        }
+                    });
+                }, 2000)
+            }
+
             dosGame.setPixelListener(40, 190, (hexValue) => {
-                processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
-                    if (hexValue === '#ffffff') {
-                        console.log ("SCORE: " + _score);
-                        emergeGamingSDK.endLevel(_score);
-                        //setTimeout(() => location.reload(), 750);
-                    }
-                })
-            }, 90);
+                if (hexValue === '#ffffff') {
+                    dosGame.stopPixelListener();
+                    console.log("Ending game with " + lastScore);
+                    emergeGamingSDK.endLevel(lastScore);
+                    setTimeout(()=> location.reload(), 750);
+                }
+            }, 2000);
         }
 
         startButtonOverlay.addEventListener('click', startButtonClicked);
