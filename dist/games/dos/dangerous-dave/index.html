@@ -96,9 +96,10 @@
 
             /*** Commented this out in order to prevent slowness on mobile ***/
 
+            let startX = 64; let startY = 2; let charWidth = 7; let charHeight = 8; let charSpacing = 1; let numChars = 5;
+            setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, dave_digits);
+
             if (!scoreInterval && !DosGame.isTouch()) {
-                let startX = 64; let startY = 2; let charWidth = 7; let charHeight = 8; let charSpacing = 1; let numChars = 5;
-                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, dave_digits);
                 scoreInterval = setInterval(() => {
                     processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
                         if (!isNaN(_score) && _score !== lastScore) {
@@ -106,7 +107,7 @@
                                 clearInterval(scoreInterval)
                                 console.log("2. Ending game with " + lastScore);
                                 emergeGamingSDK.endLevel(lastScore);
-                                setTimeout(()=> location.reload(), 750);
+                                //setTimeout(()=> location.reload(), 750);
                             }
                             lastScore = _score
                         }
@@ -115,12 +116,14 @@
             }
 
             dosGame.setPixelListener(40, 190, (hexValue) => {
+                console.log("PIXEL")
                 if (hexValue === '#ffffff') {
+                    console.log("WHITE")
                     dosGame.stopPixelListener();
                     processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
                         console.log("1. Ending game with " + _score);
                         emergeGamingSDK.endLevel(_score);
-                        setTimeout(()=> location.reload(), 750);
+                        //setTimeout(()=> location.reload(), 750);
                     });
                 }
             }, 30);
