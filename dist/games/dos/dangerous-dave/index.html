@@ -117,9 +117,13 @@
             dosGame.setPixelListener(40, 190, (hexValue) => {
                 if (hexValue === '#ffffff') {
                     dosGame.stopPixelListener();
-                    console.log("Ending game with " + lastScore);
-                    emergeGamingSDK.endLevel(lastScore);
-                    setTimeout(()=> location.reload(), 750);
+                    processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
+                        if (!isNaN(_score) && _score !== lastScore) {
+                                console.log("Ending game with " + lastScore);
+                                emergeGamingSDK.endLevel(lastScore);
+                                setTimeout(()=> location.reload(), 750);
+                        }
+                    });
                 }
             }, 30);
         }
