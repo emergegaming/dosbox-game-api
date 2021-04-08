@@ -134,8 +134,6 @@ export class DosGame {
                 resolve(null);
             }, wait)
         )
-
-
     }
 
     /**
@@ -158,6 +156,12 @@ export class DosGame {
             console.log (this.canvas.toDataURL('img/png'));
         }, 1500)
 
+    }
+
+    public static isTouch = () => {
+        return (('ontouchstart' in window) ||
+            (navigator.maxTouchPoints > 0) ||
+            (navigator.msMaxTouchPoints > 0));
     }
 
     /***** P R I V A T E   M E T H O D S *****/
@@ -187,7 +191,7 @@ export class DosGame {
     /**
      * Create touch listeners
      */
-    addTouchEventListeners() {
+    private addTouchEventListeners() {
         document.addEventListener('touchstart', this.handleTouchEvent.bind(this))
         document.addEventListener('touchend', this.handleTouchEvent.bind(this))
         document.addEventListener('touchmove', this.handleTouchEvent.bind(this))
