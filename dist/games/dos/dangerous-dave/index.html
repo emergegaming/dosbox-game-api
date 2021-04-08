@@ -107,7 +107,7 @@
                                 clearInterval(scoreInterval)
                                 console.log("2. Ending game with " + lastScore);
                                 emergeGamingSDK.endLevel(lastScore);
-                                //setTimeout(()=> location.reload(), 750);
+                                setTimeout(()=> location.reload(), 750);
                             }
                             lastScore = _score
                         }
@@ -123,7 +123,7 @@
                     processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
                         console.log("1. Ending game with " + _score);
                         emergeGamingSDK.endLevel(_score);
-                        //setTimeout(()=> location.reload(), 750);
+                        setTimeout(()=> location.reload(), 750);
                     });
                 }
             }, 30);
