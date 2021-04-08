@@ -104,7 +104,7 @@
                         if (!isNaN(_score) && _score !== lastScore) {
                             if (_score < lastScore) {
                                 clearInterval(scoreInterval)
-                                console.log("Ending game with " + lastScore);
+                                console.log("2. Ending game with " + lastScore);
                                 emergeGamingSDK.endLevel(lastScore);
                                 setTimeout(()=> location.reload(), 750);
                             }
@@ -118,9 +118,9 @@
                 if (hexValue === '#ffffff') {
                     dosGame.stopPixelListener();
                     processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
-                        console.log("Ending game with " + _score);
+                        console.log("1. Ending game with " + _score);
                         emergeGamingSDK.endLevel(_score);
-                        setTimeout(()=> location.reload(), 750);
+                        //setTimeout(()=> location.reload(), 750);
                     });
                 }
             }, 30);
