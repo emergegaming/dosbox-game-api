@@ -118,11 +118,9 @@
                 if (hexValue === '#ffffff') {
                     dosGame.stopPixelListener();
                     processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
-                        if (!isNaN(_score) && _score !== lastScore) {
-                                console.log("Ending game with " + lastScore);
-                                emergeGamingSDK.endLevel(lastScore);
-                                setTimeout(()=> location.reload(), 750);
-                        }
+                        console.log("Ending game with " + _score);
+                        emergeGamingSDK.endLevel(lastScore);
+                        setTimeout(()=> location.reload(), 750);
                     });
                 }
             }, 30);
@@ -136,9 +134,7 @@
             startButtonDesktop.focus();
         }
 
-
         startButtonOverlay.addEventListener('click', startButtonClicked);
-        startButton.focus();
         startButtonForm.addEventListener('submit', startButtonClicked);
 
     </script>
