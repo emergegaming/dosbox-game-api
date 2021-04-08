@@ -39,8 +39,8 @@
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40 outline-none focus:outline-none" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="return false" class="outline-none focus:outline-none">
-                <input type="image" src="dangerous-dave-loader-desktop.jpg" id="startButtonDesktop" class="h-96 outline-none focus:outline-none"/>
-                <input type="image" src="dangerous-dave-loader-mobile.jpg" id="startButtonMobile" class="h-96 outline-none focus:outline-none"/>
+                <input type="image" src="dangerous-dave-loader-desktop.jpg" id="startButtonDesktop" class="h-full outline-none focus:outline-none"/>
+                <input type="image" src="dangerous-dave-loader-mobile.jpg" id="startButtonMobile" class="h-full outline-none focus:outline-none"/>
             </form>
         </div>
 
@@ -94,23 +94,25 @@
             dosGame.mapButtonToKey({element:buttonA, asciiCode:17});
             dosGame.mapButtonToKey({element:buttonB, asciiCode:18});
 
-            if (!scoreInterval) {
-                let startX = 64; let startY = 2; let charWidth = 7; let charHeight = 8; let charSpacing = 1; let numChars = 5;
-                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, dave_digits);
-                scoreInterval = setInterval(() => {
-                    processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
-                        if (!isNaN(_score) && _score !== lastScore) {
-                            if (_score < lastScore) {
-                                clearInterval(scoreInterval)
-                                console.log("Ending game with " + lastScore);
-                                emergeGamingSDK.endLevel(lastScore);
-                                setTimeout(()=> location.reload(), 750);
-                            }
-                            lastScore = _score
-                        }
-                    });
-                }, 2000)
-            }
+            /*** Commented this out in order to prevent slowness on mobile ***/
+
+            // if (!scoreInterval) {
+            //     let startX = 64; let startY = 2; let charWidth = 7; let charHeight = 8; let charSpacing = 1; let numChars = 5;
+            //     setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, dave_digits);
+            //     scoreInterval = setInterval(() => {
+            //         processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
+            //             if (!isNaN(_score) && _score !== lastScore) {
+            //                 if (_score < lastScore) {
+            //                     clearInterval(scoreInterval)
+            //                     console.log("Ending game with " + lastScore);
+            //                     emergeGamingSDK.endLevel(lastScore);
+            //                     setTimeout(()=> location.reload(), 750);
+            //                 }
+            //                 lastScore = _score
+            //             }
+            //         });
+            //     }, 2000)
+            // }
 
             dosGame.setPixelListener(40, 190, (hexValue) => {
                 if (hexValue === '#ffffff') {
