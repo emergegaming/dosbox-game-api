@@ -39,7 +39,8 @@
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="return false">
-                <input type="submit" id="startButton" class="p-2 text-white bg-red-900 rounded-xl border-2 border-white outline-none" value="Start Game"/>
+                <input type="image" src="dangerous-dave-loader-desktop.jpg" id="startButtonDesktop" class="h-96 outline-none"/>
+                <input type="image" src="dangerous-dave-loader-mobile.jpg" id="startButtonMobile" class="h-96 outline-none"/>
             </form>
         </div>
 
@@ -58,7 +59,8 @@
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
-        let startButton = document.getElementById('startButton');
+        let startButtonDesktop = document.getElementById('startButtonDesktop');
+        let startButtonMobile = document.getElementById('startButtonMobile');
         let startButtonForm = document.getElementById('startButtonForm');
         let loadingOverlay = document.getElementById('loadingOverlay');
         let buttonA = document.getElementById('ctlButtonA');
@@ -119,6 +121,15 @@
                 }
             }, 2000);
         }
+
+        if (DosGame.isTouch()) {
+            startButtonDesktop.remove();
+            startButtonMobile.focus();
+        } else {
+            startButtonMobile.remove();
+            startButtonDesktop.focus();
+        }
+
 
         startButtonOverlay.addEventListener('click', startButtonClicked);
         startButton.focus();
