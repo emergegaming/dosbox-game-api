@@ -90,7 +90,7 @@
             dosGame.overrideKey('F1', null);
             dosGame.overrideKey('F2', null);
             dosGame.overrideKey('F3', null);
-            dosGame.mapTouchToArrowKeys({directions:8});
+            dosGame.mapTouchToArrowKeys({directions:4});
             dosGame.mapButtonToKey({element:buttonA, asciiCode:17});
             dosGame.mapButtonToKey({element:buttonB, asciiCode:18});
 
@@ -99,7 +99,7 @@
             let startX = 64; let startY = 2; let charWidth = 7; let charHeight = 8; let charSpacing = 1; let numChars = 5;
             setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, dave_digits);
 
-            if (!scoreInterval && !DosGame.isTouch()) {
+            if (false /**!scoreInterval && !DosGame.isTouch() **/) {
                 scoreInterval = setInterval(() => {
                     processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
                         if (!isNaN(_score) && _score !== lastScore) {
@@ -126,7 +126,7 @@
                         setTimeout(()=> location.reload(), 750);
                     });
                 }
-            }, 30);
+            }, 2000);
         }
 
         if (DosGame.isTouch()) {
