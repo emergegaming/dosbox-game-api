@@ -50,9 +50,6 @@ export class DosGame {
     private interval:number
     private pixelListener:PixelListener
     private lastPixelValue:string
-    private lastTouchX:number
-    private lastTouchY:number
-
 
     /**
      * Create a new DosGame object.
@@ -154,10 +151,6 @@ export class DosGame {
         this.interval = window.setInterval(this.doIntervalPoll.bind(this), delay)
     }
 
-    public stopPixelListener() {
-        window.clearInterval(this.interval);
-    }
-
     public consoleScreenshots() {
         setInterval(() => {
             console.log (this.canvas.toDataURL('img/png'));
@@ -252,20 +245,11 @@ export class DosGame {
             for (let i:number = 0; i < event.changedTouches.length; i++) {
                 let movingTouch:Touch = event.changedTouches[i]
                 if (movingTouch.clientX < 200) {
-
                     let control = []
                     let dx = movingTouch.clientX - this.origin.x;
                     let dy = movingTouch.clientY - this.origin.y;
-
-                    if (Math.abs(this.lastTouchX - movingTouch.clientX) < 10 && Math.abs(this.lastTouchY - movingTouch.clientY) < 10) {
-                        return;
-                    }
-
-                    this.lastTouchX = movingTouch.clientX;
-                    this.lastTouchY = movingTouch.clientY;
-
+                    if (dx === 0 && dy === 0) return
                     let r = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))
-
                     let angle = this.radToDeg(Math.asin(dy/r)) + 90
                     if (dx < 0) angle = (180 - angle) + 180
 
