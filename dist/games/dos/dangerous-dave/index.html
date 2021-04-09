@@ -73,14 +73,14 @@
         let gameConfig = {
             zipFile : 'dangerous-dave.zip',
             execCmdArray : ['-c','cd DAVE','-c','DAVE.EXE'],
-            cycles : 'max',
+            cycles : '1500',
         }
 
         const startButtonClicked = () => {
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
-                dosGame.autoKeyPress(17, 1000).then(() => {
+                dosGame.autoKeyPress(17, 1500).then(() => {
                     emergeGamingSDK.startLevel();
                     loadingOverlay.remove();
                 });
