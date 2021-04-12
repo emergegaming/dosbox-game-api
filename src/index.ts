@@ -246,41 +246,48 @@ export class DosGame {
                 let movingTouch:Touch = event.changedTouches[i]
                 if (movingTouch.clientX < 200) {
 
-                    let x:number = movingTouch.clientX;
-                    let y:number = movingTouch.clientY;
-
-                    // Equations code in here...
-
                     let control = []
                     let dx = movingTouch.clientX - this.origin.x;
                     let dy = movingTouch.clientY - this.origin.y;
-                    if (dx === 0 && dy === 0) return
-                    let r = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))
-                    let angle = this.radToDeg(Math.asin(dy/r)) + 90
-                    if (dx < 0) angle = (180 - angle) + 180
+                    if (dx === 0 && dy === 0 || isNaN(dx) || isNaN(dy)) return
 
-                    if (this.directions.directions === 4) {
-                        if (angle >= 315 || angle < 45) control=['up']
-                        else if (angle >= 45 && angle < 135) control=['right']
-                        else if (angle >= 135 && angle < 225) control = ['down']
-                        else if (angle >= 225 && angle < 315) control = ['left']
-                        else {
-                            console.error ('unknown angle ' + angle);
+                    let rangeInner:number = dy * 0.38;
+                    let rangeOuter:number = dy * 2.61;
+
+                    if (this.directions.directions === 8) {
+                        if (dx < -Math.abs(rangeOuter)) {
+                            control = ['left']
+                        } else if (dy < 0 && dx < rangeInner) {
+                            control = ['up','left']
+                        } else if (dy < 0 && dx < Math.abs(rangeInner)) {
+                            control = ['up']
+                        } else if (dy < 0 && dx < -rangeOuter) {
+                            control = ['up','right']
+                        } else if (dx > Math.abs(rangeOuter)) {
+                            control = ['right']
+                        } else if (dy > 0 && dx < -Math.abs(rangeInner)) {
+                            control = ['down','right']
+                        } else if (dy > 0 && dx < rangeInner) {
+                            control = ['down']
+                        } else if (dy > 0 && dx < dy * rangeOuter) {
+                            control = ['down','left']
+                        } else {
+                            console.log ("Not a known angle / direction")
                         }
-                    } else if (this.directions.directions === 8) {
-                        if (angle >= 338 || angle < 23) control = ['up']
-                        else if (angle >= 23 && angle < 68) control = ['up', 'right']
-                        else if (angle >= 68 && angle < 113) control = ['right']
-                        else if (angle >= 113 && angle < 158) control = ['down', 'right']
-                        else if (angle >= 158 && angle < 203) control = ['down']
-                        else if (angle >= 203 && angle < 248) control = ['down', 'left']
-                        else if (angle >= 248 && angle < 293) control = ['left']
-                        else if (angle >= 293 && angle < 338) control = ['up', 'left']
-                        else {
-                            console.error ('unknown angle '+ angle);
+                    } else if (this.directions.directions === 4) {
+                        if (dx < 0 && dx < -Math.abs(dy)) {
+                            control = ['left']
+                        } else if (dy < 0 && dx < -dy) {
+                            control = ['up']
+                        } else if (dx > 0 && dx > Math.abs(dy)) {
+                            control = ['right']
+                        } else if (dy > 0 && dx < dy) {
+                            control = ['down']
+                        } else {
+                            console.log ("Not a known angle / direction")
                         }
                     } else {
-                        console.error('directions need to be 4 or 8')
+                        console.error("Only 4 or 8 directions allowed")
                     }
 
                     this.processDirectionChange(this.lastDirection, control)
