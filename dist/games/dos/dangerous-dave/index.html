@@ -73,7 +73,7 @@
         let gameConfig = {
             zipFile : 'dangerous-dave.zip',
             execCmdArray : ['-c','cd DAVE','-c','DAVE.EXE'],
-            cycles : '2200',
+            cycles : 'max',
         }
 
         const startButtonClicked = () => {
@@ -126,7 +126,7 @@
                         setTimeout(()=> location.reload(), 750);
                     });
                 }
-            }, 30);
+            }, 70);
         }
 
         if (DosGame.isTouch()) {
@@ -142,11 +142,5 @@
 
     </script>
     <script src="/dosbox/js-dos.js"></script>
-    <style>
-        /*input[type=image]:focus {*/
-        /*    outline: none;*/
-        /*}*/
-
-    </style>
 </body>
 </html>
