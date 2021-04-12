@@ -245,6 +245,12 @@ export class DosGame {
             for (let i:number = 0; i < event.changedTouches.length; i++) {
                 let movingTouch:Touch = event.changedTouches[i]
                 if (movingTouch.clientX < 200) {
+
+                    let x:number = movingTouch.clientX;
+                    let y:number = movingTouch.clientY;
+
+                    // Equations code in here...
+
                     let control = []
                     let dx = movingTouch.clientX - this.origin.x;
                     let dy = movingTouch.clientY - this.origin.y;
@@ -354,4 +360,5 @@ export class DosGame {
     private unload() {
         this.ci.exit()
     }
+
 }

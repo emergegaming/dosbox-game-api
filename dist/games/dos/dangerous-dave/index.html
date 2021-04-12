@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/html">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Dangerous Dave</title>
@@ -70,7 +70,6 @@
         let lastScore = -1;
         let scoreInterval = null;
 
-
         let gameConfig = {
             zipFile : 'dangerous-dave.zip',
             execCmdArray : ['-c','cd DAVE','-c','DAVE.EXE'],
@@ -78,6 +77,7 @@
         }
 
         const startButtonClicked = () => {
+            return
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
