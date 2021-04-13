@@ -286,8 +286,16 @@ export class DosGame {
                         } else {
                             console.log ("Not a known angle / direction")
                         }
+                    } else if (this.directions.directions === 4 || this.directions.directions === 2) {
+                        if (dx < 0) {
+                            control = ['left']
+                        } else if (dx > 0) {
+                            control = ['right']
+                        } else {
+                            console.log ("Not a known angle / direction")
+                        }
                     } else {
-                        console.error("Only 4 or 8 directions allowed")
+                        console.error("Only 2, 4 or 8 directions allowed")
                     }
 
                     this.processDirectionChange(this.lastDirection, control)

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Digger</title>
+    <link rel="stylesheet" type="text/css" href="/css/tailwind-purged.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/style.css"/>
+</head>
+<body>
+    <section class="relative">
+        <div class="fixed w-full h-full bg-black"></div>
+        <div id="background" class="fixed w-full h-full opacity-50 z-10 bg-cover"></div>
+        <div id="gameScreen" class="fixed flex flex-row w-full h-full flex-grow items-center justify-center z-20">
+            <!-- Left Column (Directional Control) -->
+            <div class="flex flex-col flex-grow items-center justify-center pointer-events-none">
+                <div class="relative flex w-32 h-32 items-center justify-center pointer-events-none">
+                    <img class="absolute w-24 h-24 pointer-events-none" src="/images/JoystickSurround.svg">
+                    <img class="absolute w-32 h-32 pointer-events-none" src="/images/Joystick.svg">
+                </div>
+            </div>
+
+            <!-- Middle Column (Canvas) -->
+            <div class="flex items-center justify-center text-white pointer-events-none">
+                <canvas id="canvas" class="p-2 pointer-events-none bg-black"></canvas>
+            </div>
+
+            <!-- Right Column (Buttons) -->
+            <div class="flex flex-col flex-grow items-center justify-center">
+                <img id="ctlButtonA" src="/images/BTN-A.svg" class="axControl w-24 h-24 outline-none focus:outline-none">
+                <img id="ctlButtonB" src="/images/BTN-B.svg" class="axControl w-24 h-24 outline-none focus:outline-none">
+            </div>
+        </div>
+
+        <!-- Overlay to: Show when loading -->
+        <div id="loadingOverlay" class="flex orientation-notice fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-30" style="background-color: #101010">
+            <div class="text-white text-2xl">Loading...</div>
+        </div>
+
+        <!-- Overlay to: Load and Start -->
+        <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
+            <form id="startButtonForm" onsubmit="return false">
+                <input type="image" src="digger-loader-desktop.jpg" id="startButtonDesktop" class="h-96 outline-none"/>
+                <input type="image" src="digger-loader-mobile.jpg" id="startButtonMobile" class="h-96 outline-none"/>
+            </form>
+        </div>
+
+        <!-- Overlay to: Show when orientation is portrait -->
+        <div class="orientation-notice fixed hidden top-0 left-0 right-0 bottom-0 items-center justify-center z-50 pointer-events-none" style="background-color: #101010">
+            <div class="text-white text-2xl">Rotate landscape...</div>
+        </div>
+
+    </section>
+    <script type="module">
+
+        import {DosGame} from "/index.js";
+        import {emergeGamingSDK} from '/lib/emergamingSDK.js'
+        import {processScreenshot, setupOcr} from "/lib/ocr.js";
+        import {digger_digits} from "/games/dos/digger/digits.js";
+
+        let canvas = document.getElementById('canvas');
+        let startButtonOverlay = document.getElementById('startButtonOverlay');
+        let startButtonDesktop = document.getElementById('startButtonDesktop');
+        let startButtonMobile = document.getElementById('startButtonMobile');
+        let startButtonForm = document.getElementById('startButtonForm');
+        let loadingOverlay = document.getElementById('loadingOverlay');
+        let buttonA = document.getElementById('ctlButtonA');
+        let buttonB = document.getElementById('ctlButtonB');
+
+        let gameConfig = {
+            zipFile : 'digger.zip',
+            execCmdArray : ['-c','DIGGER.COM'],
+            cycles : 550,
+        }
+
+        const startButtonClicked = () => {
+            startButtonOverlay.remove();
+            let dosGame = new DosGame(window.Dos, gameConfig, canvas);
+            dosGame.start().then(() => {
+                loadingOverlay.remove();
+                let startX = 12; let startY = 0; let charWidth = 10; let charHeight = 12; let charSpacing = 2; let numChars = 5;
+                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, digger_digits);
+            });
+            dosGame.overrideKey(' ', 112);
+            dosGame.mapTouchToArrowKeys({directions:4});
+            dosGame.mapButtonToKey({element:buttonA, asciiCode:112});
+            dosGame.mapButtonToKey({element:buttonB, asciiCode:13});
+            dosGame.setPixelListener(65, 0, (hexValue) => {
+                switch(hexValue) {
+                    case '#55ffff':
+                        emergeGamingSDK.startLevel();
+                        break;
+                    case '#ffffff':
+                        processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
+                            console.log ("SCORE: " + _score);
+                            emergeGamingSDK.endLevel(_score);
+                            setTimeout(() => location.reload(), 750);
+                        });
+                        break;
+                        default:
+                            console.debug('Colour from another mother');
+                }
+            })
+        }
+
+        if (DosGame.isTouch()) {
+            startButtonDesktop.remove();
+            startButtonMobile.focus();
+        } else {
+            startButtonMobile.remove();
+            startButtonDesktop.focus();
+        }
+
+        startButtonOverlay.addEventListener('click', startButtonClicked);
+        startButtonForm.addEventListener('submit', startButtonClicked);
+
+    </script>
+    <script src="/dosbox/js-dos.js"></script>
+</body>
+</html>
