@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Digger</title>
+    <title>Pac-em</title>
     <link rel="stylesheet" type="text/css" href="/css/tailwind-purged.css"/>
     <link rel="stylesheet" type="text/css" href="/css/style.css"/>
 </head>
@@ -39,7 +39,7 @@
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="return false">
-                <input type="image" src="start-image.png" id="startButton" class="h-96 outline-none"/>
+                <input type="submit" id="startButton" class="p-2 text-white bg-red-900 rounded-xl border-2 border-white outline-none" value="Start Game"/>
             </form>
         </div>
 
@@ -53,8 +53,8 @@
 
         import {DosGame} from "/index.js";
         import {emergeGamingSDK} from '/lib/emergamingSDK.js'
-        import {processScreenshot, setupOcr} from "/lib/ocr.js";
-        import {digger_digits} from "/games/dos/digger/digits.js";
+        //import {processScreenshot, setupOcr} from "/lib/ocr.js";
+        //import {digger_digits} from "/games/dos/digger/digits.js";
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
@@ -65,9 +65,9 @@
         let buttonB = document.getElementById('ctlButtonB');
 
         let gameConfig = {
-            zipFile : 'digger.zip',
-            execCmdArray : ['-c','DIGGER.COM'],
-            cycles : 550,
+            zipFile : 'pacem.zip',
+            execCmdArray : ['-c','PACEM.EXE'],
+            cycles : 'max',
         }
 
         const startButtonClicked = () => {
@@ -75,10 +75,11 @@
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
                 loadingOverlay.remove();
+                dosGame.consoleScreenshots();
                 let startX = 12; let startY = 0; let charWidth = 10; let charHeight = 12; let charSpacing = 2; let numChars = 5;
-                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, digger_digits);
+                //setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, digger_digits);
             });
-            dosGame.overrideKey(' ', 112);
+            /*dosGame.overrideKey(' ', 112);
             dosGame.mapTouchToArrowKeys({directions:4});
             dosGame.mapButtonToKey({element:buttonA, asciiCode:112});
             dosGame.mapButtonToKey({element:buttonB, asciiCode:13});
@@ -97,7 +98,7 @@
                         default:
                             console.debug('Colour from another mother');
                 }
-            })
+            })*/
         }
 
         startButtonOverlay.addEventListener('click', startButtonClicked);
