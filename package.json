@@ -11,6 +11,8 @@
     "license": "ISC",
     "dependencies": {
         "@rollup/plugin-typescript": "^8.2.0",
+        "dosbox": "^0.1.0",
+        "emulators": "^0.0.60",
         "eslint": "^7.22.0",
         "js-dos": "^6.22.59",
         "purgecss": "^4.0.3",
@@ -19,6 +21,7 @@
         "rollup-plugin-terser": "^7.0.2",
         "tslib": "^2.1.0",
         "tslint": "^6.1.3",
-        "typescript": "^4.2.3"
+        "typescript": "^4.2.3",
+        "ui": "^0.2.4"
     }
 }
