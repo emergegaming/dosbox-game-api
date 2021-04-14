@@ -151,6 +151,10 @@ export class DosGame {
         this.interval = window.setInterval(this.doIntervalPoll.bind(this), delay)
     }
 
+    public stopPixelListener() {
+        window.clearInterval(this.interval);
+    }
+
     public consoleScreenshots() {
         setInterval(() => {
             console.log (this.canvas.toDataURL('img/png'));
@@ -286,7 +290,7 @@ export class DosGame {
                         } else {
                             console.log ("Not a known angle / direction")
                         }
-                    } else if (this.directions.directions === 4 || this.directions.directions === 2) {
+                    } else if (this.directions.directions === 2) {
                         if (dx < 0) {
                             control = ['left']
                         } else if (dx > 0) {
@@ -330,9 +334,11 @@ export class DosGame {
         let turnOff = was.filter(w => is.indexOf(w) === -1)
         let turnOn = is.filter(i => was.indexOf(i) === -1)
         turnOff.forEach((direction) => {
+            console.log (direction + " off")
             this.ci.simulateKeyEvent(DosGame.getDirectionAscii(direction), false);
         });
         turnOn.forEach((direction) => {
+            console.log (direction + " on")
             this.ci.simulateKeyEvent(DosGame.getDirectionAscii(direction), true)
         });
     }

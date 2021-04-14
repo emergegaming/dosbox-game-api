@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Paratrooper</title>
+    <title>Digger</title>
     <link rel="stylesheet" type="text/css" href="/css/tailwind-purged.css"/>
     <link rel="stylesheet" type="text/css" href="/css/style.css"/>
 </head>
@@ -39,8 +39,8 @@
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="return false">
-                <input type="submit" id="startButtonMobile" value="PLAY" class="text-2xl text-white"/>
-                <input type="submit" id="startButtonDesktop" value="PLAY" class="text-2xl text-white"/>
+                <input type="image" src="digger-loader-desktop.jpg" id="startButtonDesktop" class="h-96 outline-none"/>
+                <input type="image" src="digger-loader-mobile.jpg" id="startButtonMobile" class="h-96 outline-none"/>
             </form>
         </div>
 
@@ -68,8 +68,12 @@
 
         let gameConfig = {
             zipFile : 'paratrop.zip',
-            execCmdArray : ['-c','PTROOPER.COM'],
+            execCmdArray : ['-C', 'PTROOPER.COM'],
             cycles : 550,
+            joystick: {
+                joysticktype: 'none'
+            }
+
         }
 
         const startButtonClicked = () => {
@@ -77,30 +81,7 @@
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
                 loadingOverlay.remove();
-                //let startX = 12; let startY = 0; let charWidth = 10; let charHeight = 12; let charSpacing = 2; let numChars = 5;
-                // setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, digger_digits);
             });
-            dosGame.overrideKey(' ', 112);
-            dosGame.mapTouchToArrowKeys({directions:2});
-            dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
-            dosGame.mapButtonToKey({element:buttonB, asciiCode:38});
-            emergeGamingSDK.startLevel();
-            // dosGame.setPixelListener(65, 0, (hexValue) => {
-            //     switch(hexValue) {
-            //         case '#55ffff':
-            //             emergeGamingSDK.startLevel();
-            //             break;
-            //         case '#ffffff':
-            //             processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
-            //                 console.log ("SCORE: " + _score);
-            //                 emergeGamingSDK.endLevel(_score);
-            //                 setTimeout(() => location.reload(), 750);
-            //             });
-            //             break;
-            //             default:
-            //                 console.debug('Colour from another mother');
-            //     }
-            // })
         }
 
         if (DosGame.isTouch()) {

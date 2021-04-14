@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Digger</title>
-    <link rel="stylesheet" type="text/css" href="/css/tailwind-purged.css"/>
+    <title>Pac-Em</title>
+    <link rel="stylesheet" type="text/css" href="/css/tailwind.min.css"/>
     <link rel="stylesheet" type="text/css" href="/css/style.css"/>
 </head>
 <body>
@@ -39,8 +39,8 @@
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="return false">
-                <input type="image" src="digger-loader-desktop.jpg" id="startButtonDesktop" class="h-96 outline-none"/>
-                <input type="image" src="digger-loader-mobile.jpg" id="startButtonMobile" class="h-96 outline-none"/>
+                <input type="submit" id="startButtonMobile" class="p-2 text-white bg-red-900 rounded-xl border-2 border-white outline-none focus:outline-none" value="Start Game"/>
+                <input type="submit" id="startButtonDesktop" class="p-2 text-white bg-red-900 rounded-xl border-2 border-white outline-none focus:outline-none" value="Start Game"/>
             </form>
         </div>
 
@@ -55,7 +55,7 @@
         import {DosGame} from "/index.js";
         import {emergeGamingSDK} from '/lib/emergamingSDK.js'
         import {processScreenshot, setupOcr} from "/lib/ocr.js";
-        import {digger_digits} from "/games/dos/digger/digits.js";
+        import {pacem_digits} from "/games/dos/pac-em/digits.js";
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
@@ -67,37 +67,45 @@
         let buttonB = document.getElementById('ctlButtonB');
 
         let gameConfig = {
-            zipFile : 'digger.zip',
-            execCmdArray : ['-c','DIGGER.COM'],
-            cycles : 550,
+            zipFile : 'PACEM11.zip',
+            execCmdArray : ['-c','PACEM.EXE'],
+            cycles : 'max',
         }
+
+        let state = 'none';
+        let lastCanvas = null
+        let secondLastCanvas = null;
 
         const startButtonClicked = () => {
             startButtonOverlay.remove();
+
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
-                loadingOverlay.remove();
-                let startX = 12; let startY = 0; let charWidth = 10; let charHeight = 12; let charSpacing = 2; let numChars = 5;
-                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, digger_digits);
+
+                let startX = 282; let startY = 104; let charWidth = 5; let charHeight = 7; let charSpacing = 1; let numChars = 5; let thousandsSeparatorWidth = 4;
+                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, pacem_digits, thousandsSeparatorWidth);
+                setInterval(() => {
+                    secondLastCanvas = lastCanvas;
+                    lastCanvas = canvas.toDataURL('img/png')
+                }, 1000)
             });
             dosGame.overrideKey(' ', 112);
             dosGame.mapTouchToArrowKeys({directions:4});
-            dosGame.mapButtonToKey({element:buttonA, asciiCode:112});
+            dosGame.mapButtonToKey({element:buttonA, asciiCode:23});
             dosGame.mapButtonToKey({element:buttonB, asciiCode:13});
-            dosGame.setPixelListener(65, 0, (hexValue) => {
-                switch(hexValue) {
-                    case '#55ffff':
-                        emergeGamingSDK.startLevel();
-                        break;
-                    case '#ffffff':
-                        processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
-                            console.log ("SCORE: " + _score);
-                            emergeGamingSDK.endLevel(_score);
-                            setTimeout(() => location.reload(), 750);
-                        });
-                        break;
-                        default:
-                            console.debug('Colour from another mother');
+            dosGame.setPixelListener(144, 105, (hexValue) => {
+                if (state === 'none' && hexValue === '#ffff00') {
+
+                    emergeGamingSDK.startLevel();
+
+                    dosGame.autoKeyPress(13, 200).then(() => loadingOverlay.remove());
+                    state = 'playing'
+                } else if (state === 'playing' && (hexValue === '#be0000' || hexValue === '#ff8200' || hexValue === '#793c00')) {
+                    dosGame.stopPixelListener();
+                    processScreenshot(secondLastCanvas).then(_score => {
+                        emergeGamingSDK.endLevel(_score);
+                        setTimeout(() => location.reload(), 1750);
+                    });
                 }
             })
         }

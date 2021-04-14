@@ -32,6 +32,9 @@
                 <td>Digit Spacing</td><td><input name="digitSpacing" type="number" value="1"></td>
             </tr>
             <tr>
+                <td>Thousand Separator Space</td><td><input name="thousandSpacing" type="number" value="2"></td>
+            </tr>
+            <tr>
                 <td>Extract Digits</td><td><input type="button" value="Extract Digits" onclick="extractDigits()"></td>
             </tr>
         </form>
@@ -66,6 +69,7 @@
             let digitWidth = parseInt(document.forms[0].digitWidth.value);
             let digitHeight = parseInt(document.forms[0].digitHeight.value);
             let digitSpacing = parseInt(document.forms[0].digitSpacing.value);
+            let thousandSpacing = parseInt(document.forms[0].thousandSpacing.value);
 
             extractedImages.innerHTML = '';
 
@@ -75,8 +79,11 @@
                 let digitContext = digitCanvas.getContext('2d')
                 digitCanvas.width = digitWidth;
                 digitCanvas.height = digitHeight;
-
-                digitContext.drawImage(document.getElementById('img'), startX + ((digitWidth + digitSpacing) * i), startY, digitWidth, digitHeight, 0, 0, digitWidth, digitHeight);
+                let ifThousandSeparator = 0;
+                if (thousandSpacing > 0 && i <= numDigits - 4) {
+                    ifThousandSeparator = thousandSpacing - digitSpacing;
+                }
+                digitContext.drawImage(document.getElementById('img'), startX + ((digitWidth + digitSpacing) * i) - ifThousandSeparator, startY, digitWidth, digitHeight, 0, 0, digitWidth, digitHeight);
                 let newImage = new Image(digitWidth, digitHeight);
                 newImage.classList.add('extractedImage')
                 let imageUrl = digitCanvas.toDataURL();

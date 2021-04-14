@@ -1,6 +1,6 @@
-let charData = [], numChars = 0, startX = 0, startY = 0, charWidth = 0, charHeight = 0, charSpacing = 0;
+let charData = [], numChars = 0, startX = 0, startY = 0, charWidth = 0, charHeight = 0, charSpacing = 0, thousandsSeparatorWidth = 0;
 
-export const setupOcr = (_startX, _startY, _charWidth, _charHeight, _charSpacing, _numChars, _referenceChars) => {
+export const setupOcr = (_startX, _startY, _charWidth, _charHeight, _charSpacing, _numChars, _referenceChars, _thousandsSeparatorWidth = 0) => {
 
     numChars = _numChars;
     startX = _startX;
@@ -8,6 +8,7 @@ export const setupOcr = (_startX, _startY, _charWidth, _charHeight, _charSpacing
     charWidth = _charWidth;
     charHeight = _charHeight;
     charSpacing = _charSpacing
+    thousandsSeparatorWidth = _thousandsSeparatorWidth
 
     for (let charNo = 0; charNo < 10; charNo++) {
         getImageSignature(_referenceChars[charNo], 0, 0, _charWidth, _charHeight).then((data) => {
@@ -24,7 +25,12 @@ export const processScreenshot = (_imageData) => {
         let scoreString = '';
 
         for (let charNo = 0; charNo < numChars; charNo++) {
-            stack.push(getImageSignature(_imageData, startX + (charNo * (charWidth + charSpacing)), startY, charWidth, charHeight).then((data) => {
+            let ifThousandSeparator = 0;
+            if (thousandsSeparatorWidth > 0 && charNo <= numChars - 4) {
+                ifThousandSeparator = thousandsSeparatorWidth - charSpacing;
+            }
+            stack.push(getImageSignature(_imageData, startX + (charNo * (charWidth + charSpacing)) - ifThousandSeparator, startY, charWidth, charHeight).then((data) => {
+                // startX + ((digitWidth + digitSpacing) * i) - ifThousandSeparator
                 scoreChars[charNo] = data;
             }));
         }
