@@ -82,6 +82,7 @@ export class DosGame {
                     main(this.options.execCmdArray).then((ci) => {
                         this.ci = ci
                         resolve(ci)
+                        window.focus();
                         window.addEventListener('unload', this.unload)
                     })
                 })
