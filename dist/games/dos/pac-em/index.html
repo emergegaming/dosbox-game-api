@@ -39,8 +39,8 @@
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="return false">
-                <input type="submit" id="startButtonMobile" class="p-2 text-white bg-red-900 rounded-xl border-2 border-white outline-none focus:outline-none" value="Start Game 11:57"/>
-                <input type="submit" id="startButtonDesktop" class="p-2 text-white bg-red-900 rounded-xl border-2 border-white outline-none focus:outline-none" value="Start Game 11:57"/>
+                <input type="submit" id="startButtonMobile" class="p-2 text-white bg-red-900 rounded-xl border-2 border-white outline-none focus:outline-none" value="Start Game 12:03"/>
+                <input type="submit" id="startButtonDesktop" class="p-2 text-white bg-red-900 rounded-xl border-2 border-white outline-none focus:outline-none" value="Start Game 12:03"/>
             </form>
         </div>
 
@@ -103,7 +103,7 @@
 
                     dosGame.autoKeyPress(13, 200).then(() => loadingOverlay.remove());
                     state = 'playing'
-                } else if (state === 'playing' && (hexValue === '#be0000' || hexValue === '#ff8200' || hexValue === '#793c00')) {
+                } else if (state === 'playing' && (hexValue === '#613000' || hexValue === '#be0000' || hexValue === '#ff8200' || hexValue === '#793c00')) {
                     console.log("PIXEL DETECTED: " + hexValue + ". Stopping Pixel Listeners")
                     dosGame.stopPixelListener();
                     console.log ("last canvas");
@@ -117,19 +117,19 @@
                         console.log ("lastCanvas: " + _score)
                         if (!isNaN(_score)) {
                             emergeGamingSDK.endLevel(_score);
-                            //setTimeout(() => location.reload(), 750)
+                            setTimeout(() => location.reload(), 750)
                         } else {
                             processScreenshot(secondLastCanvas).then(_score => {
                                 console.log ("lastCanvas: " + _score)
                                 if (!isNaN(_score)) {
                                     emergeGamingSDK.endLevel(_score);
-                                    //setTimeout(() => location.reload(), 750)
+                                    setTimeout(() => location.reload(), 750)
                                 } else {
                                     processScreenshot(thirdLastCanvas).then(_score => {
                                         console.log ("lastCanvas: " + _score)
                                         if (!isNaN(_score)) {
                                             emergeGamingSDK.endLevel(_score);
-                                            //setTimeout(() => location.reload(), 750)
+                                            setTimeout(() => location.reload(), 750)
                                         }
                                     });
                                 }
