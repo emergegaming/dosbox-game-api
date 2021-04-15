@@ -115,19 +115,19 @@
                     processScreenshot(lastCanvas).then(_score => {
                         if (!isNaN(_score)) {
                             emergeGamingSDK.endLevel(_score);
-                            setTimeout(() => location.reload(), 750)
+                            //setTimeout(() => location.reload(), 750)
                         }
                     });
                     processScreenshot(secondLastCanvas).then(_score => {
                         if (!isNaN(_score)) {
                             emergeGamingSDK.endLevel(_score);
-                            setTimeout(() => location.reload(), 750)
+                            //setTimeout(() => location.reload(), 750)
                         }
                     });
-                    processScreenshot(secondLastCanvas).then(_score => {
+                    processScreenshot(thirdLastCanvas).then(_score => {
                         if (!isNaN(_score)) {
                             emergeGamingSDK.endLevel(_score);
-                            setTimeout(() => location.reload(), 750)
+                            //setTimeout(() => location.reload(), 750)
                         }
                     });
 
