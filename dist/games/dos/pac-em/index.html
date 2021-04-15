@@ -75,6 +75,7 @@
         let state = 'none';
         let lastCanvas = null
         let secondLastCanvas = null;
+        let thirdLastCanvas = null;
 
         const startButtonClicked = () => {
             startButtonOverlay.remove();
@@ -85,7 +86,8 @@
                 let startX = 282; let startY = 104; let charWidth = 5; let charHeight = 7; let charSpacing = 1; let numChars = 5; let thousandsSeparatorWidth = 4;
                 setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, pacem_digits, thousandsSeparatorWidth);
                 setInterval(() => {
-                    secondLastCanvas = lastCanvas;
+                    thirdLastCanvas = secondLastCanvas;
+                    secondLastCanvas = lastCanvas;;
                     lastCanvas = canvas.toDataURL('img/png')
                 }, 1000)
             });
@@ -101,11 +103,35 @@
                     dosGame.autoKeyPress(13, 200).then(() => loadingOverlay.remove());
                     state = 'playing'
                 } else if (state === 'playing' && (hexValue === '#be0000' || hexValue === '#ff8200' || hexValue === '#793c00')) {
-                    dosGame.stopPixelListener();
-                    processScreenshot(secondLastCanvas).then(_score => {
-                        emergeGamingSDK.endLevel(_score);
-                        setTimeout(() => location.reload(), 1750);
+                    console.log("PIXEL DETECTED: " + hexValue)
+
+                    console.log ("last canvas");
+                    console.log(lastCanvas)
+                    console.log ("second last canvas")
+                    console.log(secondLastCanvas)
+                    console.log ("third last canvas")
+                    console.log(thirdLastCanvas)
+
+                    processScreenshot(lastCanvas).then(_score => {
+                        if (!isNaN(_score)) {
+                            emergeGamingSDK.endLevel(_score);
+                            setTimeout(() => location.reload(), 750)
+                        }
                     });
+                    processScreenshot(secondLastCanvas).then(_score => {
+                        if (!isNaN(_score)) {
+                            emergeGamingSDK.endLevel(_score);
+                            setTimeout(() => location.reload(), 750)
+                        }
+                    });
+                    processScreenshot(secondLastCanvas).then(_score => {
+                        if (!isNaN(_score)) {
+                            emergeGamingSDK.endLevel(_score);
+                            setTimeout(() => location.reload(), 750)
+                        }
+                    });
+
+
                 }
             })
         }
