@@ -96,6 +96,7 @@
             dosGame.mapButtonToKey({element:buttonA, asciiCode:23});
             dosGame.mapButtonToKey({element:buttonB, asciiCode:13});
             dosGame.setPixelListener(144, 105, (hexValue) => {
+                console.log (hexValue)
                 if (state === 'none' && hexValue === '#ffff00') {
 
                     emergeGamingSDK.startLevel();
