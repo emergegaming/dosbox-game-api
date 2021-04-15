@@ -97,7 +97,10 @@
 
                 if (state === 'none' && hexValue === '#ffff00') {
                     emergeGamingSDK.startLevel();
-                    dosGame.autoKeyPress(13, 200).then(() => loadingOverlay.remove());
+                    dosGame.autoKeyPress(13, 500).then(() => {
+                        dosGame.autoKeyPress(13, 200)
+                        loadingOverlay.remove()
+                    });
                     state = 'playing'
                 } else if (state === 'playing' && (hexValue === '#613000' || hexValue === '#be0000' || hexValue === '#ff8200' || hexValue === '#793c00')) {
                     dosGame.stopPixelListener();
