@@ -1,0 +1,115 @@
+******************************************************************************
+*                          CHAMPROGRAMMING ORDER FORM                        *
+*                               revised 10/1/97                              *
+******************************************************************************
+
+1. NAME AND ADDRESS:
+
+First:   __________________  Last:  __________________________________________
+
+Address: _____________________________________________________________________
+
+City:    ____________________ State/Province: _______________ Zip: ___________
+
+Country: ____________ Phone: (______)__________ Email: ___________@___________
+
+
+2. ORDER INFORMATION:
+                                               CHAMP       
+ Quantity  Item Code     Item Description     Credits  Unit Price Total Price
+------------------------------------------------------------------------------
+|        |           |                      |         |          |           |
+|________|___________|______________________|_________|__________|___________|
+|        |           |                      |         |          |           |
+|________|___________|______________________|_________|__________|___________|
+|        |           |                      |         |          |           |
+|________|___________|______________________|_________|__________|___________|
+|        |           |                      |         |          |           |
+|________|___________|______________________|_________|__________|___________|
+|        |           |                      |         |          |           |
+|________|___________|______________________|_________|__________|___________|
+|        |           |                      |         |          |           |
+|________|___________|______________________|_________|__________|___________|
+                                                                 |           |
+Shipping and Handling:                                 Subtotal: |___________|
+-> $1 for each item (U.S.A. only)                                |           |
+-> $3 for each item (non-U.S.A.)                            Tax: |___________|
+                                                                 |           |
+All games shipped within 2-4 weeks of purchase.        Shipping: |___________|
+                                                                 |           |
+                                                          TOTAL: |___________|
+3. PAYMENT INFORMATION
+
+   [  ] Check         [  ] Money Order
+   [  ] Visa          [  ] Mastercard
+
+   Card #: ________________________  Exp. Date: ____/____
+
+   Signature (credit card only):_________________________
+
+   Please send your payment to:
+
+            CHAMProgramming Corp.
+            34-3 Shunpike Road, #187
+            Cromwell, CT 06416 USA
+
+   If paying by credit card, you may also fax your order to (860) 635-0080 
+   or you can place your order on-line at http://www.champgames.com.
+
+   All checks must be drawn from a United States bank in U.S. funds only!
+
+
+COMPLETE LIST OF CHAMP PRODUCTS AVAILABLE:
+
+ITEM   DESCRIPTION          UNIT       CREDIT     RELEASE DATE
+CODE                        PRICE*     PRICE*
+-----------------------------------------------------------------------------
+CG01   CHAMP Pac-em         12.95      300        Available Now!
+CG04   CHAMP Ms. Pac-em     14.95      400        Available Now!
+CG05   CHAMP Galaxia        12.95      300        Available Now!
+CG06   CHAMP Kong           17.95      500        Available Now!
+CG07   CHAMP Galagon        17.95      500        Available 11/97    
+CG08   CHAMP Invaders       12.95      250        Available Now!
+CG99   CHAMP Cable          17.95      450        Available Now!
+
+*All prices are subject to change without notice.  Please visit our
+website at http://www.champgames.com for the latest pricing
+information and availability.
+
+-----------------
+| CHAMP Credits |
+-----------------
+For each game you purchase, you earn 100 CHAMP Credits which can be used
+on future purchases.  If you purchase more than one game at once, you
+are also awarded BONUS CHAMP Credits.  The following table summarizes the
+CHAMP Credits earned for a purchase:
+
+# OF GAMES      CHAMP           BONUS           TOTAL
+ORDERED         CREDITS         CREDITS         CREDITS
+----------------------------------------------------------
+1               100             0               100
+2               200             50              250
+3               300             100             400
+4               400             200             600
+5 or more       Add 100 each    Add 50 each     Add 150 each
+
+HOW DO I USE CHAMP CREDITS?
+
+To use your CHAMP Credits, simply fill out your order form and make sure to
+write the number of credits for the game in the 'CHAMP Credits' column.  Only
+fill in the 'Unit Price' column for the games you are sending money for.
+
+You can also use your CHAMP Credits on-line at the CHAMProgramming Web Site, 
+located at:
+
+	http://www.champgames.com
+
+To verify your credits with our accounting department, or for any other
+questions about CHAMP Credits, please E-mail us at
+
+	credits@champgames.com
+
+This offer is valid until December 31st, 1997.
+
+
+Thank you for your support.
