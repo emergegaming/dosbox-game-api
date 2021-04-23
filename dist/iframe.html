@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IFrame</title>
+    <link rel="stylesheet" type="text/css" href="css/tailwind.min.css">
+</head>
+<body class="bg-gray-900 flex h-screen justify-center items-center">
+    <iframe id="iframe" src="" class="border w-full h-full lg:w-8/12 lg:h-4/5 "></iframe>
+    <script type="text/javascript">
+        let params = new URLSearchParams(location.search);
+        document.getElementById("iframe").setAttribute('src', params.get('url'))
+    </script>
+</body>
+</html>
