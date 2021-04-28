@@ -128,11 +128,11 @@ export class DosGame {
      * @param asciiCode the asciiCode of the key to press
      * @param wait the wait period in milliseconds
      */
-    public autoKeyPress(asciiCode:number, wait:number):Promise<any> {
+    public autoKeyPress(asciiCode:number, wait:number = 0):Promise<any> {
         return new Promise<unknown>((resolve, reject) =>
             setTimeout (() => {
                 this.ci.simulateKeyPress(asciiCode);
-                resolve(null);
+                if (wait > 0 && resolve) resolve(null);
             }, wait)
         )
     }
