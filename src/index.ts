@@ -71,6 +71,9 @@ export class DosGame {
 
     public start():Promise<any> {
         return new Promise((resolve) => {
+            this.options.execCmdArray.push('-conf');
+            this.options.execCmdArray.push('dosbox.conf')
+            console.log (this.options.execCmdArray);
             this.dosRef(this.canvas, {
                 cycles: this.options.cycles,
                 wdosboxUrl: '/dosbox/wdosbox.js',
@@ -78,7 +81,10 @@ export class DosGame {
                 log: () => {}
             }).ready((fs, main) => {
                 fs.extract(this.options.zipFile).then(() => {
-
+                    fs.createFile("dosbox.conf", `
+[joystick]
+joysticktype=none
+                    `);
                     main(this.options.execCmdArray).then((ci) => {
                         this.ci = ci
                         resolve(ci)

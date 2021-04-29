@@ -5,6 +5,7 @@
     <title>Paratrooper</title>
     <link rel="stylesheet" type="text/css" href="/css/tailwind-purged.css"/>
     <link rel="stylesheet" type="text/css" href="/css/style.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 </head>
 <body>
     <section class="relative">
@@ -54,7 +55,7 @@
         import {DosGame} from "/index.js";
         import {emergeGamingSDK} from '/lib/emergamingSDK.js'
         import {processScreenshot, setupOcr} from "/lib/ocr.js";
-        import {digger_digits} from "/games/dos/digger/digits.js";
+        import {paratrooper_digits} from "/games/dos/paratrooper/digits.js";
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
@@ -75,9 +76,9 @@
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
-                dosGame.consoleScreenshots()
-                //let startX = 12; let startY = 0; let charWidth = 10; let charHeight = 12; let charSpacing = 2; let numChars = 5;
-                //setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, digger_digits);
+                let startX = 56; let startY = 192; let charWidth = 7; let charHeight = 7; let charSpacing = 1; let numChars = 5;
+                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, paratrooper_digits);
+                emergeGamingSDK.startLevel();
             });
 
             dosGame.mapTouchToArrowKeys({directions:2});
@@ -88,6 +89,10 @@
                     case '#000000':
                         if (mode === 'playing') {
                             mode = 'gameover'
+                            processScreenshot(canvas.toDataURL('img/png')).then((_score) => {
+                                emergeGamingSDK.endLevel(_score);
+                                setTimeout(() => location.reload(), 1000);
+                            })
                             console.log ('GAME OVER')
                         }
                         break;
