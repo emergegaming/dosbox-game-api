@@ -50,6 +50,8 @@ export class DosGame {
     private interval:number
     private pixelListener:PixelListener
     private lastPixelValue:string
+    private keysDown:string[] = []
+    private readonly forceKeyPress:boolean;
 
     /**
      * Create a new DosGame object.
@@ -60,20 +62,19 @@ export class DosGame {
      * @param dosRef a reference to window.DOS created by the included JavaScript file
      * @param options {cycles:number, zipFile:string, execCmd:string}
      * @param canvas reference to the HTMLCanvasElement DOSBox is being rendered on
-     *
+     * @param forceKeyPress force simulateKeyPress instead of simulateKeyEvent
      * @see https://js-dos.com/
      */
-    constructor(dosRef:any, options:GameOptions, canvas:HTMLCanvasElement) {
+    constructor(dosRef:any, options:GameOptions, canvas:HTMLCanvasElement, forceKeyPress:boolean = false) {
         this.dosRef = dosRef
         this.options = options
         this.canvas = canvas
+        this.forceKeyPress = forceKeyPress;
     }
+
 
     public start():Promise<any> {
         return new Promise((resolve) => {
-            this.options.execCmdArray.push('-conf');
-            this.options.execCmdArray.push('dosbox.conf')
-            console.log (this.options.execCmdArray);
             this.dosRef(this.canvas, {
                 cycles: this.options.cycles,
                 wdosboxUrl: '/dosbox/wdosbox.js',
@@ -81,10 +82,27 @@ export class DosGame {
                 log: () => {}
             }).ready((fs, main) => {
                 fs.extract(this.options.zipFile).then(() => {
-                    fs.createFile("dosbox.conf", `
-[joystick]
-joysticktype=none
-                    `);
+                    main(this.options.execCmdArray).then((ci) => {
+                        this.ci = ci
+                        resolve(ci)
+                        window.focus();
+                        window.addEventListener('unload', this.unload)
+                    })
+                })
+            })
+        })
+    }
+
+
+    public startWithConf(dosboxConf):Promise<any> {
+        return new Promise((resolve) => {
+            this.options.execCmdArray.push('-conf');
+            this.options.execCmdArray.push('dosbox.conf')
+            this.dosRef(this.canvas, {
+                wdosboxUrl: '/dosbox/wdosbox.js',
+            }).ready((fs, main) => {
+                fs.extract(this.options.zipFile).then(() => {
+                    fs.createFile("dosbox.conf", dosboxConf);
                     main(this.options.execCmdArray).then((ci) => {
                         this.ci = ci
                         resolve(ci)
@@ -215,17 +233,33 @@ joysticktype=none
      * @private
      */
     private handleKeyEvent(event:KeyboardEvent) {
-        if (event.key) {
-            for (let i: number = 0; i < this.keysToReplace.length; i++) {
-                let keyMapping:KeyMapping = this.keysToReplace[i]
-                if (event.key == keyMapping.targetKey) {
-                    event.preventDefault()
-                    event.stopImmediatePropagation()
-                    if (keyMapping.replacementKeyCode)
-                        this.ci.simulateKeyEvent(keyMapping.replacementKeyCode, event.type == 'keydown');
+
+        if ((event.type === 'keydown' || event.type === 'keyup') && event.metaKey == false) {
+            let keyCode = this.findReplacementKeyCode(event.key);
+            if (keyCode) {
+
+                if (event.type === 'keydown' && !this.keysDown.includes(event.key)) {
+                    this.forceKeyPress ? this.ci.simulateKeyPress(keyCode, true) : this.ci.simulateKeyEvent(keyCode, true)
+                    this.keysDown.push(event.key)
                 }
+
+                if (event.type === 'keyup' && this.keysDown.includes(event.key)) {
+                    this.forceKeyPress ? this.ci.simulateKeyPress(keyCode, false) : this.ci.simulateKeyEvent(keyCode, false)
+                    this.keysDown.splice(this.keysDown.indexOf(event.key),1);
+                }
+
+                event.stopImmediatePropagation();
+                event.stopPropagation();
+                event.preventDefault();
             }
+
+
         }
+
+    }
+
+    private findReplacementKeyCode(key:string) {
+        return this.keysToReplace.find(item => item.targetKey == key)?.replacementKeyCode || null;
     }
 
     /**
@@ -246,6 +280,7 @@ joysticktype=none
                         let rect = mapping.element.getBoundingClientRect()
                         let x1 = rect.x, x2 = rect.x + rect.width, y1 = rect.y, y2 = rect.y + rect.height;
                         if (startingTouch.clientX > x1 && startingTouch.clientX < x2 && startingTouch.clientY > y1 && startingTouch.clientY < y2) {
+                            console.log (mapping.asciiCode)
                             this.ci.simulateKeyPress(mapping.asciiCode, true)
                         }
                     }
@@ -341,11 +376,9 @@ joysticktype=none
         let turnOff = was.filter(w => is.indexOf(w) === -1)
         let turnOn = is.filter(i => was.indexOf(i) === -1)
         turnOff.forEach((direction) => {
-            console.log (direction + " off")
             this.ci.simulateKeyEvent(DosGame.getDirectionAscii(direction), false);
         });
         turnOn.forEach((direction) => {
-            console.log (direction + " on")
             this.ci.simulateKeyEvent(DosGame.getDirectionAscii(direction), true)
         });
     }
@@ -386,7 +419,7 @@ joysticktype=none
      * @private
      */
     private unload() {
-        this.ci.exit()
+        this.dosRef.exit();
     }
 
 }

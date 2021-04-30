@@ -71,10 +71,17 @@
             cycles : 'max',
         }
 
+        let doxboxConf = `
+            [cpu]
+            cycles=max
+            [joystick]
+            joysticktype=none
+            `
+
         const startButtonClicked = () => {
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
-            dosGame.start().then(() => {
+            dosGame.startWithConf(doxboxConf).then(() => {
                 let startX = 96; let startY = 32; let charWidth = 5; let charHeight = 7; let charSpacing = 1; let numChars = 6;
                 setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, froggy_digits);
                 dosGame.overrideKey('p', 80);
@@ -82,7 +89,6 @@
                 dosGame.overrideKey('27', 27);
                 dosGame.mapTouchToArrowKeys({directions:4});
                 dosGame.mapButtonToKey({element:buttonA, asciiCode:13});
-                //dosGame.consoleScreenshots();
 
                 dosGame.setPixelListener(40, 190, (hexValue) => {
                     switch (hexValue) {

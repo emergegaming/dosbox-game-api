@@ -68,8 +68,15 @@
         let gameConfig = {
             zipFile : 'GALAGON.zip',
             execCmdArray : ['-c','cd CHGalag', '-c','cd CHAMP', '-c', 'GALAGON.BAT'],
-            cycles : 'fixed 2000',
+            cycles : 'max',
         }
+
+        let doxboxConf = `
+            [cpu]
+            cycles=max
+            [joystick]
+            joysticktype=none
+            `
 
         let state = 'none';
         let lastCanvas = null
@@ -79,7 +86,7 @@
         const startButtonClicked = () => {
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
-            dosGame.start().then(() => {
+            dosGame.startWithConf(doxboxConf).then(() => {
                 dosGame.consoleScreenshots()
                 // let startX = 276; let startY = 104; let charWidth = 5; let charHeight = 7; let charSpacing = 1; let numChars = 6; let thousandsSeparatorWidth = 4;
                 // setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, pacem_digits, thousandsSeparatorWidth);
@@ -90,7 +97,6 @@
                 // }, 1000)
             });
             dosGame.overrideKey('F1', 32);
-
             dosGame.mapTouchToArrowKeys({directions:2});
             dosGame.mapButtonToKey({element:buttonA, asciiCode:13});
             dosGame.mapButtonToKey({element:buttonB, asciiCode:17});

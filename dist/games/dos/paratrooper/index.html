@@ -39,7 +39,7 @@
 
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
-            <form id="startButtonForm" onsubmit="return false">
+            <form id="startButtonForm" onsubmit="startButtonClicked()">
                 <input type="submit" id="startButton" class="text-white" value="Start Game"/>
             </form>
         </div>
@@ -69,21 +69,31 @@
         let gameConfig = {
             zipFile : 'paratrop.zip',
             execCmdArray : ['-c','PTROOPER.COM'],
-            cycles : 550,
+            cycles: 'auto'
         }
 
         const startButtonClicked = () => {
+
+            let doxboxConf = `
+            [cpu]
+            cycles=auto
+            [joystick]
+            joysticktype=none
+            `
+
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
-            dosGame.start().then(() => {
+            dosGame.startWithConf(doxboxConf).then(() => {
                 let startX = 56; let startY = 192; let charWidth = 7; let charHeight = 7; let charSpacing = 1; let numChars = 5;
                 setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, paratrooper_digits);
+
                 emergeGamingSDK.startLevel();
             });
 
             dosGame.mapTouchToArrowKeys({directions:2});
             dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
             dosGame.mapButtonToKey({element:buttonB, asciiCode:38});
+            dosGame.overrideKey(' ', 38);
             dosGame.setPixelListener(157, 165, (hexValue) => {
                 switch(hexValue) {
                     case '#000000':
@@ -91,9 +101,10 @@
                             mode = 'gameover'
                             processScreenshot(canvas.toDataURL('img/png')).then((_score) => {
                                 emergeGamingSDK.endLevel(_score);
-                                setTimeout(() => location.reload(), 1000);
+                                console.log ('GAME OVER ' + _score)
+                                setTimeout(() => {location.reload()}, 5000);
                             })
-                            console.log ('GAME OVER')
+
                         }
                         break;
                     case '#ffffff':
@@ -109,6 +120,7 @@
             })
         }
 
+        startButton.focus();
         startButtonOverlay.addEventListener('click', startButtonClicked);
         startButtonForm.addEventListener('submit', startButtonClicked);
 

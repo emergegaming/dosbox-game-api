@@ -40,7 +40,7 @@
 
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
-            <form id="startButtonForm" onsubmit="return false">
+            <form id="startButtonForm" onsubmit="startButtonClicked()">
                 <input type="submit" id="startButton" class="text-white" value="Start Game"/>
             </form>
         </div>
@@ -60,6 +60,7 @@
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
+        let startButton = document.getElementById('startButton');
         let startButtonForm = document.getElementById('startButtonForm');
         let loadingOverlay = document.getElementById('loadingOverlay');
         let buttonA = document.getElementById('ctlButtonA');
@@ -70,23 +71,33 @@
         let gameConfig = {
             zipFile : 'Lode_Runner_DOS.zip',
             execCmdArray : ['-c', 'cd LODE_R~1', '-c', 'cd GAMEFI~1', '-c', 'LR.COM'],
-            cycles : 550,
-            joysticktype: 'none'
+            cycles : '300',
         }
+
+        let doxboxConf = `
+            [cpu]
+            cycles=fixed 300
+            [joystick]
+            joysticktype=none
+            `
 
         const startButtonClicked = () => {
             startButtonOverlay.remove();
             loadingOverlay.remove();
-            let dosGame = new DosGame(window.Dos, gameConfig, canvas);
-            dosGame.start().then(() => {
+            let dosGame = new DosGame(window.Dos, gameConfig, canvas, true);
+            dosGame.startWithConf(doxboxConf).then(() => {
+                dosGame.mapTouchToArrowKeys({directions:4});
+                dosGame.mapButtonToKey({element:buttonA, asciiCode:103});
+                dosGame.mapButtonToKey({element:buttonB, asciiCode:105});
+                dosGame.overrideKey('z', 103);
+                dosGame.overrideKey('x', 105);
+
                 //dosGame.consoleScreenshots()
                 //let startX = 12; let startY = 0; let charWidth = 10; let charHeight = 12; let charSpacing = 2; let numChars = 5;
                 //setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, digger_digits);
             });
 
-            dosGame.mapTouchToArrowKeys({directions:2});
-            dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
-            dosGame.mapButtonToKey({element:buttonB, asciiCode:38});
+
             // dosGame.setPixelListener(157, 165, (hexValue) => {
             //     switch(hexValue) {
             //         case '#000000':
@@ -108,6 +119,7 @@
             // })
         }
 
+        startButton.focus();
         startButtonOverlay.addEventListener('click', startButtonClicked);
         startButtonForm.addEventListener('submit', startButtonClicked);
 
