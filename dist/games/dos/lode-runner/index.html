@@ -56,7 +56,7 @@
         import {DosGame} from "/index.js";
         import {emergeGamingSDK} from '/lib/emergamingSDK.js'
         import {processScreenshot, setupOcr} from "/lib/ocr.js";
-        import {digger_digits} from "/games/dos/digger/digits.js";
+        import {lode_runner_digits} from "/games/dos/lode-runner/digits.js";
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
@@ -66,7 +66,7 @@
         let buttonA = document.getElementById('ctlButtonA');
         let buttonB = document.getElementById('ctlButtonB');
 
-        let mode = 'none';
+        // let mode = 'none';
 
         let gameConfig = {
             zipFile : 'Lode_Runner_DOS.zip',
@@ -81,9 +81,10 @@
             joysticktype=none
             `
 
+        let lastCanvas, secondLastCanvas, thirdLastCanvas, mode
+
         const startButtonClicked = () => {
             startButtonOverlay.remove();
-            loadingOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas, true);
             dosGame.startWithConf(doxboxConf).then(() => {
                 dosGame.mapTouchToArrowKeys({directions:4});
@@ -91,32 +92,43 @@
                 dosGame.mapButtonToKey({element:buttonB, asciiCode:105});
                 dosGame.overrideKey('z', 103);
                 dosGame.overrideKey('x', 105);
-
-                //dosGame.consoleScreenshots()
-                //let startX = 12; let startY = 0; let charWidth = 10; let charHeight = 12; let charSpacing = 2; let numChars = 5;
-                //setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, digger_digits);
+                let startX = 56; let startY = 184; let charWidth = 7; let charHeight = 7; let charSpacing = 1; let numChars = 8;
+                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, lode_runner_digits);
+                setInterval(() => {
+                    thirdLastCanvas = secondLastCanvas;
+                    secondLastCanvas = lastCanvas;;
+                    lastCanvas = canvas.toDataURL('img/png')
+                }, 1000)
             });
 
 
-            // dosGame.setPixelListener(157, 165, (hexValue) => {
-            //     switch(hexValue) {
-            //         case '#000000':
-            //             if (mode === 'playing') {
-            //                 mode = 'gameover'
-            //                 console.log ('GAME OVER')
-            //             }
-            //             break;
-            //         case '#ffffff':
-            //             if (mode === 'none') {
-            //                 dosGame.autoKeyPress(32);
-            //             }
-            //             break;
-            //         case '#ff55ff':
-            //             mode = 'playing';
-            //             loadingOverlay.remove();
-            //             break;
-            //     }
-            // })
+            dosGame.setPixelListener(17, 195, (hexValue) => {
+                console.log (hexValue);
+                switch(hexValue) {
+                    case '#ffffff':
+                        if (mode === 'playing') location.reload();
+                        console.log ('READY')
+                        dosGame.autoKeyPress(13, 1000).then(() => loadingOverlay.remove());
+                        emergeGamingSDK.startLevel();
+                        break;
+                    case '#aa5500':
+                        console.log ('GAME OVER')
+                        processScreenshot(secondLastCanvas).then(_score => {
+                            console.log ("SCORE:" + _score)
+                            emergeGamingSDK.endLevel(_score);
+                            setTimeout(() => location.reload(), 750)
+                        })
+                        break;
+                    case '#55ffff':
+                        console.log ('PLAYING')
+                        mode = 'playing';
+                        break;
+                    case '#000000':
+                        console.log ('LOADING')
+                        break;
+
+                }
+            })
         }
 
         startButton.focus();
