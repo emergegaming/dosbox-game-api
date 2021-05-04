@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tetris</title>
+    <link rel="stylesheet" type="text/css" href="/css/tailwind-purged.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/style.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+</head>
+<body>
+    <section class="relative">
+        <div class="fixed w-full h-full bg-black"></div>
+        <div id="background" class="fixed w-full h-full opacity-50 z-10 bg-cover"></div>
+        <div id="gameScreen" class="fixed flex flex-row w-full h-full flex-grow items-center justify-center z-20">
+            <!-- Left Column (Directional Control) -->
+            <div class="flex flex-col flex-grow items-center justify-center pointer-events-none">
+                <div class="relative flex w-32 h-32 items-center justify-center pointer-events-none">
+                    <img class="absolute w-24 h-24 pointer-events-none" src="/images/JoystickSurround.svg">
+                    <img class="absolute w-32 h-32 pointer-events-none" src="/images/Joystick.svg">
+                </div>
+            </div>
+
+            <!-- Middle Column (Canvas) -->
+            <div class="flex items-center justify-center text-white pointer-events-none">
+                <canvas id="canvas" class="p-2 pointer-events-none bg-black"></canvas>
+            </div>
+
+            <!-- Right Column (Buttons) -->
+            <div class="flex flex-col flex-grow items-center justify-center">
+                <img id="ctlButtonA" src="/images/BTN-A.svg" class="axControl w-24 h-24 outline-none focus:outline-none">
+                <img id="ctlButtonB" src="/images/BTN-B.svg" class="axControl w-24 h-24 outline-none focus:outline-none">
+            </div>
+        </div>
+
+        <!-- Overlay to: Show when loading -->
+        <div id="loadingOverlay" class="flex orientation-notice fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-30" style="background-color: #101010">
+            <div class="text-white text-2xl">Loading...</div>
+        </div>
+
+        <!-- Overlay to: Load and Start -->
+        <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
+            <form id="startButtonForm" onsubmit="return false">
+                <input type="button" id="startButton" class="" value="Load and Start">
+            </form>
+        </div>
+
+        <!-- Overlay to: Show when orientation is portrait -->
+        <div class="orientation-notice fixed hidden top-0 left-0 right-0 bottom-0 items-center justify-center z-50 pointer-events-none" style="background-color: #101010">
+            <div class="text-white text-2xl">Rotate landscape...</div>
+        </div>
+
+    </section>
+    <script type="module">
+
+        import {DosGame} from "/index.js";
+        import {emergeGamingSDK} from '/lib/emergamingSDK.js'
+        import {processScreenshot, setupOcr} from "/lib/ocr.js";
+        import {tetris_digits} from "/games/dos/tetris/digits.js";
+
+        let canvas = document.getElementById('canvas');
+        let startButtonOverlay = document.getElementById('startButtonOverlay');
+
+        let startButton = document.getElementById('startButton');
+        let startButtonForm = document.getElementById('startButtonForm');
+        let loadingOverlay = document.getElementById('loadingOverlay');
+        //let buttonA = document.getElementById('ctlButtonA');
+        // let buttonB = document.getElementById('ctlButtonB');
+
+        let gameConfig = {
+            zipFile : 'Tetris_academysoft.zip',
+            execCmdArray : ['-c','cd TETRIS~1', '-c', 'TETRIS.COM'],
+            cycles : 'fixed 550',
+        }
+
+        const startButtonClicked = () => {
+
+            startButtonOverlay.remove();
+            let dosGame = new DosGame(window.Dos, gameConfig, canvas);
+            dosGame.start().then(() => {
+                let startX = 96; let startY = 66; let charWidth = 14; let charHeight = 10; let charSpacing = 2; let numChars = 6;
+                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, tetris_digits);
+            });
+            dosGame.overrideKey('w',104); // 104
+            dosGame.overrideKey('s',100); // 100
+            dosGame.overrideKey('a',103); // 103
+            dosGame.overrideKey('d',105); // 105
+            dosGame.overrideDirectionAscii({
+                'up':104,
+                'down':100,
+                'left':103,
+                'right':105
+            })
+            dosGame.mapTouchToArrowKeys({directions:4});
+            //dosGame.mapButtonToKey({element:buttonA, asciiCode:48});
+            //dosGame.consoleScreenshots();
+
+            dosGame.setPixelListener(232, 186, (hexValue) => {
+                switch (hexValue) {
+                    case '#000000':
+                        dosGame.autoKeyPress(13, 250).then(() => dosGame.autoKeyPress(48));
+                        emergeGamingSDK.startLevel();
+                        break;
+                    case '#5555ff':
+                        loadingOverlay.remove();
+                        break;
+                    case '#aaaaaa':
+                        processScreenshot(canvas.toDataURL('img/png')).then((_score) => {
+                            console.log ("End: " + _score)
+                            emergeGamingSDK.startLevel(_score);
+                            setInterval(() => location.reload(), 750);
+                        })
+                        break;
+                }
+
+                // switch(hexValue) {
+                //     case '#55ffff':
+                //         emergeGamingSDK.startLevel();
+                //         break;
+                //     case '#ffffff':
+                //         processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
+                //             console.log ("SCORE: " + _score);
+                //             emergeGamingSDK.endLevel(_score);
+                //             setTimeout(() => location.reload(), 750);
+                //         });
+                //         break;
+                //         default:
+                //             console.debug('Colour from another mother');
+                // }
+            })
+        }
+
+        startButtonOverlay.addEventListener('click', startButtonClicked);
+        startButtonForm.addEventListener('submit', startButtonClicked);
+
+    </script>
+    <script src="/dosbox/js-dos.js"></script>
+</body>
+</html>

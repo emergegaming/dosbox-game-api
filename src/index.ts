@@ -30,6 +30,11 @@ interface PixelListener {
     callback: (string) => void
 }
 
+interface DirectionMapping {
+    direction:string
+    asciiMapping:number
+}
+
 /**
  * DosGame. Object and helper methods to make it easier to run DOS games in a browser using DOSBox
  * @Author Mark van Wyk
@@ -52,6 +57,13 @@ export class DosGame {
     private lastPixelValue:string
     private keysDown:string[] = []
     private readonly forceKeyPress:boolean;
+
+    private directionMapping:object = {
+        'up': 38,
+        'down':40,
+        'left':37,
+        'right':39
+    };
 
     /**
      * Create a new DosGame object.
@@ -193,6 +205,10 @@ export class DosGame {
             (navigator.msMaxTouchPoints > 0));
     }
 
+    public overrideDirectionAscii = (directionAscii:object) => {
+        this.directionMapping = directionAscii;
+    }
+
     /***** P R I V A T E   M E T H O D S *****/
 
     private doIntervalPoll() {
@@ -237,7 +253,6 @@ export class DosGame {
         if ((event.type === 'keydown' || event.type === 'keyup') && event.metaKey == false) {
             let keyCode = this.findReplacementKeyCode(event.key);
             if (keyCode) {
-
                 if (event.type === 'keydown' && !this.keysDown.includes(event.key)) {
                     this.forceKeyPress ? this.ci.simulateKeyPress(keyCode, true) : this.ci.simulateKeyEvent(keyCode, true)
                     this.keysDown.push(event.key)
@@ -376,10 +391,10 @@ export class DosGame {
         let turnOff = was.filter(w => is.indexOf(w) === -1)
         let turnOn = is.filter(i => was.indexOf(i) === -1)
         turnOff.forEach((direction) => {
-            this.ci.simulateKeyEvent(DosGame.getDirectionAscii(direction), false);
+            this.ci.simulateKeyEvent(this.getDirectionAscii(direction), false);
         });
         turnOn.forEach((direction) => {
-            this.ci.simulateKeyEvent(DosGame.getDirectionAscii(direction), true)
+            this.ci.simulateKeyEvent(this.getDirectionAscii(direction), true)
         });
     }
 
@@ -388,13 +403,8 @@ export class DosGame {
      * @param direction
      * @private
      */
-    private static getDirectionAscii(direction:string):number {
-        switch (direction) {
-            case 'up'  : return 38;
-            case 'down': return 40;
-            case 'left': return 37;
-            case 'right': return 39;
-        }
+    private getDirectionAscii(direction:string):number {
+        return this.directionMapping[direction];
     }
 
     /**
