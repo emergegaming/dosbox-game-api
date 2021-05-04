@@ -79,18 +79,19 @@
             dosGame.start().then(() => {
                 let startX = 96; let startY = 66; let charWidth = 14; let charHeight = 10; let charSpacing = 2; let numChars = 6;
                 setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, tetris_digits);
+                dosGame.overrideKey('w',104); // 104
+                dosGame.overrideKey('s',100); // 100
+                dosGame.overrideKey('a',103); // 103
+                dosGame.overrideKey('d',105); // 105
+                dosGame.overrideDirectionAscii({
+                    'up':104,
+                    'down':100,
+                    'left':103,
+                    'right':105
+                })
+                dosGame.mapTouchToArrowKeys({directions:4});
             });
-            dosGame.overrideKey('w',104); // 104
-            dosGame.overrideKey('s',100); // 100
-            dosGame.overrideKey('a',103); // 103
-            dosGame.overrideKey('d',105); // 105
-            dosGame.overrideDirectionAscii({
-                'up':104,
-                'down':100,
-                'left':103,
-                'right':105
-            })
-            dosGame.mapTouchToArrowKeys({directions:4});
+
             //dosGame.mapButtonToKey({element:buttonA, asciiCode:48});
             //dosGame.consoleScreenshots();
 
