@@ -90,54 +90,35 @@
                     'right':105
                 })
                 dosGame.mapTouchToArrowKeys({directions:4});
+                dosGame.setPixelListener(232, 186, (hexValue) => {
+                    switch (hexValue) {
+                        case '#000000':
+                            console.log ("Black pixel detected. Waiting 250.")
+                            setTimeout(() => {
+                                console.log("Pressing Enter. Waiting 250")
+                                dosGame.autoKeyPress(13, 250).then(
+                                    () => {
+                                        console.log("Pressing 0")
+                                        dosGame.autoKeyPress(48)
+                                    })
+                            }, 250);
+
+                            emergeGamingSDK.startLevel();
+                            break;
+                        case '#5555ff':
+                            console.log("Purple Pixel Detected. Removing Overlay")
+                            loadingOverlay.remove();
+                            break;
+                        case '#aaaaaa':
+                            processScreenshot(canvas.toDataURL('img/png')).then((_score) => {
+                                console.log ("End: " + _score)
+                                emergeGamingSDK.startLevel(_score);
+                                setInterval(() => location.reload(), 750);
+                            })
+                            break;
+                    }
+                })
             });
-
-            //dosGame.mapButtonToKey({element:buttonA, asciiCode:48});
-            //dosGame.consoleScreenshots();
-
-            dosGame.setPixelListener(232, 186, (hexValue) => {
-                switch (hexValue) {
-                    case '#000000':
-                        console.log ("Black pixel detected. Waiting 250.")
-                        setTimeout(() => {
-                            console.log("Pressing Enter. Waiting 250")
-                            dosGame.autoKeyPress(13, 250).then(
-                                () => {
-                                    console.log("Pressing 0")
-                                    dosGame.autoKeyPress(48)
-                                })
-                        }, 250);
-
-                        emergeGamingSDK.startLevel();
-                        break;
-                    case '#5555ff':
-                        console.log("Purple Pixel Detected. Removing Overlay")
-                        loadingOverlay.remove();
-                        break;
-                    case '#aaaaaa':
-                        processScreenshot(canvas.toDataURL('img/png')).then((_score) => {
-                            console.log ("End: " + _score)
-                            emergeGamingSDK.startLevel(_score);
-                            setInterval(() => location.reload(), 750);
-                        })
-                        break;
-                }
-
-                // switch(hexValue) {
-                //     case '#55ffff':
-                //         emergeGamingSDK.startLevel();
-                //         break;
-                //     case '#ffffff':
-                //         processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
-                //             console.log ("SCORE: " + _score);
-                //             emergeGamingSDK.endLevel(_score);
-                //             setTimeout(() => location.reload(), 750);
-                //         });
-                //         break;
-                //         default:
-                //             console.debug('Colour from another mother');
-                // }
-            })
         }
 
         startButtonOverlay.addEventListener('click', startButtonClicked);
