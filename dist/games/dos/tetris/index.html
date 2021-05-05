@@ -116,7 +116,7 @@
                             } // else don't break and allow it to kill the game.
 
                         case '#aaaaaa':
-                            processScreenshot(secondLastCanvas).then(_score => {
+                            processScreenshot(canvas.toDataURL('img/png')).then(_score => {
                                 if (!isNaN(_score)) {
                                     emergeGamingSDK.endLevel(_score);
                                     setTimeout(() => location.reload(), 750)
