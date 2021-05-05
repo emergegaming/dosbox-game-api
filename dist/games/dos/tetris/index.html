@@ -91,6 +91,7 @@
                 })
                 dosGame.mapTouchToArrowKeys({directions:4});
                 dosGame.setPixelListener(232, 186, (hexValue) => {
+                    console.log(hexValue)
                     switch (hexValue) {
                         case '#000000':
                             console.log ("Black pixel detected. Waiting 250.")
