@@ -72,6 +72,8 @@
             cycles : 'fixed 550',
         }
 
+        let mode, lastCanvas, secondLastCanvas, thirdLastCanvas
+
         const startButtonClicked = () => {
 
             startButtonOverlay.remove();
@@ -90,32 +92,49 @@
                     'right':105
                 })
                 dosGame.mapTouchToArrowKeys({directions:4});
+                setInterval(() => {
+                    thirdLastCanvas = secondLastCanvas;
+                    secondLastCanvas = lastCanvas;;
+                    lastCanvas = canvas.toDataURL('img/png')
+                }, 1000)
                 dosGame.setPixelListener(232, 186, (hexValue) => {
                     console.log(hexValue)
                     switch (hexValue) {
                         case '#000000':
-                            console.log ("Black pixel detected. Waiting 250.")
-                            setTimeout(() => {
-                                console.log("Pressing Enter. Waiting 250")
-                                dosGame.autoKeyPress(13, 250).then(
-                                    () => {
-                                        console.log("Pressing 0")
-                                        dosGame.autoKeyPress(48)
-                                    })
-                            }, 250);
+                            if (mode !== 'playing') {
+                                setTimeout(() => {
+                                    console.log("Pressing Enter. Waiting 250")
+                                    dosGame.autoKeyPress(13, 250).then(
+                                        () => {
+                                            console.log("Pressing 0")
+                                            dosGame.autoKeyPress(48)
+                                        })
+                                }, 250);
 
-                            emergeGamingSDK.startLevel();
+                                emergeGamingSDK.startLevel();
+                                break;
+                            } // else don't break and allow it to kill the game.
+
+                        case '#aaaaaa':
+                            processScreenshot(secondLastCanvas).then(_score => {
+                                if (!isNaN(_score)) {
+                                    emergeGamingSDK.endLevel(_score);
+                                    setTimeout(() => location.reload(), 750)
+                                } else {
+                                    processScreenshot(thirdLastCanvas).then(_score => {
+                                        if (!isNaN(_score)) {
+                                            emergeGamingSDK.endLevel(_score);
+                                            setTimeout(() => location.reload(), 750)
+                                        }
+                                    });
+                                }
+                            });
                             break;
+
                         case '#5555ff':
+                            mode = 'playing'
                             console.log("Purple Pixel Detected. Removing Overlay")
                             loadingOverlay.remove();
-                            break;
-                        case '#aaaaaa':
-                            processScreenshot(canvas.toDataURL('img/png')).then((_score) => {
-                                console.log ("End: " + _score)
-                                emergeGamingSDK.endLevel(_score);
-                                setInterval(() => location.reload(), 2750);
-                            })
                             break;
                     }
                 })
