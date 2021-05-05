@@ -113,7 +113,7 @@
                             processScreenshot(canvas.toDataURL('img/png')).then((_score) => {
                                 console.log ("End: " + _score)
                                 emergeGamingSDK.endLevel(_score);
-                                setInterval(() => location.reload(), 750);
+                                setInterval(() => location.reload(), 2750);
                             })
                             break;
                     }
