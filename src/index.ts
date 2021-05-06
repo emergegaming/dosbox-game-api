@@ -28,6 +28,7 @@ interface PixelListener {
     x: number
     y: number
     callback: (string) => void
+    lastColor: string
 }
 
 interface DirectionMapping {
@@ -53,10 +54,10 @@ export class DosGame {
     private lastDirection:string[] = []
     private canvasContext:CanvasRenderingContext2D
     private interval:number
-    private pixelListener:PixelListener
-    private lastPixelValue:string
+    private pixelListeners:PixelListener[] = []
     private keysDown:string[] = []
     private readonly forceKeyPress:boolean;
+    private generalPixelCallback: (colours:string[]) => void;
 
     private directionMapping:object = {
         'up': 38,
@@ -64,6 +65,7 @@ export class DosGame {
         'left':37,
         'right':39
     };
+
 
     /**
      * Create a new DosGame object.
@@ -83,7 +85,6 @@ export class DosGame {
         this.canvas = canvas
         this.forceKeyPress = forceKeyPress;
     }
-
 
     public start():Promise<any> {
         return new Promise((resolve) => {
@@ -180,12 +181,28 @@ export class DosGame {
      * @param callback
      * @param delay the number of ms to wait
      * @todo: This should really be called addPixelListener (i.e. more than one)
+     * @deprecated use addPixelListener
      */
     public setPixelListener(x:number, y:number, callback, delay:number = 1000) {
-        window.clearInterval(this.interval);
-        this.pixelListener = {x:x, y:y, callback:callback}
-        this.canvasContext = this.canvas.getContext('2d');
-        this.interval = window.setInterval(this.doIntervalPoll.bind(this), delay)
+        this.addPixelListener(x, y, callback, delay);
+    }
+
+    /**
+     * Give the x y coordinate of a pixel with a callback to be called when the colour changes
+     * @param x coord of x pixel
+     * @param y coord of y pixel
+     * @param callback to callback every interval with the pixel colour.
+     * @param delay the number of ms between callback intervals
+     */
+    public addPixelListener(x:number, y:number, callback, delay:number = 1000) {
+        if (!this.interval) this.interval = window.setInterval(this.doIntervalPoll.bind(this), delay)
+        this.pixelListeners.push({x:x, y:y, callback:callback, lastColor:undefined})
+
+        if (!this.canvasContext) this.canvasContext = this.canvas.getContext('2d');
+    }
+
+    public setGeneralPixelCallback(callback:(colours:string[]) => void) {
+        this.generalPixelCallback = callback;
     }
 
     public stopPixelListener() {
@@ -212,12 +229,20 @@ export class DosGame {
     /***** P R I V A T E   M E T H O D S *****/
 
     private doIntervalPoll() {
-        let pixelColor:ImageData = this.canvasContext.getImageData(this.pixelListener.x, this.pixelListener.y, 1, 1);
-        let colorValue:string = '#' + DosGame.getHexValue(pixelColor.data[0]) + DosGame.getHexValue(pixelColor.data[1]) + DosGame.getHexValue(pixelColor.data[2]);
-        if (colorValue != this.lastPixelValue) {
-            this.pixelListener.callback(colorValue);
-            this.lastPixelValue = colorValue;
-        }
+
+        let colors:string[] = []
+
+        this.pixelListeners.forEach((pl) => {
+            let pixelColor:ImageData = this.canvasContext.getImageData(pl.x, pl.y, 1, 1);
+            let colorValue:string = '#' + DosGame.getHexValue(pixelColor.data[0]) + DosGame.getHexValue(pixelColor.data[1]) + DosGame.getHexValue(pixelColor.data[2]);
+            colors.push(colorValue)
+            if (colorValue != pl.lastColor) {
+                pl.callback(colorValue);
+                pl.lastColor = colorValue;
+            }
+        });
+
+        this.generalPixelCallback(colors);
     }
 
     private static getHexValue(number:number):string {

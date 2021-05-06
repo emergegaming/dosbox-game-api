@@ -83,8 +83,8 @@
             });
             dosGame.overrideKey(' ', 112);
             dosGame.mapTouchToArrowKeys({directions:4});
-            dosGame.mapButtonToKey({element:buttonA, asciiCode:112});
-            dosGame.mapButtonToKey({element:buttonB, asciiCode:13});
+            dosGame.mapButtonToKey({element:buttonA, asciiCode:13});
+            dosGame.mapButtonToKey({element:buttonB, asciiCode:112});
             dosGame.setPixelListener(65, 0, (hexValue) => {
                 switch(hexValue) {
                     case '#55ffff':

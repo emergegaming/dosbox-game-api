@@ -91,7 +91,11 @@
                 //     'right':105
                 // })
                 dosGame.mapTouchToArrowKeys({directions:4});
-                dosGame.setPixelListener(26, 67, (hexValue) => {
+                dosGame.setGeneralPixelCallback((colors) => {
+                    console.log (colors.join(','))
+                })
+                //dosGame.addPixelListener()
+                dosGame.addPixelListener(26, 67, (hexValue) => {
                     switch (hexValue) {
                         case '#aa00aa': console.log(hexValue + ': Title Screen'); break;
                         case '#000000': console.log(hexValue + ': Options Screen'); break;
