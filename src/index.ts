@@ -139,8 +139,9 @@ export class DosGame {
     }
 
     /**
-     * Convert touch dragging to
-     * @param directions
+     * Convert touch dragging to direction keys
+     * @param directions can be 8 (including diagonals), 4 (up, down, left right) or 2 (left or right)
+     *
      */
     public mapTouchToArrowKeys(directions:Directions):void {
         this.directions = directions

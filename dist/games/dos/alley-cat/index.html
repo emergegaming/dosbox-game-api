@@ -33,7 +33,7 @@
         </div>
 
         <!-- Overlay to: Show when loading -->
-        <div id="loadingOverlay" class="flex orientation-notice fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-30 hidden" style="background-color: #101010">
+        <div id="loadingOverlay" class="flex orientation-notice fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-30" style="background-color: #101010">
             <div class="text-white text-2xl">Loading...</div>
         </div>
 
@@ -55,7 +55,7 @@
         import {DosGame} from "/index.js";
         import {emergeGamingSDK} from '/lib/emergamingSDK.js'
         import {processScreenshot, setupOcr} from "/lib/ocr.js";
-        import {tetris_digits} from "/games/dos/tetris/digits.js";
+        import {alley_cat_digits} from "/games/dos/alley-cat/digits.js";
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
@@ -63,8 +63,6 @@
         let startButton = document.getElementById('startButton');
         let startButtonForm = document.getElementById('startButtonForm');
         let loadingOverlay = document.getElementById('loadingOverlay');
-        //let buttonA = document.getElementById('ctlButtonA');
-        //let buttonB = document.getElementById('ctlButtonB');
 
         let gameConfig = {
             zipFile : 'AlleyCat.zip',
@@ -72,65 +70,48 @@
             cycles : 'fixed 550',
         }
 
+        let mode;
+
         const startButtonClicked = () => {
 
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             //dosGame.consoleScreenshots();
             dosGame.start().then(() => {
-                let startX = 96; let startY = 66; let charWidth = 14; let charHeight = 10; let charSpacing = 2; let numChars = 6;
-                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, tetris_digits);
-                // dosGame.overrideKey('w',104); // 104
-                // dosGame.overrideKey('s',100); // 100
-                // dosGame.overrideKey('a',103); // 103
-                // dosGame.overrideKey('d',105); // 105
-                // dosGame.overrideDirectionAscii({
-                //     'up':104,
-                //     'down':100,
-                //     'left':103,
-                //     'right':105
-                // })
-                dosGame.mapTouchToArrowKeys({directions:4});
+                dosGame.mapTouchToArrowKeys({directions: 4});
                 dosGame.setGeneralPixelCallback((colors) => {
-                    console.log (colors.join(','))
+                    let combo = colors.join(',');
+                    switch (combo) {
+                        case '#aa00aa,#00aaaa,#000000':
+                            if (!mode) {
+                                emergeGamingSDK.startLevel();
+                                dosGame.autoKeyPress(13, 250).then(() => dosGame.autoKeyPress(78, 250).then(() => dosGame.autoKeyPress(75,250).then(() => dosGame.autoKeyPress(13, 250).then(() => loadingOverlay.remove()))));
+                            } else {
+                                let _score = "";
+
+                                setupOcr(240,128,7,8,1,3, alley_cat_digits, 0);
+                                processScreenshot(canvas.toDataURL('img/png')).then((_prefix) => {console.log(_prefix); _score += _prefix});
+                                setupOcr(272,128,7,8,1,4, alley_cat_digits, 0);
+                                processScreenshot(canvas.toDataURL('img/png')).then((_suffix) => {console.log(_suffix); _score += _suffix});
+                                emergeGamingSDK.endLevel(_score);
+                                //setInterval(() => location.reload(), 750);
+                            }
+                            break;
+                        case '#00aaaa,#00aaaa,#00aaaa':
+                            mode = 'playing';
+                            break;
+
+                    default:
+                        console.log (combo)
+                    }
+
                 })
                 //dosGame.addPixelListener()
-                dosGame.addPixelListener(26, 67, (hexValue) => {
-                    switch (hexValue) {
-                        case '#aa00aa': console.log(hexValue + ': Title Screen'); break;
-                        case '#000000': console.log(hexValue + ': Options Screen'); break;
-                        case '#aa5500': console.log(hexValue + ': Mini-Game'); break;
-                        default:
-                            console.log(hexValue + ': Other')
-                    }
-                //     switch (hexValue) {
-                //         case '#000000':
-                //             console.log ("Black pixel detected. Waiting 250.")
-                //             setTimeout(() => {
-                //                 console.log("Pressing Enter. Waiting 250")
-                //                 dosGame.autoKeyPress(13, 250).then(
-                //                     () => {
-                //                         console.log("Pressing 0")
-                //                         dosGame.autoKeyPress(48)
-                //                     })
-                //             }, 250);
-                //
-                //             emergeGamingSDK.startLevel();
-                //             break;
-                //         case '#5555ff':
-                //             console.log("Purple Pixel Detected. Removing Overlay")
-                //             loadingOverlay.remove();
-                //             break;
-                //         case '#aaaaaa':
-                //             processScreenshot(canvas.toDataURL('img/png')).then((_score) => {
-                //                 console.log ("End: " + _score)
-                //                 emergeGamingSDK.startLevel(_score);
-                //                 setInterval(() => location.reload(), 750);
-                //             })
-                //             break;
-                //     }
-                })
-            });
+
+                dosGame.addPixelListener(26, 67, (hexValue) => {});
+                dosGame.addPixelListener(121, 25, (hexValue) => {});
+                dosGame.addPixelListener(123, 25, (hexValue) => {})
+            })
         }
 
         startButtonOverlay.addEventListener('click', startButtonClicked);
