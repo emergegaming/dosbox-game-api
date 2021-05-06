@@ -63,8 +63,8 @@
         let startButton = document.getElementById('startButton');
         let startButtonForm = document.getElementById('startButtonForm');
         let loadingOverlay = document.getElementById('loadingOverlay');
-        //let buttonA = document.getElementById('ctlButtonA');
-        // let buttonB = document.getElementById('ctlButtonB');
+        let buttonA = document.getElementById('ctlButtonA');
+        let buttonB = document.getElementById('ctlButtonB');
 
         let gameConfig = {
             zipFile : 'Tetris_academysoft.zip',
@@ -92,6 +92,8 @@
                     'right':105
                 })
                 dosGame.mapTouchToArrowKeys({directions:4});
+                dosGame.mapButtonToKey({element:buttonA, asciiCode:104});
+                dosGame.mapButtonToKey({element:buttonB, asciiCode:100});
                 setInterval(() => {
                     thirdLastCanvas = secondLastCanvas;
                     secondLastCanvas = lastCanvas;;
