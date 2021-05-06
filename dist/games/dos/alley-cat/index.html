@@ -86,27 +86,30 @@
                             if (!mode) {
                                 emergeGamingSDK.startLevel();
                                 dosGame.autoKeyPress(13, 250).then(() => dosGame.autoKeyPress(78, 250).then(() => dosGame.autoKeyPress(75,250).then(() => dosGame.autoKeyPress(13, 250).then(() => loadingOverlay.remove()))));
-                            } else {
-                                let _score = "";
+                            } else if (mode !== 'ended') {
+                                let _score = 0;
 
                                 setupOcr(240,128,7,8,1,3, alley_cat_digits, 0);
-                                processScreenshot(canvas.toDataURL('img/png')).then((_prefix) => {console.log(_prefix); _score += _prefix});
-                                setupOcr(272,128,7,8,1,4, alley_cat_digits, 0);
-                                processScreenshot(canvas.toDataURL('img/png')).then((_suffix) => {console.log(_suffix); _score += _suffix});
-                                emergeGamingSDK.endLevel(_score);
-                                //setInterval(() => location.reload(), 750);
+                                processScreenshot(canvas.toDataURL('img/png')).then((_prefix) => {
+                                    _score += _prefix * 10000;
+                                    setupOcr(272,128,7,8,1,4, alley_cat_digits, 0);
+                                    processScreenshot(canvas.toDataURL('img/png')).then((_suffix) => {
+                                        _score += _suffix
+                                        console.log ("Score: " + _score);
+                                        emergeGamingSDK.endLevel(_score);
+                                        mode = 'ended';
+                                        setInterval(() => location.reload(), 750);
+                                    });
+                                });
                             }
                             break;
                         case '#00aaaa,#00aaaa,#00aaaa':
                             mode = 'playing';
                             break;
-
                     default:
-                        console.log (combo)
+                        //console.log (combo)
                     }
-
                 })
-                //dosGame.addPixelListener()
 
                 dosGame.addPixelListener(26, 67, (hexValue) => {});
                 dosGame.addPixelListener(121, 25, (hexValue) => {});
