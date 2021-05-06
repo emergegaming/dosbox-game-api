@@ -78,7 +78,7 @@
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             //dosGame.consoleScreenshots();
             dosGame.start().then(() => {
-                dosGame.mapTouchToArrowKeys({directions: 4});
+                dosGame.mapTouchToArrowKeys({directions: 8});
                 dosGame.setGeneralPixelCallback((colors) => {
                     let combo = colors.join(',');
                     switch (combo) {
