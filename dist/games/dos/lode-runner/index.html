@@ -41,7 +41,7 @@
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="startButtonClicked()">
-                <input type="submit" id="startButton" class="text-white" value="Start Game"/>
+                <input type="image" src="lode-runner.png" id="startButton" class="h-96" value="Start Game"/>
             </form>
         </div>
 
@@ -102,7 +102,7 @@
             });
 
 
-            dosGame.setPixelListener(17, 195, (hexValue) => {
+            dosGame.addPixelListener(17, 195, (hexValue) => {
                 console.log (hexValue);
                 switch(hexValue) {
                     case '#ffffff':
