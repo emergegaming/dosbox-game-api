@@ -243,7 +243,7 @@ export class DosGame {
             }
         });
 
-        this.generalPixelCallback(colors);
+        if (this.generalPixelCallback) this.generalPixelCallback(colors);
     }
 
     private static getHexValue(number:number):string {

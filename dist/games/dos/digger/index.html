@@ -70,36 +70,43 @@
         let gameConfig = {
             zipFile : 'digger.zip',
             execCmdArray : ['-c','DIGGER.COM'],
-            cycles : 'fixed 550',
+            cycles: '600'
         }
 
         const startButtonClicked = () => {
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
-                loadingOverlay.remove();
                 let startX = 12; let startY = 0; let charWidth = 10; let charHeight = 12; let charSpacing = 2; let numChars = 5;
                 setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, digger_digits);
-            });
-            dosGame.overrideKey(' ', 112);
-            dosGame.mapTouchToArrowKeys({directions:4});
-            dosGame.mapButtonToKey({element:buttonA, asciiCode:13});
-            dosGame.mapButtonToKey({element:buttonB, asciiCode:112});
-            dosGame.setPixelListener(65, 0, (hexValue) => {
-                switch(hexValue) {
-                    case '#55ffff':
-                        emergeGamingSDK.startLevel();
-                        break;
-                    case '#ffffff':
-                        processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
-                            console.log ("SCORE: " + _score);
-                            emergeGamingSDK.endLevel(_score);
-                            setTimeout(() => location.reload(), 750);
-                        });
-                        break;
+
+                dosGame.overrideKey(' ', 112);
+                dosGame.mapTouchToArrowKeys({directions:4});
+                dosGame.mapButtonToKey({element:buttonA, asciiCode:13});
+                dosGame.mapButtonToKey({element:buttonB, asciiCode:112});
+                dosGame.addPixelListener(65, 0, (hexValue) => {
+                    console.log (hexValue)
+                    switch(hexValue) {
+                        case '#000000':
+                            console.log ("Here")
+                            loadingOverlay.remove();
+                            dosGame.autoKeyPress(13);
+                            emergeGamingSDK.startLevel();
+                        case '#55ffff':
+                            console.log ("Playing")
+                            break;
+                        case '#ffffff':
+                            console.log("Game Over")
+                            processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
+                                console.log ("SCORE: " + _score);
+                                emergeGamingSDK.endLevel(_score);
+                                setTimeout(() => location.reload(), 750);
+                            });
+                            break;
                         default:
                             console.debug('Colour from another mother');
-                }
+                    }
+                })
             })
         }
 
