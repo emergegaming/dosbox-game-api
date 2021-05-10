@@ -40,7 +40,7 @@
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="startButtonClicked()">
-                <input type="submit" id="startButton" class="text-white" value="Start Game"/>
+                <input type="image" src="loading-screen.png" id="startButton" class="h-96"/>
             </form>
         </div>
 
@@ -94,7 +94,7 @@
             dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
             dosGame.mapButtonToKey({element:buttonB, asciiCode:38});
             dosGame.overrideKey(' ', 38);
-            dosGame.setPixelListener(157, 165, (hexValue) => {
+            dosGame.addPixelListener(157, 165, (hexValue) => {
                 switch(hexValue) {
                     case '#000000':
                         if (mode === 'playing') {

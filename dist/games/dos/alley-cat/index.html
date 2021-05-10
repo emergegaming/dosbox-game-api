@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Tetris</title>
+    <title>Alley Cat</title>
     <link rel="stylesheet" type="text/css" href="/css/tailwind-purged.css"/>
     <link rel="stylesheet" type="text/css" href="/css/style.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -40,7 +40,7 @@
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="return false">
-                <input type="button" id="startButton" class="" value="Load and Start">
+                <input type="image" id="startButton" class="h-96" src="alleycat.png" class="h-96" style="image-rendering: pixelated">
             </form>
         </div>
 
@@ -59,7 +59,7 @@
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
-
+        let buttonB = document.getElementById('ctlButtonB');
         let startButton = document.getElementById('startButton');
         let startButtonForm = document.getElementById('startButtonForm');
         let loadingOverlay = document.getElementById('loadingOverlay');
@@ -79,7 +79,9 @@
             //dosGame.consoleScreenshots();
             dosGame.start().then(() => {
                 dosGame.mapTouchToArrowKeys({directions: 8});
+                dosGame.mapButtonToKey({element:buttonB, asciiCode:18})
                 dosGame.setGeneralPixelCallback((colors) => {
+
                     let combo = colors.join(',');
                     switch (combo) {
                         case '#aa00aa,#00aaaa,#000000':
