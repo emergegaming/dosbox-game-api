@@ -38,9 +38,9 @@
         </div>
 
         <!-- Overlay to: Load and Start -->
-        <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
+        <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40 bg-black">
             <form id="startButtonForm" onsubmit="return false">
-                <input type="button" id="startButton" class="" value="Load and Start">
+                <input type="image" src="tetris.png" id="startButton" class="h-96" value="Load and Start">
             </form>
         </div>
 
@@ -143,6 +143,7 @@
             });
         }
 
+        startButton.focus();
         startButtonOverlay.addEventListener('click', startButtonClicked);
         startButtonForm.addEventListener('submit', startButtonClicked);
 
