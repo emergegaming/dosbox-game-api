@@ -56,7 +56,7 @@
         import {DosGame} from "/index.js";
         import {emergeGamingSDK} from '/lib/emergamingSDK.js'
         import {processScreenshot, setupOcr} from "/lib/ocr.js";
-        import {arkanoid_digits} from "/games/dos/Arkanoid/digits.js";
+        import {arkanoid_digits} from "/games/dos/arkanoid/digits.js";
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
@@ -98,8 +98,8 @@
                 dosGame.addPixelListener(106, 50, (hexValue) => {
                     //console.log (hexValue);
                     //dosGame.autoKeyPress(13);
-                    //loadingOverlay.remove();
-                    
+                    loadingOverlay.remove();
+
                     switch(hexValue) {
                         case '#0000aa':
                                 {
@@ -114,12 +114,13 @@
                                     //             dosGame.autoKeyPress(32, 250).then(() => {
                                     //                 dosGame.autoKeyPress(32, 250).then(() => {
                                     //                 })
-                                    //             }) 
+                                    //             })
                         case '#aa0000':
+                            console.log ("Logo Build")
                             dosGame.autoKeyPress(32, 250).then(
                                 () => {dosGame.autoKeyPress(32, 250)}
                             )
-                            
+
 
                             //console.log("Red");
                             // if (mode = "") {
@@ -132,19 +133,23 @@
                             loadingOverlay.remove();
                             //dosGame.autoKeyPress(13);
                             emergeGamingSDK.startLevel();
+                            setTimeout(() => mode = 'playing', 1000);
                             break;
                         case '#ffff55':
                             //console.log ("Playing")
                             //loadingOverlay.remove();
                             break;
                         case '#ffffff':
-                            //console.log("Game Over")
-                            //console.log(secondLastCanvas)
-                            processScreenshot(secondLastCanvas).then((_score) => {
-                                //console.log ("SCORE: " + _score);
-                                emergeGamingSDK.endLevel(_score);
-                                setTimeout(() => location.reload(), 750);   
-                            });
+                            if (mode === 'playing') {
+                                mode = 'game over'
+                                console.log("Game Over")
+                                //console.log(secondLastCanvas)
+                                processScreenshot(secondLastCanvas).then((_score) => {
+                                    //console.log ("SCORE: " + _score);
+                                    emergeGamingSDK.endLevel(_score);
+                                    //setTimeout(() => location.reload(), 750);
+                                });
+                            }
                             break;
                         default:
                             //console.debug('Colour from another mother');
