@@ -40,8 +40,8 @@
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="return false">
-                <input type="image" src="arkanoid.png" id="startButtonDesktop" class="h-96 outline-none"/>
-                <input type="image" src="arkanoid.png" id="startButtonMobile" class="h-96 outline-none"/>
+                <input type="image" src="arkanoid.png" id="startButton" class="h-64 outline-none"/>
+
             </form>
         </div>
 
@@ -60,14 +60,13 @@
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
-        let startButtonDesktop = document.getElementById('startButtonDesktop');
-        let startButtonMobile = document.getElementById('startButtonMobile');
+        let startButton = document.getElementById('startButton');
         let startButtonForm = document.getElementById('startButtonForm');
         let loadingOverlay = document.getElementById('loadingOverlay');
         let buttonA = document.getElementById('ctlButtonA');
         let buttonB = document.getElementById('ctlButtonB');
 
-        let lastCanvas, secondLastCanvas, thirdLastCanvas, mode
+        let lastCanvas, secondLastCanvas, thirdLastCanvas, mode = 'started'
 
         let gameConfig = {
             zipFile : 'ARKANOID.ZIP',
@@ -95,76 +94,56 @@
                     lastCanvas = canvas.toDataURL('img/png')
                 }, 1000)
 
-                dosGame.addPixelListener(106, 50, (hexValue) => {
-                    //console.log (hexValue);
+                dosGame.addPixelListener(235, 82, (hexValue) => {
+                    console.log (hexValue);
                     //dosGame.autoKeyPress(13);
                     loadingOverlay.remove();
 
+                    if (mode === 'playing' && hexValue !== '#5555ff') {
+                        processScreenshot(secondLastCanvas).then((_score) => {
+                            console.log ("GAME OVER: " + _score);
+                            emergeGamingSDK.endLevel(_score)
+                            setTimeout(() => location.reload(), 750);
+                        });
+                        return;
+                    }
+
                     switch(hexValue) {
-                        case '#0000aa':
-                                {
-                                    dosGame.autoKeyPress(69, 250).then( //Press: E -> K
-                                        () => {dosGame.autoKeyPress(75, 250);})
-                                    //console.log("Blue");
-                                    mode = "title";
-                                    break;
-                                }
-
-                                //dosGame.autoKeyPress(32, 250).then(() => {
-                                    //             dosGame.autoKeyPress(32, 250).then(() => {
-                                    //                 dosGame.autoKeyPress(32, 250).then(() => {
-                                    //                 })
-                                    //             })
-                        case '#aa0000':
-                            console.log ("Logo Build")
-                            dosGame.autoKeyPress(32, 250).then(
-                                () => {dosGame.autoKeyPress(32, 250)}
-                            )
-
-
-                            //console.log("Red");
-                            // if (mode = "") {
-                            //     break;
-                            // }
+                        case '#0000aa': { // Blue Screen
+                            dosGame.autoKeyPress(69, 250).then( //Press: E -> K
+                                () => {dosGame.autoKeyPress(75, 250);})
+                            mode = 'initialized'
                             break;
-
-                        case '#000000':
-                            //console.log ("Lore")
-                            loadingOverlay.remove();
-                            //dosGame.autoKeyPress(13);
-                            emergeGamingSDK.startLevel();
-                            setTimeout(() => mode = 'playing', 1000);
-                            break;
-                        case '#ffff55':
-                            //console.log ("Playing")
-                            //loadingOverlay.remove();
-                            break;
-                        case '#ffffff':
-                            if (mode === 'playing') {
-                                mode = 'game over'
-                                console.log("Game Over")
-                                //console.log(secondLastCanvas)
-                                processScreenshot(secondLastCanvas).then((_score) => {
-                                    //console.log ("SCORE: " + _score);
-                                    emergeGamingSDK.endLevel(_score);
-                                    //setTimeout(() => location.reload(), 750);
-                                });
+                        }
+                        case "#000000": { // TAITO Screen
+                            if (mode === 'initialized') {
+                                mode = 'story';
+                                console.log("Taito screen, pressing space twice thrice.")
+                                setTimeout(() => dosGame.autoKeyPress(32), 0);
+                                setTimeout(() => dosGame.autoKeyPress(32), 250);
+                                setTimeout(() => dosGame.autoKeyPress(32), 500);
+                                setTimeout(() => {
+                                    loadingOverlay.remove()
+                                    emergeGamingSDK.startLevel();
+                                }, 750);
                             }
                             break;
+                        }
+
+                        case "#5555ff": {
+                            console.log ("We're playing....")
+                            mode = 'playing'
+                        }
+
                         default:
-                            //console.debug('Colour from another mother');
+                            console.debug('Colour from another mother');
                     }
                 })
             })
         }
 
-        if (DosGame.isTouch()) {
-            startButtonDesktop.remove();
-            startButtonMobile.focus();
-        } else {
-            startButtonMobile.remove();
-            startButtonDesktop.focus();
-        }
+
+        startButton.focus();
 
         startButtonOverlay.addEventListener('click', startButtonClicked);
         startButtonForm.addEventListener('submit', startButtonClicked);
