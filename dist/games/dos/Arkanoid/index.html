@@ -98,12 +98,12 @@
                 dosGame.addPixelListener(106, 50, (hexValue) => {
                     console.log (hexValue);
                     //dosGame.autoKeyPress(13);
-                    loadingOverlay.remove();
-                    dosGame.autoKeyPress(69, 200).then(() => {
-                        dosGame.autoKeyPress(75, 200)}).then(() => {
-                            dosGame.autoKeyPress(32, 200).then(() => {
-                                dosGame.autoKeyPress(32, 200).then(() => {
-                                    dosGame.autoKeyPress(32, 200).then(() => {
+                    //loadingOverlay.remove();
+                    dosGame.autoKeyPress(69, 250).then(() => {
+                        dosGame.autoKeyPress(75, 250)}).then(() => {
+                            dosGame.autoKeyPress(32, 250).then(() => {
+                                dosGame.autoKeyPress(32, 250).then(() => {
+                                    dosGame.autoKeyPress(32, 250).then(() => {
                                     })
                                 })    
                             })
@@ -116,6 +116,7 @@
                             emergeGamingSDK.startLevel();
                         case '#ffff55':
                             console.log ("Playing")
+                            loadingOverlay.remove();
                             break;
                         case '#ffffff':
                             console.log("Game Over")
