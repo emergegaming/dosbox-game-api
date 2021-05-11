@@ -86,8 +86,8 @@
 
                 dosGame.overrideKey(' ', 112);
                 dosGame.mapTouchToArrowKeys({directions:4});
-                dosGame.mapButtonToKey({element:buttonA, asciiCode:13});
-                dosGame.mapButtonToKey({element:buttonB, asciiCode:112});
+                dosGame.mapButtonToKey({element:buttonA, asciiCode:37});
+                dosGame.mapButtonToKey({element:buttonB, asciiCode:39});
 
                 setInterval(() => {
                     thirdLastCanvas = secondLastCanvas;
@@ -99,11 +99,11 @@
                     console.log (hexValue);
                     //dosGame.autoKeyPress(13);
                     loadingOverlay.remove();
-                    dosGame.autoKeyPress(69, 250).then(() => {
-                        dosGame.autoKeyPress(75, 250)}).then(() => {
-                            dosGame.autoKeyPress(32, 250).then(() => {
-                                dosGame.autoKeyPress(32, 250).then(() => {
-                                    dosGame.autoKeyPress(32, 250).then(() => {
+                    dosGame.autoKeyPress(69, 200).then(() => {
+                        dosGame.autoKeyPress(75, 200)}).then(() => {
+                            dosGame.autoKeyPress(32, 200).then(() => {
+                                dosGame.autoKeyPress(32, 200).then(() => {
+                                    dosGame.autoKeyPress(32, 200).then(() => {
                                     })
                                 })    
                             })
