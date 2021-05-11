@@ -87,7 +87,7 @@
                         case '#aa00aa,#00aaaa,#000000':
                             if (!mode) {
                                 emergeGamingSDK.startLevel();
-                                dosGame.autoKeyPress(13, 250).then(() => dosGame.autoKeyPress(78, 250).then(() => dosGame.autoKeyPress(75,250).then(() => dosGame.autoKeyPress(13, 250).then(() => loadingOverlay.remove()))));
+                                dosGame.autoKeyPress(13, 250).then(() => dosGame.autoKeyPress(78, 250).then(() => dosGame.autoKeyPress(75,250).then(() => dosGame.autoKeyPress(13, 250).then(() => loadingOverlay.style.visibility = 'hidden'))));
                             } else if (mode !== 'ended') {
                                 let _score = 0;
 
@@ -96,6 +96,7 @@
                                     _score += _prefix * 10000;
                                     setupOcr(272,128,7,8,1,4, alley_cat_digits, 0);
                                     processScreenshot(canvas.toDataURL('img/png')).then((_suffix) => {
+                                        loadingOverlay.style.visibility = 'visible'
                                         _score += _suffix
                                         console.log ("Score: " + _score);
                                         emergeGamingSDK.endLevel(_score);
@@ -119,6 +120,7 @@
             })
         }
 
+        startButton.focus();
         startButtonOverlay.addEventListener('click', startButtonClicked);
         startButtonForm.addEventListener('submit', startButtonClicked);
 
