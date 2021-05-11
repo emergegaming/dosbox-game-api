@@ -40,8 +40,8 @@
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="return false">
-                <input type="image" src="digger-loader-desktop.jpg" id="startButtonDesktop" class="h-96 outline-none"/>
-                <input type="image" src="digger-loader-mobile.jpg" id="startButtonMobile" class="h-96 outline-none"/>
+                <input type="image" src="arkanoid.png" id="startButtonDesktop" class="h-96 outline-none"/>
+                <input type="image" src="arkanoid.png" id="startButtonMobile" class="h-96 outline-none"/>
             </form>
         </div>
 
@@ -82,12 +82,12 @@
             dosGame.start().then(() => {
                 let startX = 239; let startY = 61; let charWidth = 9; let charHeight = 9; let charSpacing = -1; let numChars = 6;
                 setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, arkanoid_digits);
-                dosGame.consoleScreenshots();
+                //dosGame.consoleScreenshots();
 
                 dosGame.overrideKey(' ', 112);
-                dosGame.mapTouchToArrowKeys({directions:4});
-                dosGame.mapButtonToKey({element:buttonA, asciiCode:37});
-                dosGame.mapButtonToKey({element:buttonB, asciiCode:39});
+                dosGame.mapTouchToArrowKeys({directions:2});
+                dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
+                //dosGame.mapButtonToKey({element:buttonB, asciiCode:39});
 
                 setInterval(() => {
                     thirdLastCanvas = secondLastCanvas;
@@ -96,39 +96,58 @@
                 }, 1000)
 
                 dosGame.addPixelListener(106, 50, (hexValue) => {
-                    console.log (hexValue);
+                    //console.log (hexValue);
                     //dosGame.autoKeyPress(13);
                     //loadingOverlay.remove();
-                    dosGame.autoKeyPress(69, 250).then(() => {
-                        dosGame.autoKeyPress(75, 250)}).then(() => {
-                            dosGame.autoKeyPress(32, 250).then(() => {
-                                dosGame.autoKeyPress(32, 250).then(() => {
-                                    dosGame.autoKeyPress(32, 250).then(() => {
-                                    })
-                                })    
-                            })
-                        });
+                    
                     switch(hexValue) {
+                        case '#0000aa':
+                                {
+                                    dosGame.autoKeyPress(69, 250).then( //Press: E -> K
+                                        () => {dosGame.autoKeyPress(75, 250);})
+                                    //console.log("Blue");
+                                    mode = "title";
+                                    break;
+                                }
+
+                                //dosGame.autoKeyPress(32, 250).then(() => {
+                                    //             dosGame.autoKeyPress(32, 250).then(() => {
+                                    //                 dosGame.autoKeyPress(32, 250).then(() => {
+                                    //                 })
+                                    //             }) 
+                        case '#aa0000':
+                            dosGame.autoKeyPress(32, 250).then(
+                                () => {dosGame.autoKeyPress(32, 250)}
+                            )
+                            
+
+                            //console.log("Red");
+                            // if (mode = "") {
+                            //     break;
+                            // }
+                            break;
+
                         case '#000000':
-                            console.log ("Here")
+                            //console.log ("Lore")
                             loadingOverlay.remove();
-                            dosGame.autoKeyPress(13);
+                            //dosGame.autoKeyPress(13);
                             emergeGamingSDK.startLevel();
+                            break;
                         case '#ffff55':
-                            console.log ("Playing")
-                            loadingOverlay.remove();
+                            //console.log ("Playing")
+                            //loadingOverlay.remove();
                             break;
                         case '#ffffff':
-                            console.log("Game Over")
+                            //console.log("Game Over")
                             //console.log(secondLastCanvas)
                             processScreenshot(secondLastCanvas).then((_score) => {
-                                console.log ("SCORE: " + _score);
+                                //console.log ("SCORE: " + _score);
                                 emergeGamingSDK.endLevel(_score);
                                 setTimeout(() => location.reload(), 750);   
                             });
                             break;
                         default:
-                            console.debug('Colour from another mother');
+                            //console.debug('Colour from another mother');
                     }
                 })
             })
