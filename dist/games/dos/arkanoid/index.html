@@ -15,8 +15,7 @@
             <!-- Left Column (Directional Control) -->
             <div class="flex flex-col flex-grow items-center justify-center pointer-events-none">
                 <div class="relative flex w-32 h-32 items-center justify-center pointer-events-none">
-                    <img class="absolute w-24 h-24 pointer-events-none" src="/images/JoystickSurround.svg">
-                    <img class="absolute w-32 h-32 pointer-events-none" src="/images/Joystick.svg">
+                    <img id="dPad" class="absolute w-32 h-32 pointer-events-none" src="/images/D-Pad.svg">
                 </div>
             </div>
 
@@ -65,6 +64,7 @@
         let loadingOverlay = document.getElementById('loadingOverlay');
         let buttonA = document.getElementById('ctlButtonA');
         let buttonB = document.getElementById('ctlButtonB');
+        let dPad = document.getElementById('dPad');
 
         let lastCanvas, secondLastCanvas, thirdLastCanvas, mode = 'started'
 
@@ -84,7 +84,8 @@
                 //dosGame.consoleScreenshots();
 
                 dosGame.overrideKey(' ', 112);
-                dosGame.mapTouchToArrowKeys({directions:2});
+                //dosGame.mapTouchToArrowKeys({directions:2});
+                dosGame.mapDPadToArrowKeys(dPad)
                 dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
                 //dosGame.mapButtonToKey({element:buttonB, asciiCode:39});
 
