@@ -12,12 +12,12 @@
 <circle cx="27.2358" cy="27" r="1.41509" fill="#9F9F9F"/>
 <defs>
 <linearGradient id="paint0_linear" x1="17.3302" y1="2" x2="48.2264" y2="52" gradientUnits="userSpaceOnUse">
-<stop stop-color="#383838"/>
-<stop offset="1" stop-color="#292929"/>
+<stop stop-color="#dd0000"/>
+<stop offset="1" stop-color="#990000"/>
 </linearGradient>
 <linearGradient id="paint1_linear" x1="17.3302" y1="2" x2="48.2264" y2="52" gradientUnits="userSpaceOnUse">
-<stop stop-color="#4D4D4D"/>
-<stop offset="1" stop-color="#292929"/>
+<stop stop-color="#cccccc"/>
+<stop offset="1" stop-color="#888888"/>
 </linearGradient>
 </defs>
 </svg>
