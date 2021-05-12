@@ -1,0 +1,9 @@
+    GAME STATE			||       KEY PRESS
+
+start game splash 	    -> 	    click start -> 10(ctrl + f12)
+animac title screen 	-> 	    click space
+playing 		        ->      wait for last rocket in bottom left corner to dissapear and Add pixel listener to the bottom left and add 3 pixel listeners to the end game splash location
+game over               ->      space -> p -> space
+playing -- LOOP back
+
+
