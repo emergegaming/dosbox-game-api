@@ -328,8 +328,6 @@ export class DosGame {
                         let xPct = (startingTouch.clientX - this.dPadBounds.left) / this.dPadBounds.width * 100;
                         let yPct = (startingTouch.clientY - this.dPadBounds.top) / this.dPadBounds.height * 100;
 
-                        console.log (xPct, yPct);
-
                         if (xPct >= 0 && xPct <= 100 && yPct > 0 && yPct <= 100) {
                             if (yPct < 33) {
                                 if (xPct > 33 && xPct < 67) {
@@ -345,17 +343,14 @@ export class DosGame {
                                 if (xPct > 33 && xPct < 67) {
                                     this.ci.simulateKeyPress(this.directionMapping['down'])
                                 }
-
                             }
                             continue;
                         }
-
 
                         let mapping:ButtonMapping = this.buttons[j]
                         let rect = mapping.element.getBoundingClientRect()
                         let x1 = rect.x, x2 = rect.x + rect.width, y1 = rect.y, y2 = rect.y + rect.height;
                         if (startingTouch.clientX > x1 && startingTouch.clientX < x2 && startingTouch.clientY > y1 && startingTouch.clientY < y2) {
-                            console.log (mapping.asciiCode)
                             this.ci.simulateKeyPress(mapping.asciiCode, true)
                         }
                     }
