@@ -152,6 +152,10 @@ export class DosGame {
         }
     }
 
+    /**
+     * Use the D-Pad instead of the touch dragging (joystick)
+     * @param dPadElem the HTMLElement of the bounding (div) of the D-Pad container. Used to assess where the finder is.
+     */
     public mapDPadToArrowKeys(dPadElem):void {
 
         this.dPadBounds = dPadElem.getBoundingClientRect();
