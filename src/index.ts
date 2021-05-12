@@ -76,7 +76,7 @@ export class DosGame {
      * eg: <script src="/dosbox/js-dos.js"></script>
      *
      * @param dosRef a reference to window.DOS created by the included JavaScript file
-     * @param options {cycles:number, zipFile:string, execCmd:string}
+     * @param options {cycles:number, zipFile:string, execCmd:string[]}
      * @param canvas reference to the HTMLCanvasElement DOSBox is being rendered on
      * @param forceKeyPress force simulateKeyPress instead of simulateKeyEvent
      * @see https://js-dos.com/
@@ -87,6 +87,7 @@ export class DosGame {
         this.canvas = canvas
         this.forceKeyPress = forceKeyPress;
     }
+    
 
     public start():Promise<any> {
         return new Promise((resolve) => {
@@ -106,6 +107,11 @@ export class DosGame {
                 })
             })
         })
+    }
+
+    public getCommandInterface():object {
+
+        return this.ci;
     }
 
 
