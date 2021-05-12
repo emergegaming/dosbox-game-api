@@ -56,7 +56,7 @@
         import {DosGame} from "/index.js";
         import {emergeGamingSDK} from '/lib/emergamingSDK.js'
         import {processScreenshot, setupOcr} from "/lib/ocr.js";
-        import {arkanoid_digits} from "/games/dos/arkanoid/digits.js";
+        import {animac_digits} from "/games/dos/animac/digits.js";
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
@@ -80,8 +80,8 @@
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
-                let startX = 239; let startY = 61; let charWidth = 9; let charHeight = 9; let charSpacing = -1; let numChars = 6;
-                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, arkanoid_digits);
+                let startX = 120; let startY = 188; let charWidth = 6; let charHeight = 9; let charSpacing = 2; let numChars = 9;
+                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, animac_digits);
                 //dosGame.consoleScreenshots();
                 let ci = dosGame.getCommandInterface();
                 dosGame.overrideKey(' ', 112);
@@ -92,17 +92,21 @@
                 setInterval(() => {
 
                     thirdLastCanvas = secondLastCanvas;
-                    secondLastCanvas = lastCanvas;;
-                    lastCanvas = canvas.toDataURL('img/png')
+                    secondLastCanvas = lastCanvas;
+                    lastCanvas = canvas.toDataURL('img/png');
+                    
                     //console.log(canvas);
                 }, 1000)
+
+                //dosGame.consoleScreenshots();
+
 
                 dosGame.addPixelListener(80, 88, (hexValue) => {});//left side middle of GAME OVER box
                 dosGame.addPixelListener(167, 94, (hexValue) => {});//bottom right corner of GAME OVER box
                 dosGame.addPixelListener(158, 86, (hexValue) => {});//bottom right corner of 'R'
                 dosGame.addPixelListener(4, 193, (hexValue) => {});//rocket bottom left corner
 
-                console.log("here")
+                //console.log("here")
                 mode='~~START_GAME_SPLASH';
 
 
@@ -123,9 +127,9 @@
 
                             }, 50);
                             keyPressCount++;
-                            console.log("KeyPressCount: " + keyPressCount)
+                            //console.log("KeyPressCount: " + keyPressCount)
                             if (keyPressCount >= 14) {
-                            console.log("STOPPING INTERVAL" + keyPressCount);
+                            //console.log("STOPPING INTERVAL" + keyPressCount);
                             window.clearInterval(keyPressCountInterval);
 
                             
@@ -141,11 +145,11 @@
 
                     let combo = colors.join(',');
                     
-                    console.log (combo);
-                    console.log(mode);
+                    //console.log (combo);
+                    //console.log(mode);
 
                     
-                    console.log(keyPressCount);
+                    //console.log(keyPressCount);
                     
                     if (mode === '~~START_GAME_SPLASH') {
                         
@@ -156,7 +160,7 @@
                         dosGame.autoKeyPress(32);
 
                         mode="~~PLAYING";
-                        console.log(mode);
+                        //console.log(mode);
                         loadingOverlay.remove();
                     }
                     
@@ -166,7 +170,7 @@
                         //button press || wait for colour change
 
                         //mode change
-                        mode = '~~PLAYING';
+                        //mode = '~~PLAYING';
                         console.log(mode);
                         
                     }
@@ -177,12 +181,19 @@
 
                         //mode change
                         mode = '~~GAME_OVER';
-                        console.log(mode);
+                        //console.log(mode);
+                        //console.log(secondLastCanvas.toDataURL('img/png'));
+                        processScreenshot(secondLastCanvas).then((_score) => {
+                            console.log ("GAME OVER: " + _score);
+                            emergeGamingSDK.endLevel(_score)
+                            setTimeout(() => location.reload(), 750);
+                        });
+                        
 
                         
                     }
                     else {
-                        console.log("not state change");
+                        //console.log("no state change");
                     }
 
                         
