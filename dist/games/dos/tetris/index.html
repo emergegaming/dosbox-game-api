@@ -14,9 +14,8 @@
         <div id="gameScreen" class="fixed flex flex-row w-full h-full flex-grow items-center justify-center z-20">
             <!-- Left Column (Directional Control) -->
             <div class="flex flex-col flex-grow items-center justify-center pointer-events-none">
-                <div class="relative flex w-32 h-32 items-center justify-center pointer-events-none">
-                    <img class="absolute w-24 h-24 pointer-events-none" src="/images/JoystickSurround.svg">
-                    <img class="absolute w-32 h-32 pointer-events-none" src="/images/Joystick.svg">
+                <div id="dPad" class="relative flex w-32 h-32 items-center justify-center pointer-events-none">
+                    <img class="absolute w-32 h-32 pointer-events-none" src="/images/D-Pad.svg">
                 </div>
             </div>
 
@@ -65,6 +64,7 @@
         let loadingOverlay = document.getElementById('loadingOverlay');
         let buttonA = document.getElementById('ctlButtonA');
         let buttonB = document.getElementById('ctlButtonB');
+        let dPad = document.getElementById("dPad");
 
         let gameConfig = {
             zipFile : 'Tetris_academysoft.zip',
@@ -91,7 +91,8 @@
                     'left':103,
                     'right':105
                 })
-                dosGame.mapTouchToArrowKeys({directions:2});
+                //dosGame.mapTouchToArrowKeys({directions:2});
+                dosGame.mapDPadToArrowKeys(dPad);
                 dosGame.mapButtonToKey({element:buttonA, asciiCode:104});
                 dosGame.mapButtonToKey({element:buttonB, asciiCode:100});
                 setInterval(() => {
