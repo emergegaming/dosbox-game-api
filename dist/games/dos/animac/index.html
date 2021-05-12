@@ -145,13 +145,15 @@
 
                     let combo = colors.join(',');
                     
-                    //console.log (combo);
+                    console.log (combo);
+                    console.log ("substr: " + combo.substring(24, 31));
+
                     //console.log(mode);
 
                     
                     //console.log(keyPressCount);
                     
-                    if (mode === '~~START_GAME_SPLASH') {
+                    if (mode === '~~START_GAME_SPLASH' && (combo.substring(24, 30) != "#55ffff")) {
                         
                         
 
@@ -160,19 +162,18 @@
                         dosGame.autoKeyPress(32);
 
                         mode="~~PLAYING";
-                        //console.log(mode);
-                        loadingOverlay.remove();
+                        console.log(mode);
+                        
                     }
                     
                     
                     
-                    if (combo[3] == "#55ffff") { // playing
+                    if (combo.substring(24, 31) == "#55ffff") { // playing
                         //button press || wait for colour change
-
                         //mode change
-                        //mode = '~~PLAYING';
-                        console.log(mode);
-                        
+                        mode = '~~PLAYING';
+                        //console.log(mode);
+                        loadingOverlay.remove();
                     }
                     
                     else if (combo.toString() === "#ffffff,#ffffff,#ffffff,#000000" && mode === '~~PLAYING') { // game over 
@@ -193,7 +194,7 @@
                         
                     }
                     else {
-                        //console.log("no state change");
+                        console.log("no state change");
                     }
 
                         
