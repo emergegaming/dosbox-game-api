@@ -159,7 +159,6 @@ export class DosGame {
     public mapDPadToArrowKeys(dPadElem):void {
 
         this.dPadBounds = dPadElem.getBoundingClientRect();
-
         this.dPadMode = true;
         this.addTouchEventListeners();
     }
