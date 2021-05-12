@@ -58,6 +58,8 @@ export class DosGame {
     private keysDown:string[] = []
     private readonly forceKeyPress:boolean;
     private generalPixelCallback: (colours:string[]) => void;
+    private dPadMode:boolean = false;
+    private dPadBounds:DOMRect;
 
     private directionMapping:object = {
         'up': 38,
@@ -154,6 +156,14 @@ export class DosGame {
         if (this.buttons.length == 0) {
             this.addTouchEventListeners()
         }
+    }
+
+    public mapDPadToArrowKeys(dPadElem):void {
+
+        this.dPadBounds = dPadElem.getBoundingClientRect();
+
+        this.dPadMode = true;
+        this.addTouchEventListeners();
     }
 
     /**
@@ -299,10 +309,7 @@ export class DosGame {
                 event.stopPropagation();
                 event.preventDefault();
             }
-
-
         }
-
     }
 
     private findReplacementKeyCode(key:string) {
@@ -319,22 +326,44 @@ export class DosGame {
         if (event.type == 'touchstart') {
             for (let i:number = 0; i < event.changedTouches.length; i++) {
                 let startingTouch = event.changedTouches[i]
-                if (startingTouch.clientX < 200) {
+                if (!this.dPadMode && startingTouch.clientX < 200 ) {
                     this.setOrigin(startingTouch)
                 }  else {
                     for (let j:number = 0; j < this.buttons.length; j++) {
+
+                        let xPct = (startingTouch.clientX - this.dPadBounds.left) / this.dPadBounds.width * 100;
+                        let yPct = (startingTouch.clientY - this.dPadBounds.top) / this.dPadBounds.height * 100;
+
+                        if (xPct >= 0 && xPct <= 100 && yPct > 0 && yPct <= 100) {
+                            if (yPct < 33) {
+                                if (xPct > 33 && xPct < 67) {
+                                    this.ci.simulateKeyPress(this.directionMapping['up'])
+                                }
+                            } else if (yPct < 67) {
+                                if (xPct < 33) {
+                                    this.ci.simulateKeyPress(this.directionMapping['left'])
+                                } else if (xPct > 67) {
+                                    this.ci.simulateKeyPress(this.directionMapping['right'])
+                                }
+                            } else {
+                                if (xPct > 33 && xPct < 67) {
+                                    this.ci.simulateKeyPress(this.directionMapping['down'])
+                                }
+                            }
+                            continue;
+                        }
+
                         let mapping:ButtonMapping = this.buttons[j]
                         let rect = mapping.element.getBoundingClientRect()
                         let x1 = rect.x, x2 = rect.x + rect.width, y1 = rect.y, y2 = rect.y + rect.height;
                         if (startingTouch.clientX > x1 && startingTouch.clientX < x2 && startingTouch.clientY > y1 && startingTouch.clientY < y2) {
-                            console.log (mapping.asciiCode)
                             this.ci.simulateKeyPress(mapping.asciiCode, true)
                         }
                     }
                 }
             }
 
-        } else if (event.type == 'touchmove') {
+        } else if (this.dPadMode == false && event.type == 'touchmove') {
             for (let i:number = 0; i < event.changedTouches.length; i++) {
                 let movingTouch:Touch = event.changedTouches[i]
                 if (movingTouch.clientX < 200) {
