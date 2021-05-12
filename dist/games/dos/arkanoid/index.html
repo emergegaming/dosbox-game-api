@@ -97,7 +97,7 @@
                 dosGame.addPixelListener(235, 82, (hexValue) => {
                     console.log (hexValue);
                     //dosGame.autoKeyPress(13);
-                    loadingOverlay.remove();
+                    //loadingOverlay.remove();
 
                     if (mode === 'playing' && hexValue !== '#5555ff') {
                         processScreenshot(secondLastCanvas).then((_score) => {
