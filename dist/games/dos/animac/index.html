@@ -33,7 +33,7 @@
         </div>
 
         <!-- Overlay to: Show when loading -->
-        <div id="loadingOverlay" class="hidden flex orientation-notice fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-30" style="background-color: #101010">
+        <div id="loadingOverlay" class="flex orientation-notice fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-30" style="background-color: #101010">
             <div class="text-white text-2xl">Loading...</div>
         </div>
 
@@ -73,7 +73,7 @@
             execCmdArray : ['-c','animac.exe'],
             cycles: '500'
         }
-
+        let keyPressCount = 0;
 
         const startButtonClicked = () => {
             
@@ -83,7 +83,7 @@
                 let startX = 239; let startY = 61; let charWidth = 9; let charHeight = 9; let charSpacing = -1; let numChars = 6;
                 setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, arkanoid_digits);
                 //dosGame.consoleScreenshots();
-
+                let ci = dosGame.getCommandInterface();
                 dosGame.overrideKey(' ', 112);
                 dosGame.mapTouchToArrowKeys({directions:2});
                 dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
@@ -104,6 +104,39 @@
 
                 console.log("here")
                 mode='~~START_GAME_SPLASH';
+
+
+                let keyPressCountInterval =
+                        setInterval(() => {
+                            
+                            // dosGame.autoKeyPress(17);
+                            // dosGame.autoKeyPress(123);
+                            // setTimeout(30);
+
+
+                            ci.simulateKeyEvent(17, true);
+                            ci.simulateKeyEvent(123, true);
+                            setTimeout( () => {
+                                
+                                ci.simulateKeyEvent(123, false);
+                                ci.simulateKeyEvent(17, false);
+
+                            }, 50);
+                            keyPressCount++;
+                            console.log("KeyPressCount: " + keyPressCount)
+                            if (keyPressCount >= 14) {
+                            console.log("STOPPING INTERVAL" + keyPressCount);
+                            window.clearInterval(keyPressCountInterval);
+
+                            
+                            }
+                                
+                        }, 150);
+                        
+                            //console.log("STOPPING INTERVAL" + keyPressCount);
+
+
+
                 dosGame.setGeneralPixelCallback((colors) => {
 
                     let combo = colors.join(',');
@@ -111,15 +144,20 @@
                     console.log (combo);
                     console.log(mode);
 
+                    
+                    console.log(keyPressCount);
+                    
                     if (mode === '~~START_GAME_SPLASH') {
                         
+                        
+
                         //skip intro everytime the game starts
                         setTimeout(200);
                         dosGame.autoKeyPress(32);
 
                         mode="~~PLAYING";
                         console.log(mode);
-
+                        loadingOverlay.remove();
                     }
                     
                     

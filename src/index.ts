@@ -85,6 +85,7 @@ export class DosGame {
         this.canvas = canvas
         this.forceKeyPress = forceKeyPress;
     }
+    
 
     public start():Promise<any> {
         return new Promise((resolve) => {
@@ -104,6 +105,11 @@ export class DosGame {
                 })
             })
         })
+    }
+
+    public getCommandInterface():object {
+
+        return this.ci;
     }
 
 
