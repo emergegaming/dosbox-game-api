@@ -69,14 +69,14 @@
         let gameConfig = {
             zipFile : 'paratrop.zip',
             execCmdArray : ['-c','PTROOPER.COM'],
-            cycles: 'auto'
+            cycles: 'max'
         }
 
         const startButtonClicked = () => {
 
             let doxboxConf = `
             [cpu]
-            cycles=auto
+            cycles=max
             [joystick]
             joysticktype=none
             `

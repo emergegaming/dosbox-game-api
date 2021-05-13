@@ -26,11 +26,11 @@
             </div>
 
             <!-- Right Column (Buttons) -->
-            <div class="flex flex-col flex-grow items-center justify-center">
-                <div class="bg-red-500 w-32 h-10 rounded border-gray-300 border-2 flex items-center justify-center text-white">ACCELERATE</div>
-                <div class="">AUTO HOME</div>
-                <img id="ctlButtonA" src="/images/BTN-A.svg" class="axControl w-24 h-24 outline-none focus:outline-none">
-                <img id="ctlButtonB" src="/images/BTN-B.svg" class="axControl w-24 h-24 outline-none focus:outline-none">
+            <div class="flex flex-col flex-grow items-center justify-center axControl">
+                <div id="ctlButtonAccelerate" class="axControl bg-green-500 w-24 h-10 rounded border-gray-300 border-2 flex items-center justify-center text-white outline-none mb-5 text-sm">ACCELERATE</div>
+                <div id="ctlButtonHome" class="axControl bg-blue-500 w-24 h-10 rounded border-gray-300 border-2 flex items-center justify-center text-white outline-none mb-16 text-sm ">AUTO HOME</div>
+                <div id="ctlButtonBomb" class="axControl bg-red-500 w-24 h-10 rounded border-gray-300 border-2 flex items-center justify-center text-white outline-none mb-5 text-sm">BOMB</div>
+                <div id="ctlButtonFire" class="axControl bg-yellow-500 w-24 h-16 rounded border-gray-300 border-2 flex items-center justify-center text-white outline-none text-sm">FIRE</div>
             </div>
         </div>
 
@@ -64,8 +64,10 @@
         let startButton = document.getElementById('startButton');
         let startButtonForm = document.getElementById('startButtonForm');
         let loadingOverlay = document.getElementById('loadingOverlay');
-        let buttonA = document.getElementById('ctlButtonA');
-        let buttonB = document.getElementById('ctlButtonB');
+        let buttonAccelerate = document.getElementById('ctlButtonAccelerate');
+        let buttonBomb = document.getElementById('ctlButtonBomb');
+        let buttonHome = document.getElementById('ctlButtonHome');
+        let buttonFire = document.getElementById('ctlButtonFire');
 
         let gameConfig = {
             zipFile : 'sopwith.zip',
@@ -86,10 +88,18 @@
                     })
                 }, 150)
 
-                //dosGame.consoleScreenshots();
-                // dosGame.mapTouchToArrowKeys({directions:4});
-                // dosGame.mapButtonToKey({element:buttonA, asciiCode:13});
-                // dosGame.mapButtonToKey({element:buttonB, asciiCode:112});
+                dosGame.overrideDirectionAscii({
+                    'up': 190, // period
+                    'down':190, // period
+                    'left':188, // comma
+                    'right':191, // forward slash
+                })
+                dosGame.mapTouchToArrowKeys({directions:4});
+                dosGame.mapButtonToKey({element:buttonAccelerate, asciiCode:88}); // x
+                dosGame.mapButtonToKey({element:buttonHome, asciiCode:72}); // h
+                dosGame.mapButtonToKey({element:buttonBomb, asciiCode:66}); // b
+                dosGame.mapButtonToKey({element:buttonFire, asciiCode:32}); // space
+
 
             })
         }

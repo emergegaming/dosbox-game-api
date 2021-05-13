@@ -87,7 +87,7 @@ export class DosGame {
         this.canvas = canvas
         this.forceKeyPress = forceKeyPress;
     }
-    
+
 
     public start():Promise<any> {
         return new Promise((resolve) => {
@@ -334,26 +334,30 @@ export class DosGame {
                 }  else {
                     for (let j:number = 0; j < this.buttons.length; j++) {
 
-                        let xPct = (startingTouch.clientX - this.dPadBounds.left) / this.dPadBounds.width * 100;
-                        let yPct = (startingTouch.clientY - this.dPadBounds.top) / this.dPadBounds.height * 100;
+                        if (this.dPadMode) {
 
-                        if (xPct >= 0 && xPct <= 100 && yPct > 0 && yPct <= 100) {
-                            if (yPct < 33) {
-                                if (xPct > 33 && xPct < 67) {
-                                    this.ci.simulateKeyPress(this.directionMapping['up'])
+                            let xPct = (startingTouch.clientX - this.dPadBounds.left) / this.dPadBounds.width * 100;
+                            let yPct = (startingTouch.clientY - this.dPadBounds.top) / this.dPadBounds.height * 100;
+
+                            if (xPct >= 0 && xPct <= 100 && yPct > 0 && yPct <= 100) {
+                                if (yPct < 33) {
+                                    if (xPct > 33 && xPct < 67) {
+                                        this.ci.simulateKeyPress(this.directionMapping['up'])
+                                    }
+                                } else if (yPct < 67) {
+                                    if (xPct < 33) {
+                                        this.ci.simulateKeyPress(this.directionMapping['left'])
+                                    } else if (xPct > 67) {
+                                        this.ci.simulateKeyPress(this.directionMapping['right'])
+                                    }
+                                } else {
+                                    if (xPct > 33 && xPct < 67) {
+                                        this.ci.simulateKeyPress(this.directionMapping['down'])
+                                    }
                                 }
-                            } else if (yPct < 67) {
-                                if (xPct < 33) {
-                                    this.ci.simulateKeyPress(this.directionMapping['left'])
-                                } else if (xPct > 67) {
-                                    this.ci.simulateKeyPress(this.directionMapping['right'])
-                                }
-                            } else {
-                                if (xPct > 33 && xPct < 67) {
-                                    this.ci.simulateKeyPress(this.directionMapping['down'])
-                                }
+                                continue;
                             }
-                            continue;
+
                         }
 
                         let mapping:ButtonMapping = this.buttons[j]
