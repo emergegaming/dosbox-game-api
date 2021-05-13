@@ -87,6 +87,7 @@
                 dosGame.overrideKey(' ', 112);
                 dosGame.mapTouchToArrowKeys({directions:8});
                 dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
+                emergeGamingSDK.startLevel();
                 //dosGame.mapButtonToKey({element:buttonB, asciiCode:39});
                 //dosGame.consoleScreenshots();
                 setInterval(() => {
@@ -185,7 +186,7 @@
                         //console.log(mode);
                         //console.log(secondLastCanvas.toDataURL('img/png'));
                         processScreenshot(secondLastCanvas).then((_score) => {
-                            console.log ("GAME OVER: " + _score);
+                            //console.log ("GAME OVER: " + _score);
                             emergeGamingSDK.endLevel(_score)
                             setTimeout(() => location.reload(), 750);
                         });
@@ -195,7 +196,7 @@
                         
                     }
                     else {
-                        console.log("no state change");
+                        //console.log("no state change");
                     }
 
                         
