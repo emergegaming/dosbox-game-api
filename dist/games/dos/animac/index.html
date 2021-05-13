@@ -76,133 +76,85 @@
         let keyPressCount = 0;
 
         const startButtonClicked = () => {
-            
+
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
                 let startX = 120; let startY = 188; let charWidth = 6; let charHeight = 9; let charSpacing = 2; let numChars = 9;
                 setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, animac_digits);
-                //dosGame.consoleScreenshots();
                 let ci = dosGame.getCommandInterface();
                 dosGame.overrideKey(' ', 112);
                 dosGame.mapTouchToArrowKeys({directions:4});
                 dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
-                //dosGame.mapButtonToKey({element:buttonB, asciiCode:39});
-                //dosGame.consoleScreenshots();
                 setInterval(() => {
 
                     thirdLastCanvas = secondLastCanvas;
                     secondLastCanvas = lastCanvas;
                     lastCanvas = canvas.toDataURL('img/png');
-                    
-                    //console.log(canvas);
+
                 }, 1000)
-
-                //dosGame.consoleScreenshots();
-
 
                 dosGame.addPixelListener(80, 88, (hexValue) => {});//left side middle of GAME OVER box
                 dosGame.addPixelListener(167, 94, (hexValue) => {});//bottom right corner of GAME OVER box
                 dosGame.addPixelListener(158, 86, (hexValue) => {});//bottom right corner of 'R'
                 dosGame.addPixelListener(4, 193, (hexValue) => {});//rocket bottom left corner
 
-                //console.log("here")
                 mode='~~START_GAME_SPLASH';
 
+                let keyPressCountInterval = setInterval(() => {
 
-                let keyPressCountInterval =
-                        setInterval(() => {
-                            
-                            // dosGame.autoKeyPress(17);
-                            // dosGame.autoKeyPress(123);
-                            // setTimeout(30);
+                    ci.simulateKeyEvent(17, true);
+                    ci.simulateKeyEvent(123, true);
+                    setTimeout( () => {
 
+                        ci.simulateKeyEvent(123, false);
+                        ci.simulateKeyEvent(17, false);
 
-                            ci.simulateKeyEvent(17, true);
-                            ci.simulateKeyEvent(123, true);
-                            setTimeout( () => {
-                                
-                                ci.simulateKeyEvent(123, false);
-                                ci.simulateKeyEvent(17, false);
+                    }, 50);
+                    keyPressCount++;
+                    if (keyPressCount >= 14) {
+                        window.clearInterval(keyPressCountInterval);
+                    }
 
-                            }, 50);
-                            keyPressCount++;
-                            //console.log("KeyPressCount: " + keyPressCount)
-                            if (keyPressCount >= 14) {
-                            //console.log("STOPPING INTERVAL" + keyPressCount);
-                            window.clearInterval(keyPressCountInterval);
-
-                            
-                            }
-                                
-                        }, 150);
-                        
-                            //console.log("STOPPING INTERVAL" + keyPressCount);
-
-
+                }, 150);
 
                 dosGame.setGeneralPixelCallback((colors) => {
 
                     let combo = colors.join(',');
-                    
-                    //console.log (combo);
-                    //console.log ("substr: " + combo.substring(24, 31));
 
-                    //console.log(mode);
-
-                    
-                    //console.log(keyPressCount);
-                    
                     if (mode === '~~START_GAME_SPLASH' && (combo.substring(24, 30) != "#55ffff")) {
-                        
-                        
 
                         //skip intro everytime the game starts
                         setTimeout(200);
                         dosGame.autoKeyPress(32);
-
                         mode="~~PLAYING";
-                        //console.log(mode);
-                        
+
                     }
-                    
-                    
-                    
-                    if (combo.substring(24, 31) == "#55ffff") { // playing
+
+                    if (combo.substring(24, 31) === "#55ffff") { // playing
                         //button press || wait for colour change
                         //mode change
                         mode = '~~PLAYING';
-                        //console.log(mode);
                         loadingOverlay.remove();
                     }
-                    
-                    else if (combo.toString() === "#ffffff,#ffffff,#ffffff,#000000" && mode === '~~PLAYING') { // game over 
-                        
+
+                    else if (combo.toString() === "#ffffff,#ffffff,#ffffff,#000000" && mode === '~~PLAYING') { // game over
+
                         //button press || wait for colour change
 
                         //mode change
                         mode = '~~GAME_OVER';
-                        //console.log(mode);
-                        //console.log(secondLastCanvas.toDataURL('img/png'));
                         processScreenshot(secondLastCanvas).then((_score) => {
                             console.log ("GAME OVER: " + _score);
                             emergeGamingSDK.endLevel(_score)
                             setTimeout(() => location.reload(), 750);
                         });
-                        
 
-                        
                     }
-                    else {
-                        //console.log("no state change");
-                    }
-
-                        
-                    
+                    else
                 })
             })
         }
-
 
         startButton.focus();
 
