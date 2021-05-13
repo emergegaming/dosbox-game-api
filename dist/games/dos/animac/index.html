@@ -40,7 +40,7 @@
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="return false">
-                <input type="image" src="arkanoid.png" id="startButton" class="h-64 outline-none"/>
+                <input type="image" src="animac.png" id="startButton" class="h-64 outline-none"/>
 
             </form>
         </div>
@@ -85,7 +85,7 @@
                 //dosGame.consoleScreenshots();
                 let ci = dosGame.getCommandInterface();
                 dosGame.overrideKey(' ', 112);
-                dosGame.mapTouchToArrowKeys({directions:4});
+                dosGame.mapTouchToArrowKeys({directions:8});
                 dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
                 //dosGame.mapButtonToKey({element:buttonB, asciiCode:39});
                 //dosGame.consoleScreenshots();
@@ -181,7 +181,7 @@
                         //button press || wait for colour change
 
                         //mode change
-                        mode = '~~GAME_OVER';
+                        
                         //console.log(mode);
                         //console.log(secondLastCanvas.toDataURL('img/png'));
                         processScreenshot(secondLastCanvas).then((_score) => {
@@ -189,12 +189,13 @@
                             emergeGamingSDK.endLevel(_score)
                             setTimeout(() => location.reload(), 750);
                         });
+                        mode = '~~GAME_OVER';
                         
 
                         
                     }
                     else {
-                        //console.log("no state change");
+                        console.log("no state change");
                     }
 
                         
