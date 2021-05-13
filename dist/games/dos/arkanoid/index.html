@@ -15,7 +15,8 @@
             <!-- Left Column (Directional Control) -->
             <div class="flex flex-col flex-grow items-center justify-center pointer-events-none">
                 <div class="relative flex w-32 h-32 items-center justify-center pointer-events-none">
-                    <img id="dPad" class="absolute w-32 h-32 pointer-events-none" src="/images/D-Pad.svg">
+                    <img class="absolute w-24 h-24 pointer-events-none" src="/images/JoystickSurround.svg">
+                    <img class="absolute w-32 h-32 pointer-events-none" src="/images/Joystick.svg">
                 </div>
             </div>
 
@@ -82,7 +83,7 @@
                 setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, arkanoid_digits);
 
                 dosGame.overrideKey(' ', 112);
-                dosGame.mapDPadToArrowKeys(dPad)
+                dosGame.mapTouchToArrowKeys({directions:2})
                 dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
 
                 setInterval(() => {
