@@ -1,4 +1,4 @@
-let charData = [], numChars = 0, startX = 0, startY = 0, charWidth = 0, charHeight = 0, charSpacing = 0, thousandsSeparatorWidth = 0;
+let charData = [], numChars = 0, startX = 0, startY = 0, charWidth = 0, charHeight = 0, charSpacing = 0, thousandsSeparatorWidth = 0, digitArrayLength = 10;
 
 export const setupOcr = (_startX, _startY, _charWidth, _charHeight, _charSpacing, _numChars, _referenceChars, _thousandsSeparatorWidth = 0) => {
 
@@ -9,8 +9,10 @@ export const setupOcr = (_startX, _startY, _charWidth, _charHeight, _charSpacing
     charHeight = _charHeight;
     charSpacing = _charSpacing
     thousandsSeparatorWidth = _thousandsSeparatorWidth
+    digitArrayLength = _referenceChars.length
 
-    for (let charNo = 0; charNo < 10; charNo++) {
+
+    for (let charNo = 0; charNo < digitArrayLength; charNo++) {
         getImageSignature(_referenceChars[charNo], 0, 0, _charWidth, _charHeight).then((data) => {
             charData[charNo] = data;
         });
@@ -37,20 +39,23 @@ export const processScreenshot = (_imageData) => {
 
         Promise.all(stack).then(() => {
             scoreChars.forEach(scoreChar => {
-                for (let i = 0; i < 10; i++) {
+
+                for (let i = 0; i < digitArrayLength; i++) {
                     if (scoreChar === charData[i]) {
-                        scoreString += i;
-                        break;
+                        if (i < digitArrayLength - 1) {
+                            scoreString += i;
+                            break
+                        } else {
+                            scoreString += '-';
+                            break
+                        }
                     }
                 }
             })
             let numericScore = parseInt(scoreString, 10);
             resolve(numericScore);
         });
-
-
     })
-
 }
 
 export const getImageSignature = (_imageData, sourceX, sourceY, width, height) => {
