@@ -26,11 +26,20 @@
             </div>
 
             <!-- Right Column (Buttons) -->
-            <div class="flex flex-col flex-grow items-center justify-center axControl">
-                <div id="ctlButtonAccelerate" class="axControl bg-green-500 w-24 h-10 rounded border-gray-300 border-2 flex items-center justify-center text-white outline-none mb-5 text-sm">ACCELERATE</div>
-                <div id="ctlButtonHome" class="axControl bg-blue-500 w-24 h-10 rounded border-gray-300 border-2 flex items-center justify-center text-white outline-none mb-16 text-sm ">AUTO HOME</div>
-                <div id="ctlButtonBomb" class="axControl bg-red-500 w-24 h-10 rounded border-gray-300 border-2 flex items-center justify-center text-white outline-none mb-5 text-sm">BOMB</div>
-                <div id="ctlButtonFire" class="axControl bg-yellow-500 w-24 h-16 rounded border-gray-300 border-2 flex items-center justify-center text-white outline-none text-sm">FIRE</div>
+            <div class="flex flex-col flex-grow items-center justify-center axControl pointer-events-none">
+                <div class="flex flex-col">
+                    <div class="flex flex-row justify-center">
+                        <div id="ctlButtonAccelerate" class="axControl from-green-500 to-green-700 bg-gradient-to-tl w-14 h-14 rounded-full border-white border-2 flex items-center justify-center text-white outline-none text-sm"><img src="/images/icons/accelerate.svg" class="h-6"></div>
+                    </div>
+                    <div class="flex flex-row pt-2">
+                        <div id="ctlButtonHome" class="axControl from-blue-500 to-blue-700 bg-gradient-to-tl w-14 h-14 rounded-full border-white border-2 flex items-center justify-center text-white outline-none text-sm mr-1"><img src="/images/icons/home.svg" class="h-6"></div>
+                        <div id="ctlButtonInvert" class="axControl from-purple-500 to-purple-700 bg-gradient-to-tl w-14 h-14 rounded-full border-white border-2 flex items-center justify-center text-white outline-none text-sm ml-1"><img src="/images/icons/invert.svg" class="h-6"></div>
+                    </div>
+                    <div class="flex flex-row pt-2">
+                        <div id="ctlButtonBomb" class="axControl from-red-500 to-red-700 bg-gradient-to-tl w-14 h-14 rounded-full border-white border-2 flex items-center justify-center text-white outline-none text-sm mr-1"><img src="/images/icons/bomb.svg" class="h-6"></div>
+                        <div id="ctlButtonFire" class="axControl from-yellow-500 to-yellow-700 bg-gradient-to-tl w-14 h-14 rounded-full border-white border-2 flex items-center justify-center text-white outline-none text-sm ml-1"><img src="/images/icons/fire.svg" class="h-6"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -57,7 +66,7 @@
         import {DosGame} from "/index.js";
         import {emergeGamingSDK} from '/lib/emergamingSDK.js'
         import {processScreenshot, setupOcr} from "/lib/ocr.js";
-        import {digger_digits} from "/games/dos/digger/digits.js";
+        import {sopwith_digits} from "/games/dos/sopwith/digits.js";
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
@@ -79,8 +88,9 @@
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
-                //let startX = 12; let startY = 0; let charWidth = 10; let charHeight = 12; let charSpacing = 2; let numChars = 5;
-                //setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, digger_digits);
+
+                let startX = 16; let startY = 192; let charWidth = 7; let charHeight = 7; let charSpacing = 1; let numChars = 5;
+                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, sopwith_digits);
 
                 setTimeout(() => {
                     dosGame.autoKeyPress(83,150).then(() => {
@@ -100,7 +110,8 @@
                 dosGame.mapButtonToKey({element:buttonBomb, asciiCode:66}); // b
                 dosGame.mapButtonToKey({element:buttonFire, asciiCode:32}); // space
 
-
+                setInterval(() => processScreenshot(canvas.toDataURL('img/png')).then((_score) => console.log(_score)), 2000)
+                
             })
         }
 
