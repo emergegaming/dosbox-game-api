@@ -104,6 +104,7 @@
                                     console.log ("End Game: " + _score);
                                     mode = 'gameover'
                                     emergeGamingSDK.endLevel(_score);
+                                    setTimeout(() => {location.reload()},750)
                                 });
                             }
                         });
