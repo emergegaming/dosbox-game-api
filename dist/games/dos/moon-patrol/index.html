@@ -33,7 +33,7 @@
         </div>
 
         <!-- Overlay to: Show when loading -->
-        <div id="loadingOverlay" class="hidden flex orientation-notice fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-30" style="background-color: #101010">
+        <div id="loadingOverlay" class="flex orientation-notice fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-30" style="background-color: #101010">
             <div class="text-white text-2xl">Loading...</div>
         </div>
 
@@ -56,7 +56,7 @@
         import {DosGame} from "/index.js";
         import {emergeGamingSDK} from '/lib/emergamingSDK.js'
         import {processScreenshot, setupOcr} from "/lib/ocr.js";
-        import {animac_digits} from "/games/dos/animac/digits.js";
+        import {moon_patrol_digits} from "/games/dos/moon-patrol/digits.js";
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
@@ -70,7 +70,7 @@
 
         let gameConfig = {
             zipFile : 'PATROL.zip',
-            execCmdArray : ['-c','patrol'],
+            execCmdArray : ['-c','patrol'], //[''],
             cycles: '500'
         }
         let keyPressCount = 0;
@@ -80,8 +80,8 @@
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
-                let startX = 120; let startY = 188; let charWidth = 6; let charHeight = 9; let charSpacing = 2; let numChars = 9;
-                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, animac_digits);
+                let startX = 42; let startY = 15; let charWidth = 6; let charHeight = 7; let charSpacing = 1; let numChars = 6;
+                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, moon_patrol_digits);
                 let ci = dosGame.getCommandInterface();
                 //dosGame.overrideKey(' ', 112);
                 dosGame.mapTouchToArrowKeys({directions:4});
@@ -94,56 +94,70 @@
                     secondLastCanvas = lastCanvas;
                     lastCanvas = canvas.toDataURL('img/png');
                     
-                    
-                    console.log(lastCanvas);
-                }, 3000)
+                    //console.log(lastCanvas);
+                }, 1000)
 
                 
-                //left side middle of GAME OVER box
-                // dosGame.addPixelListener(167, 94, (hexValue) => {});//bottom right corner of GAME OVER box
-                // dosGame.addPixelListener(158, 86, (hexValue) => {});//bottom right corner of 'R'
-                // dosGame.addPixelListener(4, 193, (hexValue) => {});//rocket bottom left corner
-
-                // mode='~~START_GAME_SPLASH';
-                
+         
 
                 
                 
 
-                let keyPressCountInterval =
-                        setInterval(() => {
-                            ci.simulateKeyEvent(17, true);
-                            ci.simulateKeyEvent(123, true);
-                            setTimeout( () => {
-                                ci.simulateKeyEvent(123, false);
-                                ci.simulateKeyEvent(17, false);
-                            }, 50);
+          
+                let GAMESPEED = false;
+                console.log(mode);//started
+                mode = 'Splash Screen'
+                console.log(mode);//splashscreen
 
-                            keyPressCount++;
-                            if (keyPressCount >= 3) {
-                            window.clearInterval(keyPressCountInterval);
-                            }
-                        }, 150);
-                mode = "GAME SPEED UP"
                 
                         
-                dosGame.addPixelListener(277, 0, (hexValue) => {
+                dosGame.addPixelListener(113, 190, (hexValue) => {
 
-                    console.log(hexValue);
-                    switch (hexValue) {
-                        case '#aa5500':
-                                mode = "SPLASH SCREEN"
-                                console.log(mode);
-                                dosGame.autoKeyPress(112,50);//f1 to start the game
-                            break;
-                        case '#000000':
-                            mode = "GAME OPTIONS"
-                            console.log(mode)
-                            dosGame.autoKeyPress(112,50);//f1 to start the game
-                        break;
-                        default:
-                            break;
+                    if (hexValue === '#aa5500') {//orange
+                        mode = 'GAMEOPTIONS'
+                        console.log(mode);
+                        dosGame.autoKeyPress(113);//f2 to go to options
                     }
+                    else if(hexValue === '#000000' && mode === 'GAMEOPTIONS') {//black
+                        if (!GAMESPEED) {
+                                GAMESPEED = true;
+                                let keyPressCountInterval =
+                                setInterval(() => {
+                                    ci.simulateKeyEvent(17, true);
+                                    ci.simulateKeyEvent(123, true);
+                                    setTimeout( () => {
+                                        ci.simulateKeyEvent(123, false);
+                                        ci.simulateKeyEvent(17, false);
+                                    }, 50);
+
+                                    keyPressCount++;
+                                    if (keyPressCount >= 3) {
+                                    window.clearInterval(keyPressCountInterval);
+                                    }
+                                }, 150);
+                        }
+                        loadingOverlay.remove();
+                        emergeGamingSDK.startLevel();
+                        mode = 'GAMEPLAY' 
+                        console.log(mode)
+                        dosGame.autoKeyPress(112);//f1 to start the game
+                    }
+                    else if(hexValue === '#aa0000') {//red
+                        console.log("NO STATE CHANGE")
+                    }
+                    else if(hexValue === '#000000' && mode === 'GAMEPLAY') {//black
+                        mode = 'GAMEOVER'
+                        console.log(mode)
+                        processScreenshot(secondLastCanvas).then((_score) => {
+                        emergeGamingSDK.endLevel(_score)
+                        console.log(_score)
+                        setTimeout(() => location.reload(), 750);
+                        })
+                    }
+                    else{
+                        //do nothing
+                    }
+                   
                     
 
                     // let combo = colors.join(',');
