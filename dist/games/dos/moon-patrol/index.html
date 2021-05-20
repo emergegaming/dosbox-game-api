@@ -37,6 +37,8 @@
             <div class="text-white text-2xl">Loading...</div>
         </div>
 
+        
+
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="return false">
@@ -63,6 +65,7 @@
         let startButton = document.getElementById('startButton');
         let startButtonForm = document.getElementById('startButtonForm');
         let loadingOverlay = document.getElementById('loadingOverlay');
+        
         let buttonA = document.getElementById('ctlButtonA');
         let buttonB = document.getElementById('ctlButtonB');
 
@@ -147,6 +150,7 @@
                     }
                     else if(hexValue === '#000000' && mode === 'GAMEPLAY') {//black
                         mode = 'GAMEOVER'
+                        
                         console.log(mode)
                         processScreenshot(secondLastCanvas).then((_score) => {
                         emergeGamingSDK.endLevel(_score)
