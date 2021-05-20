@@ -1,0 +1,9 @@
+    GAME STATE			||       KEY PRESS
+
+start game splash       ->      space
+difficulty              ->      6 -> enter
+score board             ->      space
+in game                 ->      no PRESS
+game over               ->      restart 
+
+
