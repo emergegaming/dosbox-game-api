@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Animac</title>
+    <title>Moon Patrol</title>
     <link rel="stylesheet" type="text/css" href="/css/tailwind-purged.css"/>
     <link rel="stylesheet" type="text/css" href="/css/style.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -37,6 +37,8 @@
             <div class="text-white text-2xl">Loading...</div>
         </div>
 
+        
+
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="return false">
@@ -56,21 +58,22 @@
         import {DosGame} from "/index.js";
         import {emergeGamingSDK} from '/lib/emergamingSDK.js'
         import {processScreenshot, setupOcr} from "/lib/ocr.js";
-        import {animac_digits} from "/games/dos/animac/digits.js";
+        import {moon_patrol_digits} from "/games/dos/moon-patrol/digits.js";
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
         let startButton = document.getElementById('startButton');
         let startButtonForm = document.getElementById('startButtonForm');
         let loadingOverlay = document.getElementById('loadingOverlay');
+        
         let buttonA = document.getElementById('ctlButtonA');
         let buttonB = document.getElementById('ctlButtonB');
 
-        let lastCanvas, secondLastCanvas, thirdLastCanvas, mode = 'started'
+        let lastCanvas, secondLastCanvas, thirdLastCanvas, mode = "STARTED";
 
         let gameConfig = {
-            zipFile : 'ANIMAC_DOS_EN.ZIP',
-            execCmdArray : ['-c','animac.exe'],
+            zipFile : 'PATROL.zip',
+            execCmdArray : ['-c','patrol'], //[''],
             cycles: '500'
         }
         let keyPressCount = 0;
@@ -80,67 +83,111 @@
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
-                let startX = 120; let startY = 188; let charWidth = 6; let charHeight = 9; let charSpacing = 2; let numChars = 9;
-                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, animac_digits);
+                let startX = 42; let startY = 15; let charWidth = 6; let charHeight = 7; let charSpacing = 1; let numChars = 6;
+                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, moon_patrol_digits);
                 let ci = dosGame.getCommandInterface();
-                dosGame.overrideKey(' ', 112);
-                dosGame.mapTouchToArrowKeys({directions:4});
-                dosGame.mapButtonToKey({element:buttonB, asciiCode:32});
+                //dosGame.overrideKey(' ', 112);
+                dosGame.mapTouchToArrowKeys({directions:2});
+                dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
+                dosGame.mapButtonToKey({element:buttonB, asciiCode:38});
+                
                 emergeGamingSDK.startLevel();
                 setInterval(() => {
                     thirdLastCanvas = secondLastCanvas;
                     secondLastCanvas = lastCanvas;
                     lastCanvas = canvas.toDataURL('img/png');
+                    
+                    //console.log(lastCanvas);
                 }, 1000)
 
-                dosGame.addPixelListener(80, 88, (hexValue) => {});//left side middle of GAME OVER box
-                dosGame.addPixelListener(167, 94, (hexValue) => {});//bottom right corner of GAME OVER box
-                dosGame.addPixelListener(158, 86, (hexValue) => {});//bottom right corner of 'R'
-                dosGame.addPixelListener(4, 193, (hexValue) => {});//rocket bottom left corner
+                
+         
 
-                mode='~~START_GAME_SPLASH';
+                
+                
 
-                let keyPressCountInterval =
-                        setInterval(() => {
-                            ci.simulateKeyEvent(17, true);
-                            ci.simulateKeyEvent(123, true);
-                            setTimeout( () => {
-                                ci.simulateKeyEvent(123, false);
-                                ci.simulateKeyEvent(17, false);
-                            }, 50);
+          
+                let GAMESPEED = false;
+                console.log(mode);//started
+                mode = 'Splash Screen'
+                console.log(mode);//splashscreen
 
-                            keyPressCount++;
-                            if (keyPressCount >= 14) {
-                            window.clearInterval(keyPressCountInterval);
-                            }
-                        }, 150);
+                
                         
-                dosGame.setGeneralPixelCallback((colors) => {
+                dosGame.addPixelListener(113, 190, (hexValue) => {
 
-                    let combo = colors.join(',');
-                                        
-                    if (mode === '~~START_GAME_SPLASH' && (combo.substring(24, 30) != "#55ffff")) {
-                        //skip intro everytime the game starts
-                        setTimeout(200);
-                        dosGame.autoKeyPress(32);
-                        mode="~~PLAYING";
+                    if (hexValue === '#aa5500') {//orange
+                        mode = 'GAMEOPTIONS'
+                        console.log(mode);
+                        dosGame.autoKeyPress(113);//f2 to go to options
                     }
-                    if (combo.substring(24, 31) == "#55ffff") { // playing
-                        //button press || wait for colour change
-                        //mode change
-                        mode = '~~PLAYING';
+                    else if(hexValue === '#000000' && mode === 'GAMEOPTIONS') {//black
+                        if (!GAMESPEED) {
+                                GAMESPEED = true;
+                                let keyPressCountInterval =
+                                setInterval(() => {
+                                    ci.simulateKeyEvent(17, true);
+                                    ci.simulateKeyEvent(123, true);
+                                    setTimeout( () => {
+                                        ci.simulateKeyEvent(123, false);
+                                        ci.simulateKeyEvent(17, false);
+                                    }, 50);
+
+                                    keyPressCount++;
+                                    if (keyPressCount >= 3) {
+                                    window.clearInterval(keyPressCountInterval);
+                                    }
+                                }, 150);
+                        }
                         loadingOverlay.remove();
+                        
+                        mode = 'GAMEPLAY' 
+                        console.log(mode)
+                        dosGame.autoKeyPress(112);//f1 to start the game
                     }
-                    else if (combo.toString() === "#ffffff,#ffffff,#ffffff,#000000" && mode === '~~PLAYING') { // game over 
+                    else if(hexValue === '#aa0000') {//red
+                        console.log("NO STATE CHANGE")
+                    }
+                    else if(hexValue === '#000000' && mode === 'GAMEPLAY') {//black
+                        mode = 'GAMEOVER'
+                        
+                        console.log(mode)
                         processScreenshot(secondLastCanvas).then((_score) => {
-                            emergeGamingSDK.endLevel(_score)
-                            setTimeout(() => location.reload(), 750);
-                        });
-                        mode = '~~GAME_OVER';
+                        emergeGamingSDK.endLevel(_score)
+                        console.log(_score)
+                        setTimeout(() => location.reload(), 750);
+                        })
                     }
-                    else {
+                    else{
                         //do nothing
                     }
+                   
+                    
+
+                    // let combo = colors.join(',');
+                                        
+                    // if (mode === '~~START_GAME_SPLASH' && (combo.substring(24, 30) != "#55ffff")) {
+                    //     //skip intro everytime the game starts
+                    //     setTimeout(200);
+                    //     dosGame.autoKeyPress(32);
+                    //     mode="~~PLAYING";
+                    // }
+                    // if (combo.substring(24, 31) == "#55ffff") { // playing
+                    //     //button press || wait for colour change
+                    //     //mode change
+                    //     mode = '~~PLAYING';
+                    //     loadingOverlay.remove();
+                    // }
+                    // else if (combo.toString() === "#ffffff,#ffffff,#ffffff,#000000" && mode === '~~PLAYING') { // game over 
+                    //     processScreenshot(secondLastCanvas).then((_score) => {
+                    //         emergeGamingSDK.endLevel(_score)
+                    //         setTimeout(() => location.reload(), 750);
+                    //     });
+                    //     mode = '~~GAME_OVER';
+                    // }
+                    // else {
+                    //     //do nothing
+                    // }
                 })
             })
         }

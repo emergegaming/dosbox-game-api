@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Animac</title>
+    <title>Xonix</title>
     <link rel="stylesheet" type="text/css" href="/css/tailwind-purged.css"/>
     <link rel="stylesheet" type="text/css" href="/css/style.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -56,7 +56,7 @@
         import {DosGame} from "/index.js";
         import {emergeGamingSDK} from '/lib/emergamingSDK.js'
         import {processScreenshot, setupOcr} from "/lib/ocr.js";
-        import {animac_digits} from "/games/dos/animac/digits.js";
+        import {xonix_digits} from "/games/dos/xonix/digits.js";
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
@@ -69,8 +69,8 @@
         let lastCanvas, secondLastCanvas, thirdLastCanvas, mode = 'started'
 
         let gameConfig = {
-            zipFile : 'ANIMAC_DOS_EN.ZIP',
-            execCmdArray : ['-c','animac.exe'],
+            zipFile : 'xonix.ZIP',
+            execCmdArray : ['-c','xonix.exe'],
             cycles: '500'
         }
         let keyPressCount = 0;
@@ -80,12 +80,12 @@
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
-                let startX = 120; let startY = 188; let charWidth = 6; let charHeight = 9; let charSpacing = 2; let numChars = 9;
-                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, animac_digits);
+                let startX = 128; let startY = 34; let charWidth = 14; let charHeight = 10; let charSpacing = 2; let numChars = 9;
+                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, xonix_digits);
                 let ci = dosGame.getCommandInterface();
-                dosGame.overrideKey(' ', 112);
                 dosGame.mapTouchToArrowKeys({directions:4});
-                dosGame.mapButtonToKey({element:buttonB, asciiCode:32});
+                //dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
+                //dosGame.consoleScreenshots();
                 emergeGamingSDK.startLevel();
                 setInterval(() => {
                     thirdLastCanvas = secondLastCanvas;
@@ -93,54 +93,44 @@
                     lastCanvas = canvas.toDataURL('img/png');
                 }, 1000)
 
-                dosGame.addPixelListener(80, 88, (hexValue) => {});//left side middle of GAME OVER box
-                dosGame.addPixelListener(167, 94, (hexValue) => {});//bottom right corner of GAME OVER box
-                dosGame.addPixelListener(158, 86, (hexValue) => {});//bottom right corner of 'R'
-                dosGame.addPixelListener(4, 193, (hexValue) => {});//rocket bottom left corner
-
-                mode='~~START_GAME_SPLASH';
-
-                let keyPressCountInterval =
-                        setInterval(() => {
-                            ci.simulateKeyEvent(17, true);
-                            ci.simulateKeyEvent(123, true);
-                            setTimeout( () => {
-                                ci.simulateKeyEvent(123, false);
-                                ci.simulateKeyEvent(17, false);
-                            }, 50);
-
-                            keyPressCount++;
-                            if (keyPressCount >= 14) {
-                            window.clearInterval(keyPressCountInterval);
-                            }
-                        }, 150);
+                mode = 'START_GAME_SPLASH';
+                //console.log(mode)
+                dosGame.autoKeyPress(32, 50);//press space to get past the splash screen
+                mode = 'DIFFICULTY'
                         
-                dosGame.setGeneralPixelCallback((colors) => {
+                dosGame.addPixelListener(2, 192, (hexValue) => {
 
-                    let combo = colors.join(',');
+                if (mode === 'DIFFICULTY') {//gray 
+                    dosGame.autoKeyPress(6, 50).then(dosGame.autoKeyPress(13, 50));//select difficulty 6 and press enter
+                    mode = 'SCOREBOARD'
+                    //console.log(mode);
+                    dosGame.autoKeyPress(32, 50);
+                    mode = 'IN_GAME'
+                    
+                    //console.log(mode) 
+                    
                                         
-                    if (mode === '~~START_GAME_SPLASH' && (combo.substring(24, 30) != "#55ffff")) {
-                        //skip intro everytime the game starts
-                        setTimeout(200);
-                        dosGame.autoKeyPress(32);
-                        mode="~~PLAYING";
-                    }
-                    if (combo.substring(24, 31) == "#55ffff") { // playing
-                        //button press || wait for colour change
-                        //mode change
-                        mode = '~~PLAYING';
-                        loadingOverlay.remove();
-                    }
-                    else if (combo.toString() === "#ffffff,#ffffff,#ffffff,#000000" && mode === '~~PLAYING') { // game over 
-                        processScreenshot(secondLastCanvas).then((_score) => {
-                            emergeGamingSDK.endLevel(_score)
-                            setTimeout(() => location.reload(), 750);
-                        });
-                        mode = '~~GAME_OVER';
-                    }
-                    else {
-                        //do nothing
-                    }
+                }
+                else if(hexValue === '#aaaaaa' && mode === 'IN_GAME') {//
+                    loadingOverlay.remove();
+                    
+                    
+                    //console.log(mode)
+                    //dosGame.autoKeyPress();//
+                }
+                else if(hexValue === '#000000' && mode === 'IN_GAME') {//black
+                    mode = 'GAME_OVER'
+                    //console.log(mode)
+                    processScreenshot(lastCanvas).then((_score) => {
+                    emergeGamingSDK.endLevel(_score)
+                    //console.log(_score)
+                    setTimeout(() => location.reload(), 500); 
+                    })
+                }
+                else{
+                    //do nothing
+                }
+
                 })
             })
         }
