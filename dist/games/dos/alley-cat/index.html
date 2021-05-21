@@ -98,7 +98,7 @@
                                     processScreenshot(canvas.toDataURL('img/png')).then((_suffix) => {
                                         loadingOverlay.style.visibility = 'visible'
                                         _score += _suffix
-                                        console.log ("Score: " + _score);
+                                        //console.log ("Score: " + _score);
                                         emergeGamingSDK.endLevel(_score);
                                         mode = 'ended';
                                         setInterval(() => location.reload(), 750);

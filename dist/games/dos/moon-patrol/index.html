@@ -108,9 +108,9 @@
 
           
                 let GAMESPEED = false;
-                console.log(mode);//started
+                //console.log(mode);//started
                 mode = 'Splash Screen'
-                console.log(mode);//splashscreen
+                //console.log(mode);//splashscreen
 
                 
                         
@@ -118,7 +118,7 @@
 
                     if (hexValue === '#aa5500') {//orange
                         mode = 'GAMEOPTIONS'
-                        console.log(mode);
+                        //console.log(mode);
                         dosGame.autoKeyPress(113);//f2 to go to options
                     }
                     else if(hexValue === '#000000' && mode === 'GAMEOPTIONS') {//black
@@ -142,19 +142,19 @@
                         loadingOverlay.remove();
                         
                         mode = 'GAMEPLAY' 
-                        console.log(mode)
+                        //console.log(mode)
                         dosGame.autoKeyPress(112);//f1 to start the game
                     }
                     else if(hexValue === '#aa0000') {//red
-                        console.log("NO STATE CHANGE")
+                        //console.log("NO STATE CHANGE")
                     }
                     else if(hexValue === '#000000' && mode === 'GAMEPLAY') {//black
                         mode = 'GAMEOVER'
                         
-                        console.log(mode)
+                        //console.log(mode)
                         processScreenshot(secondLastCanvas).then((_score) => {
                         emergeGamingSDK.endLevel(_score)
-                        console.log(_score)
+                        //console.log(_score)
                         setTimeout(() => location.reload(), 750);
                         })
                     }
