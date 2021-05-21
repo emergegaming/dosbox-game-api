@@ -95,7 +95,6 @@
                 dosGame.addPixelListener(235, 82, (hexValue) => {
                     if (mode === 'playing' && hexValue !== '#5555ff') {
                         processScreenshot(secondLastCanvas).then((_score) => {
-                            //console.log ("GAME OVER: " + _score);
                             emergeGamingSDK.endLevel(_score)
                             setTimeout(() => location.reload(), 750);
                         });
@@ -112,7 +111,6 @@
                         case "#000000": { // TAITO Screen
                             if (mode === 'initialized') {
                                 mode = 'story';
-                                //console.log("Taito screen, pressing space twice thrice.")
                                 setTimeout(() => dosGame.autoKeyPress(32), 0);
                                 setTimeout(() => dosGame.autoKeyPress(32), 250);
                                 setTimeout(() => dosGame.autoKeyPress(32), 500);
@@ -125,7 +123,6 @@
                         }
 
                         case "#5555ff": {
-                            //console.log ("We're playing....")
                             mode = 'playing'
                         }
 

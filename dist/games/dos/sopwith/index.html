@@ -101,7 +101,6 @@
                         dosGame.setGeneralPixelCallback((colours) => {
                             if (colours.join() === '#ff55ff,#ff55ff,#ff55ff' && mode !== 'gameover') {
                                 processScreenshot(canvas.toDataURL('img/png')).then((_score) => {
-                                    //console.log ("End Game: " + _score);
                                     mode = 'gameover'
                                     emergeGamingSDK.endLevel(_score);
                                     setTimeout(() => {location.reload()},750)

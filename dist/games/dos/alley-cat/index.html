@@ -60,6 +60,7 @@
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
         let buttonB = document.getElementById('ctlButtonB');
+        
         let startButton = document.getElementById('startButton');
         let startButtonForm = document.getElementById('startButtonForm');
         let loadingOverlay = document.getElementById('loadingOverlay');
@@ -76,10 +77,10 @@
 
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
-            //dosGame.consoleScreenshots();
             dosGame.start().then(() => {
                 dosGame.mapTouchToArrowKeys({directions: 8});
                 dosGame.mapButtonToKey({element:buttonB, asciiCode:18})
+                
                 dosGame.setGeneralPixelCallback((colors) => {
 
                     let combo = colors.join(',');
@@ -98,7 +99,6 @@
                                     processScreenshot(canvas.toDataURL('img/png')).then((_suffix) => {
                                         loadingOverlay.style.visibility = 'visible'
                                         _score += _suffix
-                                        //console.log ("Score: " + _score);
                                         emergeGamingSDK.endLevel(_score);
                                         mode = 'ended';
                                         setInterval(() => location.reload(), 750);
@@ -110,7 +110,7 @@
                             mode = 'playing';
                             break;
                     default:
-                        //console.log (combo)
+                        //do nothing
                     }
                 })
 

@@ -85,7 +85,7 @@
                 let ci = dosGame.getCommandInterface();
                 dosGame.mapTouchToArrowKeys({directions:4});
                 //dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
-                //dosGame.consoleScreenshots();
+                dosGame.consoleScreenshots();
                 emergeGamingSDK.startLevel();
                 setInterval(() => {
                     thirdLastCanvas = secondLastCanvas;
@@ -123,7 +123,7 @@
                     //console.log(mode)
                     processScreenshot(lastCanvas).then((_score) => {
                     emergeGamingSDK.endLevel(_score)
-                    //console.log(_score)
+                    console.log(_score)
                     setTimeout(() => location.reload(), 500); 
                     })
                 }
