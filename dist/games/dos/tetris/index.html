@@ -39,7 +39,8 @@
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40 bg-black">
             <form id="startButtonForm" onsubmit="return false">
-                <input type="image" src="tetris.png" id="startButton" class="h-96 outline-none hover:outline-none" value="Load and Start">
+                <input type="image" src="tetris-loader-desktop.png" id="startButtonDesktop" class="h-96 outline-none hover:outline-none" value="Load and Start">
+                <input type="image" src="tetris-loader-mobile.png" id="startButtonMobile" class="h-96 outline-none hover:outline-none" value="Load and Start">
             </form>
         </div>
 
@@ -58,7 +59,8 @@
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
-
+        let startButtonDesktop = document.getElementById('startButtonDesktop');
+        let startButtonMobile = document.getElementById('startButtonMobile');
         let startButton = document.getElementById('startButton');
         let startButtonForm = document.getElementById('startButtonForm');
         let loadingOverlay = document.getElementById('loadingOverlay');
@@ -139,7 +141,14 @@
             });
         }
 
-        startButton.focus();
+        if (DosGame.isTouch()) {
+            startButtonDesktop.remove();
+            startButtonMobile.focus();
+        } else {
+            startButtonMobile.remove();
+            startButtonDesktop.focus();
+        }
+
         startButtonOverlay.addEventListener('click', startButtonClicked);
         startButtonForm.addEventListener('submit', startButtonClicked);
 

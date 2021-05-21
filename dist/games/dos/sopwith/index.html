@@ -48,10 +48,11 @@
             <div class="text-white text-2xl">Loading...</div>
         </div>
 
-        <!-- Overlay to: Load and Start -->
+        <!-- Overlay to: Load and Start Mobile -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="return false">
-                <input type="image" src="sopwith.png" id="startButton" class="h-96 outline-none hover:outline-none"/>
+                <input type="image" src="sopwith-loader-desktop.png" id="startButtonDesktop" class="h-96 outline-none hover:outline-none"/>
+                <input type="image" src="sopwith-loader-mobile.png" id="startButtonMobile" class="h-96 outline-none hover:outline-none"/>
             </form>
         </div>
 
@@ -70,14 +71,20 @@
 
         let canvas = document.getElementById('canvas');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
-        let startButton = document.getElementById('startButton');
+        let startButtonDesktop = document.getElementById('startButtonDesktop');
+        let startButtonMobile = document.getElementById('startButtonMobile');
         let startButtonForm = document.getElementById('startButtonForm');
+        let startButton = document.getElementById('startButton');
         let loadingOverlay = document.getElementById('loadingOverlay');
         let buttonAccelerate = document.getElementById('ctlButtonAccelerate');
         let buttonBomb = document.getElementById('ctlButtonBomb');
         let buttonHome = document.getElementById('ctlButtonHome');
         let buttonFire = document.getElementById('ctlButtonFire');
+        
         let mode = 'none'
+        
+
+        
 
         let gameConfig = {
             zipFile : 'sopwith.zip',
@@ -86,7 +93,9 @@
         }
 
         const startButtonClicked = () => {
+            
             startButtonOverlay.remove();
+            
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
 
@@ -129,8 +138,16 @@
 
             })
         }
+        if (DosGame.isTouch()){
+            startButtonDesktop.remove();
+            startButtonMobile.focus();
+        }
+        else{
+            startButtonMobile.remove();
+            startButtonDesktop.focus();
+        }
 
-        startButton.focus();
+        
         startButtonOverlay.addEventListener('click', startButtonClicked);
         startButtonForm.addEventListener('submit', startButtonClicked);
 
