@@ -153,41 +153,15 @@
                         
                         //console.log(mode)
                         processScreenshot(secondLastCanvas).then((_score) => {
+                        //console.log("SCORE" + _score)
                         emergeGamingSDK.endLevel(_score)
-                        //console.log(_score)
                         setTimeout(() => location.reload(), 750);
                         })
                     }
                     else{
                         //do nothing
                     }
-                   
-                    
-
-                    // let combo = colors.join(',');
-                                        
-                    // if (mode === '~~START_GAME_SPLASH' && (combo.substring(24, 30) != "#55ffff")) {
-                    //     //skip intro everytime the game starts
-                    //     setTimeout(200);
-                    //     dosGame.autoKeyPress(32);
-                    //     mode="~~PLAYING";
-                    // }
-                    // if (combo.substring(24, 31) == "#55ffff") { // playing
-                    //     //button press || wait for colour change
-                    //     //mode change
-                    //     mode = '~~PLAYING';
-                    //     loadingOverlay.remove();
-                    // }
-                    // else if (combo.toString() === "#ffffff,#ffffff,#ffffff,#000000" && mode === '~~PLAYING') { // game over 
-                    //     processScreenshot(secondLastCanvas).then((_score) => {
-                    //         emergeGamingSDK.endLevel(_score)
-                    //         setTimeout(() => location.reload(), 750);
-                    //     });
-                    //     mode = '~~GAME_OVER';
-                    // }
-                    // else {
-                    //     //do nothing
-                    // }
+  
                 })
             })
         }
