@@ -42,7 +42,7 @@
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="return false">
-                <input type="image" src="animac.png" id="startButton" class="h-64 outline-none"/>
+                <input type="image" id="startButton" class="h-screen max-h-96 outline-none"/>
 
             </form>
         </div>
@@ -162,36 +162,17 @@
                         //do nothing
                     }
                    
-                    
-
-                    // let combo = colors.join(',');
-                                        
-                    // if (mode === '~~START_GAME_SPLASH' && (combo.substring(24, 30) != "#55ffff")) {
-                    //     //skip intro everytime the game starts
-                    //     setTimeout(200);
-                    //     dosGame.autoKeyPress(32);
-                    //     mode="~~PLAYING";
-                    // }
-                    // if (combo.substring(24, 31) == "#55ffff") { // playing
-                    //     //button press || wait for colour change
-                    //     //mode change
-                    //     mode = '~~PLAYING';
-                    //     loadingOverlay.remove();
-                    // }
-                    // else if (combo.toString() === "#ffffff,#ffffff,#ffffff,#000000" && mode === '~~PLAYING') { // game over 
-                    //     processScreenshot(secondLastCanvas).then((_score) => {
-                    //         emergeGamingSDK.endLevel(_score)
-                    //         setTimeout(() => location.reload(), 750);
-                    //     });
-                    //     mode = '~~GAME_OVER';
-                    // }
-                    // else {
-                    //     //do nothing
-                    // }
+            
                 })
             })
         }
         startButton.focus();
+        if (DosGame.isTouch()){
+            startButton.src = 'moon-patrol-loader-desktop.png'
+        } else {
+            startButton.src = 'moon-patrol-loader-desktop.png'
+        }
+
         startButtonOverlay.addEventListener('click', startButtonClicked);
         startButtonForm.addEventListener('submit', startButtonClicked);
     </script>
