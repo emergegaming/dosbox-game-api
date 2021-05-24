@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Paratrooper</title>
-    <link rel="stylesheet" type="text/css" href="/css/tailwind-purged.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/tailwind.min.css"/>
     <link rel="stylesheet" type="text/css" href="/css/style.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 </head>
@@ -40,8 +40,9 @@
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="startButtonClicked()">
-                <input type="image" src="paratrooper-loader-desktop.png" id="startButtonDesktop" class="h-96 outline-none focus:outline-none"/>
+                <input type="image" src="paratrooper-loader-desktop.png" id="startButtonDesktop" class="h-screen outline-none focus:outline-none"/>
                 <input type="image" src="paratrooper-loader-mobile.png" id="startButtonMobile" class="h-96 outline-none focus:outline-none"/>
+                <!-- <input type="image" src="safe-area-1600-900.png" id="startButtonMobile" class="h-64 outline-none"/> -->
             </form>
         </div>
 
