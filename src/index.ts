@@ -60,6 +60,7 @@ export class DosGame {
     private generalPixelCallback: (colours:string[]) => void;
     private dPadMode:boolean = false;
     private dPadBounds:DOMRect;
+    private touchEventListenersAdded:boolean = false;
 
     private directionMapping:object = {
         'up': 38,
@@ -165,6 +166,8 @@ export class DosGame {
     public mapDPadToArrowKeys(dPadElem):void {
 
         this.dPadBounds = dPadElem.getBoundingClientRect();
+        console.log ("Init dPad")
+        console.log (this.dPadBounds)
         this.dPadMode = true;
         this.addTouchEventListeners();
     }
@@ -282,9 +285,15 @@ export class DosGame {
      * Create touch listeners
      */
     private addTouchEventListeners() {
-        document.addEventListener('touchstart', this.handleTouchEvent.bind(this))
-        document.addEventListener('touchend', this.handleTouchEvent.bind(this))
-        document.addEventListener('touchmove', this.handleTouchEvent.bind(this))
+        if (!this.touchEventListenersAdded) {
+            console.log("Init touchstart")
+            document.addEventListener('touchstart', this.handleTouchEvent.bind(this))
+            console.log("Init touchend")
+            document.addEventListener('touchend', this.handleTouchEvent.bind(this))
+            console.log("Init touchmove")
+            document.addEventListener('touchmove', this.handleTouchEvent.bind(this))
+            this.touchEventListenersAdded = true;
+        }
     }
 
     /**
@@ -326,6 +335,8 @@ export class DosGame {
      * @todo THIS NEEDS TO BE SIMPLIFIED AND EITHER MOVED TO A DIFFERENT CLASS OR BECOME PART OF A SUPERCLASS
      */
     private handleTouchEvent(event:TouchEvent) {
+        console.log ("touchevent");
+        console.log (event);
         if (event.type == 'touchstart') {
             for (let i:number = 0; i < event.changedTouches.length; i++) {
                 let startingTouch = event.changedTouches[i]
