@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Animac</title>
-    <link rel="stylesheet" type="text/css" href="/css/tailwind-purged.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/tailwind.min.css"/>
     <link rel="stylesheet" type="text/css" href="/css/style.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 </head>
@@ -40,7 +40,8 @@
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="return false">
-                <input type="image" src="animac.png" id="startButton" class="h-64 outline-none"/>
+                <input type="image" id="startButton" class="h-screen max-h-96 outline-none focus:outline-none"/>
+
 
             </form>
         </div>
@@ -145,6 +146,12 @@
             })
         }
         startButton.focus();
+        if (DosGame.isTouch()){
+            startButton.src = 'animac-loader-mobile.png'
+        } else {
+            startButton.src = 'animac-loader-desktop.png'
+        }
+
         startButtonOverlay.addEventListener('click', startButtonClicked);
         startButtonForm.addEventListener('submit', startButtonClicked);
     </script>
