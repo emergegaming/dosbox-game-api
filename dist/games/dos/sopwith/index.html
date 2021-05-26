@@ -80,11 +80,8 @@
         let buttonBomb = document.getElementById('ctlButtonBomb');
         let buttonHome = document.getElementById('ctlButtonHome');
         let buttonFire = document.getElementById('ctlButtonFire');
-        
-        let mode = 'none'
-        
 
-        
+        let mode = 'none'
 
         let gameConfig = {
             zipFile : 'sopwith.zip',
@@ -93,9 +90,9 @@
         }
 
         const startButtonClicked = () => {
-            
+
             startButtonOverlay.remove();
-            
+
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
 
@@ -111,8 +108,9 @@
                             if (colours.join() === '#ff55ff,#ff55ff,#ff55ff' && mode !== 'gameover') {
                                 processScreenshot(canvas.toDataURL('img/png')).then((_score) => {
                                     mode = 'gameover'
-                                    emergeGamingSDK.endLevel(_score);
-                                    setTimeout(() => {location.reload()},750)
+                                    console.log(_score);
+                                    emergeGamingSDK.endLevel("Score: " +_score);
+                                    //setTimeout(() => {location.reload()},750)
                                 });
                             }
                         });
@@ -134,8 +132,6 @@
                 dosGame.mapButtonToKey({element:buttonBomb, asciiCode:66}); // b
                 dosGame.mapButtonToKey({element:buttonFire, asciiCode:32}); // space
 
-
-
             })
         }
         if (DosGame.isTouch()){
@@ -147,7 +143,7 @@
             startButtonDesktop.focus();
         }
 
-        
+
         startButtonOverlay.addEventListener('click', startButtonClicked);
         startButtonForm.addEventListener('submit', startButtonClicked);
 

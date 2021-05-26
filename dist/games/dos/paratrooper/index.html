@@ -87,7 +87,6 @@
             dosGame.startWithConf(doxboxConf).then(() => {
                 let startX = 56; let startY = 192; let charWidth = 7; let charHeight = 7; let charSpacing = 1; let numChars = 5;
                 setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, paratrooper_digits);
-
                 emergeGamingSDK.startLevel();
             });
 
@@ -101,6 +100,7 @@
                         if (mode === 'playing') {
                             mode = 'gameover'
                             processScreenshot(canvas.toDataURL('img/png')).then((_score) => {
+                                if (isNaN(_score)) _score = 0;
                                 emergeGamingSDK.endLevel(_score);
                                 setTimeout(() => {location.reload()}, 5000);
                             })

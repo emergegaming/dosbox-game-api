@@ -286,11 +286,8 @@ export class DosGame {
      */
     private addTouchEventListeners() {
         if (!this.touchEventListenersAdded) {
-            console.log("Init touchstart")
             document.addEventListener('touchstart', this.handleTouchEvent.bind(this))
-            console.log("Init touchend")
             document.addEventListener('touchend', this.handleTouchEvent.bind(this))
-            console.log("Init touchmove")
             document.addEventListener('touchmove', this.handleTouchEvent.bind(this))
             this.touchEventListenersAdded = true;
         }
