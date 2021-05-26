@@ -106,7 +106,7 @@
                                 console.log ("GAME OVER")
                                 processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
                                     mode = 'done'
-                                    console.log('Score:' + _score);
+                                    //console.log('Score:' + _score);
                                     emergeGamingSDK.endLevel(_score)
                                     setTimeout(() => location.reload(),750);
                                 })

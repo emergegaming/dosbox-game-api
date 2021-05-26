@@ -108,9 +108,9 @@
                             if (colours.join() === '#ff55ff,#ff55ff,#ff55ff' && mode !== 'gameover') {
                                 processScreenshot(canvas.toDataURL('img/png')).then((_score) => {
                                     mode = 'gameover'
-                                    console.log(_score);
+                                    //console.log(_score);
                                     emergeGamingSDK.endLevel("Score: " +_score);
-                                    //setTimeout(() => {location.reload()},750)
+                                    setTimeout(() => {location.reload()},750)
                                 });
                             }
                         });
