@@ -79,6 +79,7 @@
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
+                //dosGame.consoleScreenshots();
                 let startX = 72; let startY = 0; let charWidth = 7; let charHeight = 7; let charSpacing = 1; let numChars = 6;
                 setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, buck_rogers_digits);
 
@@ -92,42 +93,47 @@
                     'left':100,
                     'right':102
                 })
+
+                setInterval(() => {
+                    lastCanvas = canvas.toDataURL('img/png')
+                }, 1000)
+                
                 dosGame.mapDPadToArrowKeys(dPad);
                 dosGame.mapButtonToKey({element:buttonB, asciiCode:32});
-                mode = 'pre-start'
+               
                 emergeGamingSDK.startLevel();
-                setTimeout(() => loadingOverlay.remove(), 200)
-                dosGame.setGeneralPixelCallback((colours) => {
-                    switch (colours.join()) {
-                        case "#ff55ff,#ffffff,#55ffff":
-                            if (mode === 'pre-start') {
-                                mode = "start-screen"
-                            } else if (mode === "playing") {
-                                console.log ("GAME OVER")
-                                processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
-                                    mode = 'done'
-                                    //console.log('Score:' + _score);
-                                    emergeGamingSDK.endLevel(_score)
-                                    setTimeout(() => location.reload(),750);
-                                })
-                            }
-                            break;
-                            case "#55ffff,#55ffff,#ff55ff": {
-                                mode = "playing";
-                            }
-                            break;
-                        default:
-                            if (mode === "start-screen") {
-                                mode = "playing";
-                            }
-                            break;
-
+                //setTimeout(() => loadingOverlay.remove(), 200)
+                mode = "none";
+               
+                dosGame.addPixelListener(213,3, (hexValue) => {
+                    //console.log("HexValue: " + hexValue)
+                    if (hexValue === "#000000" && mode === "none") {//preGameSplash
+                        mode = "preGame";
+                        //console.log(mode);
+                        dosGame.autoKeyPress(32, 10);
+                        loadingOverlay.remove();
+                    }
+                    else if (hexValue === "#55ffff" && mode === "preGame") {//inGame
+                        mode = "inGame";
+                        //console.log(mode);
+                    }
+                    else if (hexValue === "#ffffff" && mode === "inGame") {//postGameSplash -> GameOver
+                        mode = "gameOver";
+                        //console.log(mode);
+                        processScreenshot(lastCanvas).then((_score) => {
+                            emergeGamingSDK.endLevel(_score);
+                            //console.log("Score: " + _score);
+                            //console.log(lastCanvas);
+                            setTimeout(() => location.reload(), 750);
+                        });
+                    }
+                    else{
+                        //console.log(mode);
+                        //console.log("NO STATE CHANGE");
                     }
 
                 })
-                dosGame.addPixelListener(100,48, () => {})
-                dosGame.addPixelListener(100,49, () => {})
-                dosGame.addPixelListener(100,50, () => {})
+                
             });
         }
 
