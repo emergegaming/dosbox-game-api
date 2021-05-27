@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>RADICAL SOPWITH</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="/css/tailwind.min.css"/>
+</head>
+<body class="bg-black">
+    <div id="landscape" class="relative w-full h-screen flex items-center justify-center bg-no-repeat bg-center" style="background-image: url('table-landscape.png');background-size: auto 100%">
+        <div class="bg-blue-900"></div>
+    </div>
+    <div id="portrait" style="background-image: url('table-portrait.png');background-size: 100% auto" class="flex justify-center w-full h-screen bg-top bg-no-repeat">
+        <div class="bg-blue-900"></div>
+    </div>
+    <style type="text/css">
+
+        @media screen and (orientation:portrait) {
+            #landscape {
+                display: none;
+            }
+            #portrait div {
+                margin-top: calc(100vw * 0.08);
+                width: calc(100vw * 0.84);
+                height: calc(100vw *0.52)
+            }
+        }
+
+        @media screen and (orientation:landscape) {
+            #portrait {
+                display: none;
+            }
+            #landscape div {
+                width: calc(100vh * 1.27);
+                height:79%;
+                margin-left:calc(100vh * 0.08)
+            }
+        }
+
+    </style>
+</body>
+</html>
