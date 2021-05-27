@@ -77,7 +77,7 @@
         let keyPressCount = 0;
 
         const startButtonClicked = () => {
-            
+
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
@@ -115,11 +115,11 @@
                             window.clearInterval(keyPressCountInterval);
                             }
                         }, 150);
-                        
+
                 dosGame.setGeneralPixelCallback((colors) => {
 
                     let combo = colors.join(',');
-                                        
+
                     if (mode === '~~START_GAME_SPLASH' && (combo.substring(24, 30) != "#55ffff")) {
                         //skip intro everytime the game starts
                         setTimeout(200);
@@ -132,7 +132,7 @@
                         mode = '~~PLAYING';
                         loadingOverlay.remove();
                     }
-                    else if (combo.toString() === "#ffffff,#ffffff,#ffffff,#000000" && mode === '~~PLAYING') { // game over 
+                    else if (combo.toString() === "#ffffff,#ffffff,#ffffff,#000000" && mode === '~~PLAYING') { // game over
                         processScreenshot(secondLastCanvas).then((_score) => {
                             emergeGamingSDK.endLevel(_score)
                             setTimeout(() => location.reload(), 750);

@@ -101,7 +101,7 @@
                     secondLastCanvas = lastCanvas;;
                     lastCanvas = canvas.toDataURL('img/png')
                 }, 1000)
-                dosGame.setPixelListener(232, 186, (hexValue) => {
+                dosGame.addPixelListener(232, 186, (hexValue) => {
                     switch (hexValue) {
                         case '#000000':
                             if (mode !== 'playing') {

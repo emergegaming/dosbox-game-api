@@ -85,23 +85,20 @@
                 dosGame.mapButtonToKey({element:buttonA, asciiCode:13});
                 dosGame.mapButtonToKey({element:buttonB, asciiCode:112});
                 dosGame.addPixelListener(65, 0, (hexValue) => {
-                    console.log (hexValue)
                     switch(hexValue) {
                         case '#000000':
-                            console.log ("Here")
                             loadingOverlay.remove();
                             dosGame.autoKeyPress(13);
                             emergeGamingSDK.startLevel();
                             break;
                         case '#55ffff':
-                            console.log ("Playing")
                             break;
                         case '#ffffff':
                             console.log("Game Over")
                             processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
                                 console.log ("SCORE: " + _score);
                                 emergeGamingSDK.endLevel(_score);
-                                setTimeout(() => location.reload(), 750);
+                                //setTimeout(() => location.reload(), 750);
                             });
                             break;
                         default:

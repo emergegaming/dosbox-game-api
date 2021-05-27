@@ -165,10 +165,7 @@ export class DosGame {
      */
     public mapDPadToArrowKeys(dPadElem):void {
 
-        this.dPadBounds = dPadElem.getBoundingClientRect();
-        console.log ("Init dPad")
-        console.log (this.dPadBounds)
-        this.dPadMode = true;
+        this.dPadBounds = dPadElem.getBoundingClientRect();this.dPadMode = true;
         this.addTouchEventListeners();
     }
 
@@ -332,8 +329,6 @@ export class DosGame {
      * @todo THIS NEEDS TO BE SIMPLIFIED AND EITHER MOVED TO A DIFFERENT CLASS OR BECOME PART OF A SUPERCLASS
      */
     private handleTouchEvent(event:TouchEvent) {
-        console.log ("touchevent");
-        console.log (event);
         if (event.type == 'touchstart') {
             for (let i:number = 0; i < event.changedTouches.length; i++) {
                 let startingTouch = event.changedTouches[i]
@@ -409,7 +404,7 @@ export class DosGame {
                         } else if (dy > 0 && dx < dy * rangeOuter) {
                             control = ['down','left']
                         } else {
-                            console.log ("Not a known angle / direction")
+                            console.error ("Not a known angle / direction")
                         }
                     } else if (this.directions.directions === 4) {
                         if (dx < 0 && dx < -Math.abs(dy)) {
@@ -421,7 +416,7 @@ export class DosGame {
                         } else if (dy > 0 && dx < dy) {
                             control = ['down']
                         } else {
-                            console.log ("Not a known angle / direction")
+                            console.error ("Not a known angle / direction")
                         }
                     } else if (this.directions.directions === 2) {
                         if (dx < 0) {
@@ -429,7 +424,7 @@ export class DosGame {
                         } else if (dx > 0) {
                             control = ['right']
                         } else {
-                            console.log ("Not a known angle / direction")
+                            console.error ("Not a known angle / direction")
                         }
                     } else {
                         console.error("Only 2, 4 or 8 directions allowed")

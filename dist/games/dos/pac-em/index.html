@@ -113,6 +113,7 @@
                                     setTimeout(() => location.reload(), 750)
                                 } else {
                                     processScreenshot(thirdLastCanvas).then(_score => {
+                                        console.log(_score)
                                         if (!isNaN(_score)) {
                                             emergeGamingSDK.endLevel(_score);
                                             setTimeout(() => location.reload(), 750)

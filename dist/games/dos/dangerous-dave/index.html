@@ -99,9 +99,12 @@
             let startX = 64; let startY = 2; let charWidth = 7; let charHeight = 8; let charSpacing = 1; let numChars = 5;
             setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, dave_digits);
 
+            console.log ("DAVE")
+
             if (!scoreInterval && !DosGame.isTouch()) {
                 scoreInterval = setInterval(() => {
                     processScreenshot(canvas.toDataURL('image/png')).then((_score) => {
+                        console.log (_score + "!!")
                         if (!isNaN(_score) && _score !== lastScore) {
                             if (_score < lastScore) {
                                 clearInterval(scoreInterval)
