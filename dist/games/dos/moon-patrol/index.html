@@ -143,6 +143,7 @@
                         //console.log(mode)
                         processScreenshot(secondLastCanvas).then((_score) => {
                             emergeGamingSDK.endLevel(_score)
+                            //console.log("SCORE:" + _score)
                             setTimeout(() => location.reload(), 750);
                         })
                     }
