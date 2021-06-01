@@ -7,8 +7,8 @@
     <title>Document</title>
     <style>
         html, body, canvas, .dosbox-container {
-          width: 100%;
-          height: 100%;
+          width: 320;
+          height: 200;
           margin: 0;
           padding: 0;
           overflow: hidden;
@@ -17,9 +17,12 @@
       <link href="/dosbox/dos7/js-dos.css" rel="stylesheet">
       <div  id="root"></div>
       <script src="/dosbox/dos7/js-dos.js"></script>
-      <script>
-          emulators.pathPrefix = "/dosbox/dos7/";
-          Dos(document.getElementById("root")).run("arkan.zip");
+      <script type=module>
+        import {DosGame} from '/index7.js';
+          // emulators.pathPrefix = "/dosbox/dos7/";
+          // Dos(document.getElementById("root")).run("GDNT/wolf3d.jsdos");
+          let dosGame = new DosGame(window.Dos, document.getElementById("root"), emulators);
+          dosGame.start7("wsf/wolf3d.jsdos");
   
       </script>
     
