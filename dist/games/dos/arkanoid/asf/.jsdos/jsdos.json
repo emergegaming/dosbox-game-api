@@ -111,50 +111,50 @@
       }
     }
   },
-  "layersConfig": {
-    "version": 1,
-    "layers": [
-      {
-        "grid": "honeycomb",
-        "title": "Layer#0",
-        "controls": [
-          {
-            "row": 0,
-            "column": 9,
-            "symbol": "⚙",
-            "type": "Options"
-          },
-          {
-            "row": 5,
-            "column": 0,
-            "symbol": "␠",
-            "type": "Key",
-            "mapTo": 32
+  "layers": {
+    "default": {
+      "name": "joystick+button",
+      "image": "layers-joystick-button.jpg",
+      "buttons": [
+        {
+          "action": "click",
+          "mapTo": 32,
+          "style": {
+            "left": "16px",
+            "bottom": "32px"
           }
-        ],
-        "gestures": [
-          {
-            "joystickId": 0,
-            "event": "dir:up",
-            "mapTo": 265
-          },
-          {
-            "joystickId": 0,
-            "event": "dir:down",
-            "mapTo": 264
-          },
-          {
-            "joystickId": 0,
-            "event": "dir:left",
-            "mapTo": 263
-          },
-          {
-            "joystickId": 0,
-            "event": "dir:right",
-            "mapTo": 262
-          }
-        ]
-      }
-    ]
+        }
+      ],
+      "mapper": {
+        "88": 290
+      },
+      "gestures": [
+        {
+          "joystickId": 0,
+          "event": "dir:up",
+          "mapTo": 265
+        },
+        {
+          "joystickId": 0,
+          "event": "dir:down",
+          "mapTo": 264
+        },
+        {
+          "joystickId": 0,
+          "event": "dir:left",
+          "mapTo": 263
+        },
+        {
+          "joystickId": 0,
+          "event": "dir:right",
+          "mapTo": 262
+        },
+        {
+          "joystickId": 0,
+          "event": "end:release",
+          "mapTo": 0
+        }
+      ]
+    }
   }
 }

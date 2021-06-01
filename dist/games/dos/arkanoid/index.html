@@ -14,8 +14,14 @@
           overflow: hidden;
         }
       </style>
-      <link href="/dosbox/dos7/js-dos.css" rel="stylesheet">
-      <div  id="root"></div>
+    
+    <link rel="stylesheet" type="text/css" href="/css/style.css"/>
+    <link href="/dosbox/dos7/js-dos.css" rel="stylesheet">
+
+
+
+    
+      <!-- <div  id="root"></div> -->
       <script src="/dosbox/dos7/js-dos.js"></script>
       <script type=module>
         import {DosGame} from '/index7.js';
@@ -28,7 +34,9 @@
     
 </head>
 <body>
-    
+  <div class="flex items-center justify-center text-white pointer-events-none">
+    <canvas id="root" class="p-2 pointer-events-none bg-black"></canvas>
+  </div>
     
 </body>
 </html>
