@@ -101,6 +101,12 @@
 
           let dosGame = new DosGame(window.Dos, document.getElementById("root"), emulators);
           dosGame.start7("asfNOAUTO.zip").then(() =>{
+
+            const mapper = {
+                103/*KBD_x*/: 37 /*KBD_f1*/,
+                105/*KBD_x*/: 39 /*KBD_f1*/,
+            };
+            emulatorsUi.controls.keyboard(layers, ci, mapper);
             dosGame.overrideDirectionAscii({
                     'left':103,
                     'right':105
