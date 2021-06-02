@@ -48,7 +48,7 @@ export class DosGame {
     private canvas: HTMLCanvasElement
     private rootElement: HTMLElement
     private emulators: any;
-    private ci: any
+    private ci: any;
     private keysToReplace:KeyMapping[] = []
     private directions:Directions
     private buttons:ButtonMapping[] = []
@@ -111,8 +111,8 @@ export class DosGame {
             }).ready((fs, main) => {
                 fs.extract(this.options.zipFile).then(() => {
                     main(this.options.execCmdArray).then((ci) => {
-                        this.ci = ci
-                        resolve(ci)
+                        this.ci = ci;
+                        resolve(ci);
                         window.focus();
                         window.addEventListener('unload', this.unload)
                     })
@@ -122,10 +122,11 @@ export class DosGame {
     }
 
     public start7(gameBundle: string):Promise<any> {
-        return new Promise((resolve)=>{
+        return new Promise(async (resolve)=>{
             this.emulators.pathPrefix = "/dosbox/dos7/";
             this.dosRef(this.rootElement).run(gameBundle).then((ci)=>{
                 console.log("CI:" + ci);
+                this.ci = ci;
                 resolve(ci);
             });
         })
@@ -483,10 +484,16 @@ export class DosGame {
         let turnOff = was.filter(w => is.indexOf(w) === -1)
         let turnOn = is.filter(i => was.indexOf(i) === -1)
         turnOff.forEach((direction) => {
-            this.ci.simulateKeyEvent(this.getDirectionAscii(direction), false);
+            console.log("Key Up: " + this.getDirectionAscii(direction));
+
+            this.ci.sendKeyEvent(this.getDirectionAscii(direction), false);
+
         });
         turnOn.forEach((direction) => {
-            this.ci.simulateKeyEvent(this.getDirectionAscii(direction), true)
+            //console.log(this.ci);
+            console.log("Key Down: " + this.getDirectionAscii(direction));
+
+            this.ci.sendKeyEvent(this.getDirectionAscii(direction), true);
         });
     }
 

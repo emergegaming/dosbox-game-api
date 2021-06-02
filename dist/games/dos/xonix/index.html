@@ -84,7 +84,8 @@
                 setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, xonix_digits);
                 let ci = dosGame.getCommandInterface();
                 dosGame.mapTouchToArrowKeys({directions:4});
-                //dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
+                dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
+                dosGame.mapButtonToKey({element:buttonB, asciiCode:32});
                 dosGame.consoleScreenshots();
                 emergeGamingSDK.startLevel();
                 setInterval(() => {

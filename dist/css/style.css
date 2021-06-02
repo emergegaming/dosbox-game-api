@@ -9,7 +9,7 @@
     background-image:url('/images/Background.svg');
 }
 
-#canvas {
+canvas {
     height: calc((100vw - 260px) / 1.6);
     width: calc(100vw - 260px);
 }
@@ -25,21 +25,21 @@
 }
 
 @media only screen and (min-width: 1025px) {
-    #canvas {
+    canvas {
         height: calc((100vw - 360px) / 1.6);
         width: calc(100vw - 360px);
     }
 }
 
 @media only screen and (min-width: 1200px) {
-    #canvas {
+    canvas {
         height: calc((100vw - 520px) / 1.6);
         width: calc(100vw - 520px);
     }
 }
 
 @media only screen and (min-width: 1400px) {
-    #canvas {
+    canvas {
         height: calc((100vw - 820px) / 1.6);
         width: calc(100vw - 820px);
     }

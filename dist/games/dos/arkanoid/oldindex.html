@@ -9,8 +9,10 @@
 
     <!-- <link rel="stylesheet" href="../../../dosbox/dos7/js-dos.css">
     <script src="../../../dosbox/dos7/wdosbox.js"></script> -->
-    <link rel="stylesheet" href="../../../node_modules/js-dos/dist/js-dos.css">
-    <script src="../../../node_modules/js-dos/dist/js-dos.js"></script>
+
+
+    <link rel="stylesheet" type="text/css" href="/css/style.css"/>
+    <link href="/dosbox/dos7/js-dos.css" rel="stylesheet">
 
 </head>
 <body>
@@ -27,8 +29,8 @@
             </div>
 
             <!-- Middle Column (Canvas) -->
-            <div class="flex items-center justify-center text-white pointer-events-none">
-                <canvas id="canvas" class="p-2 pointer-events-none bg-black"></canvas>
+            <div id="root" class="flex items-center justify-center text-white">
+                <!-- <canvas class="p-2 pointer-events-none bg-black"></canvas> -->
             </div>
 
             <!-- Right Column (Buttons) -->
@@ -39,7 +41,7 @@
         </div>
 
         <!-- Overlay to: Show when loading -->
-        <div id="loadingOverlay" class="flex orientation-notice fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-30" style="background-color: #101010">
+        <div id="loadingOverlay" class="hidden flex orientation-notice fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-30" style="background-color: #101010">
             <div class="text-white text-2xl">Loading...</div>
         </div>
 
@@ -59,14 +61,17 @@
         </div>
 
     </section>
+    <script src="/dosbox/dos7/js-dos.js"></script>
+
     <script type="module">
 
-        import {DosGame} from "/index.js";
+        
         import {emergeGamingSDK} from '/lib/emergamingSDK.js'
         import {processScreenshot, setupOcr} from "/lib/ocr.js";
         import {arkanoid_digits} from "/games/dos/arkanoid/digits.js";
+        import {DosGame} from '/index7.js';
 
-        let canvas = document.getElementById('canvas');
+        let canvas = document.getElementById('root');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
         let startButtonDesktop = document.getElementById('startButtonDesktop');
         let startButtonMobile = document.getElementById('startButtonMobile');
@@ -74,22 +79,41 @@
         let loadingOverlay = document.getElementById('loadingOverlay');
         let buttonA = document.getElementById('ctlButtonA');
         let buttonB = document.getElementById('ctlButtonB');
-        let dPad = document.getElementById('dPad');
+        // let dPad = document.getElementById('dPad');
 
         let lastCanvas, secondLastCanvas, thirdLastCanvas, mode = 'started'
 
-        let gameConfig = {
-            zipFile : 'ARKANOID.ZIP',
-            execCmdArray : ['-c','ARKANOID.COM'],
-            cycles: '300'
-        }
+        // let gameConfig = {
+        //     zipFile : 'ARKANOID.ZIP',
+        //     execCmdArray : ['-c','ARKANOID.COM'],
+        //     cycles: '300'
+        // }
 
 
 
         const startButtonClicked = () => {
             startButtonOverlay.remove();
-            // emulators.pathPrefix = "/v7/build/releases/latest/js-dos/";
-            Dos(document.getElementById(canvas)).run("arkanoid.jsdos");
+      
+        
+          // emulators.pathPrefix = "/dosbox/dos7/";
+          // Dos(document.getElementById("root")).run("GDNT/wolf3d.jsdos");
+          
+
+          let dosGame = new DosGame(window.Dos, document.getElementById("root"), emulators);
+          dosGame.start7("asfNOAUTO.zip").then(() =>{
+            dosGame.overrideDirectionAscii({
+                    'left':103,
+                    'right':105
+                });
+                dosGame.overrideKey(' ', 112);
+                dosGame.overrideKey('left',103); // 103
+                dosGame.overrideKey('right',105); // 105
+                dosGame.mapTouchToArrowKeys({directions:2});
+                dosGame.mapButtonToKey({element:buttonB, asciiCode:83});
+                dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
+          });
+  
+     
 
 
 
@@ -100,10 +124,7 @@
             //     let startX = 239; let startY = 61; let charWidth = 9; let charHeight = 9; let charSpacing = -1; let numChars = 6;
             //     setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, arkanoid_digits);
 
-            //     dosGame.overrideKey(' ', 112);
-            //     dosGame.mapTouchToArrowKeys({directions:2})
-            //     dosGame.mapButtonToKey({element:buttonB, asciiCode:32});
-            //     dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
+        
 
             //     setInterval(() => {
             //         thirdLastCanvas = secondLastCanvas;
@@ -167,6 +188,6 @@
         startButtonForm.addEventListener('submit', startButtonClicked);
 
     </script>
-    <script src="/dosbox/js-dos.js"></script>
+    <script src="/dosbox/dos7/js-dos.js"></script>
 </body>
 </html>

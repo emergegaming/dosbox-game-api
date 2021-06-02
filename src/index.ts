@@ -469,9 +469,11 @@ export class DosGame {
         let turnOff = was.filter(w => is.indexOf(w) === -1)
         let turnOn = is.filter(i => was.indexOf(i) === -1)
         turnOff.forEach((direction) => {
+            console.log("Key Up: " + this.getDirectionAscii(direction));
             this.ci.simulateKeyEvent(this.getDirectionAscii(direction), false);
         });
         turnOn.forEach((direction) => {
+            console.log("Key Up: " + this.getDirectionAscii(direction));
             this.ci.simulateKeyEvent(this.getDirectionAscii(direction), true)
         });
     }
