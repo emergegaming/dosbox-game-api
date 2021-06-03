@@ -367,17 +367,17 @@ export class DosGame {
                             if (xPct >= 0 && xPct <= 100 && yPct > 0 && yPct <= 100) {
                                 if (yPct < 33) {
                                     if (xPct > 33 && xPct < 67) {
-                                        this.ci.simulateKeyPress(this.directionMapping['up'])
+                                        this.ci.simulateKeyPress(this.directionMapping['up'], true)
                                     }
                                 } else if (yPct < 67) {
                                     if (xPct < 33) {
-                                        this.ci.simulateKeyPress(this.directionMapping['left'])
+                                        this.ci.simulateKeyPress(this.directionMapping['left'], true)
                                     } else if (xPct > 67) {
-                                        this.ci.simulateKeyPress(this.directionMapping['right'])
+                                        this.ci.simulateKeyPress(this.directionMapping['right'], true)
                                     }
                                 } else {
                                     if (xPct > 33 && xPct < 67) {
-                                        this.ci.simulateKeyPress(this.directionMapping['down'])
+                                        this.ci.simulateKeyPress(this.directionMapping['down'], true)
                                     }
                                 }
                                 continue;
