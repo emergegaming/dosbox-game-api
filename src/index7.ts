@@ -82,11 +82,18 @@ export class DosGame {
             188 : 44,
             191 : 47,
             263 : 37,
-            38 : 265,
-            40 : 264,
+            265 : 38,
+            264 : 40,
             262 : 39
             
     }
+
+    
+
+    
+    
+
+    
 
     private dosRef: any;
     private options: GameOptions
@@ -108,6 +115,7 @@ export class DosGame {
     private dPadMode:boolean = false;
     private dPadBounds:DOMRect;
     private touchEventListenersAdded:boolean = false;
+    private reverseKeyMap = new Map();
 
     private directionMapping:object = {
         'up': 38,
@@ -115,6 +123,15 @@ export class DosGame {
         'left': 37,
         'right': 39
     };
+
+    private jsdosKeyCodeLookup(inputCode: number){ //helper function to throw a warning when a key is pressed that is not mapped
+        let result = this.reverseKeyMap.get(inputCode);
+        if (result != undefined){
+            return result;    
+        } else {
+            console.warn('%c That Key is not Mapped, check index7.ts -> start7()', 'background: #000000; color: #00ff00');
+        }
+    }
 
 
     /**
@@ -140,6 +157,7 @@ export class DosGame {
         this.rootElement = rootElement;
         this.forceKeyPress = forceKeyPress;
         this.emulators = emulators;
+       
     }
 
 
@@ -168,6 +186,22 @@ export class DosGame {
 
     public start7(gameBundle: string):Promise<any> {
         return new Promise(async (resolve)=>{
+
+            this.reverseKeyMap.set(32, 32)//space
+            this.reverseKeyMap.set(38, 265)//up
+            this.reverseKeyMap.set(40, 264)//down
+            this.reverseKeyMap.set(37, 263)//left
+            this.reverseKeyMap.set(39, 262)//right
+            this.reverseKeyMap.set(18, 342)//alt
+            this.reverseKeyMap.set(16, 340)//shift
+            this.reverseKeyMap.set(66, 66)//B
+            this.reverseKeyMap.set(88, 88)//X
+            this.reverseKeyMap.set(188, 44)//comma
+            this.reverseKeyMap.set(190, 46)//fullstop or period
+            this.reverseKeyMap.set(191, 47)//forward-slash
+            this.reverseKeyMap.set(72, 72)//H
+            
+            
             this.emulators.pathPrefix = "/dosbox/dos7/";
             this.dosRef(this.rootElement).run(gameBundle).then((ci)=>{
                 console.log("CI:" + ci);
@@ -241,7 +275,7 @@ export class DosGame {
      * @param buttonMapping the keyCode and asciiCode mapping.
      */
     public mapButtonToKey(buttonMapping:ButtonMapping):void {
-        this.buttons.push(buttonMapping)
+        this.buttons.push({element: buttonMapping.element, asciiCode: this.jsdosKeyCodeLookup(buttonMapping.asciiCode)})
         if (!this.directions) {
             this.addTouchEventListeners()
         }
@@ -526,19 +560,23 @@ export class DosGame {
      */
     private processDirectionChange = (was, is) => {
 
+    
+
+    
+
         let turnOff = was.filter(w => is.indexOf(w) === -1)
         let turnOn = is.filter(i => was.indexOf(i) === -1)
         turnOff.forEach((direction) => {
-            console.log("Key Up: " + this.getDirectionAscii(this.dos7ReverseKeyMapping[direction]));
+            console.log("Key Up: " + this.jsdosKeyCodeLookup(this.getDirectionAscii(direction)));
 
-            this.ci.sendKeyEvent(this.getDirectionAscii(direction), false);
+            this.ci.sendKeyEvent(this.jsdosKeyCodeLookup(this.getDirectionAscii(direction)), false);
 
         });
         turnOn.forEach((direction) => {
             //console.log(this.ci);
-            console.log("Key Down: " + this.getDirectionAscii(this.dos7ReverseKeyMapping[direction]));
+            console.log("Key Down: " + this.jsdosKeyCodeLookup(this.getDirectionAscii(direction)));
 
-            this.ci.sendKeyEvent(this.getDirectionAscii(direction), true);
+            this.ci.sendKeyEvent(this.jsdosKeyCodeLookup(this.getDirectionAscii(direction)), true);
         });
     }
 

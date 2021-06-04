@@ -110,8 +110,8 @@ var DosGame = /** @class */ (function () {
             188: 44,
             191: 47,
             263: 37,
-            38: 265,
-            40: 264,
+            265: 38,
+            264: 40,
             262: 39
         };
         this.keysToReplace = [];
@@ -122,6 +122,7 @@ var DosGame = /** @class */ (function () {
         this.keysDown = [];
         this.dPadMode = false;
         this.touchEventListenersAdded = false;
+        this.reverseKeyMap = new Map();
         this.directionMapping = {
             'up': 38,
             'down': 40,
@@ -141,13 +142,13 @@ var DosGame = /** @class */ (function () {
             var turnOff = was.filter(function (w) { return is.indexOf(w) === -1; });
             var turnOn = is.filter(function (i) { return was.indexOf(i) === -1; });
             turnOff.forEach(function (direction) {
-                console.log("Key Up: " + _this.getDirectionAscii(_this.dos7ReverseKeyMapping[direction]));
-                _this.ci.sendKeyEvent(_this.getDirectionAscii(direction), false);
+                console.log("Key Up: " + _this.jsdosKeyCodeLookup(_this.getDirectionAscii(direction)));
+                _this.ci.sendKeyEvent(_this.jsdosKeyCodeLookup(_this.getDirectionAscii(direction)), false);
             });
             turnOn.forEach(function (direction) {
                 //console.log(this.ci);
-                console.log("Key Down: " + _this.getDirectionAscii(_this.dos7ReverseKeyMapping[direction]));
-                _this.ci.sendKeyEvent(_this.getDirectionAscii(direction), true);
+                console.log("Key Down: " + _this.jsdosKeyCodeLookup(_this.getDirectionAscii(direction)));
+                _this.ci.sendKeyEvent(_this.jsdosKeyCodeLookup(_this.getDirectionAscii(direction)), true);
             });
         };
         /**
@@ -164,6 +165,15 @@ var DosGame = /** @class */ (function () {
         this.forceKeyPress = forceKeyPress;
         this.emulators = emulators;
     }
+    DosGame.prototype.jsdosKeyCodeLookup = function (inputCode) {
+        var result = this.reverseKeyMap.get(inputCode);
+        if (result != undefined) {
+            return result;
+        }
+        else {
+            console.warn('%c That Key is not Mapped, check index7.ts -> start7()', 'background: #000000; color: #00ff00');
+        }
+    };
     DosGame.prototype.start = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -189,6 +199,19 @@ var DosGame = /** @class */ (function () {
         return new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
+                this.reverseKeyMap.set(32, 32); //space
+                this.reverseKeyMap.set(38, 265); //up
+                this.reverseKeyMap.set(40, 264); //down
+                this.reverseKeyMap.set(37, 263); //left
+                this.reverseKeyMap.set(39, 262); //right
+                this.reverseKeyMap.set(18, 342); //alt
+                this.reverseKeyMap.set(16, 340); //shift
+                this.reverseKeyMap.set(66, 66); //B
+                this.reverseKeyMap.set(88, 88); //X
+                this.reverseKeyMap.set(188, 44); //comma
+                this.reverseKeyMap.set(190, 46); //fullstop or period
+                this.reverseKeyMap.set(191, 47); //forward-slash
+                this.reverseKeyMap.set(72, 72); //H
                 this.emulators.pathPrefix = "/dosbox/dos7/";
                 this.dosRef(this.rootElement).run(gameBundle).then(function (ci) {
                     console.log("CI:" + ci);
@@ -258,7 +281,7 @@ var DosGame = /** @class */ (function () {
      * @param buttonMapping the keyCode and asciiCode mapping.
      */
     DosGame.prototype.mapButtonToKey = function (buttonMapping) {
-        this.buttons.push(buttonMapping);
+        this.buttons.push({ element: buttonMapping.element, asciiCode: this.jsdosKeyCodeLookup(buttonMapping.asciiCode) });
         if (!this.directions) {
             this.addTouchEventListeners();
         }

@@ -5,6 +5,7 @@
     <title>Sopwith II</title>
     <link rel="stylesheet" type="text/css" href="/css/tailwind.min.css"/>
     <link rel="stylesheet" type="text/css" href="/css/style.css"/>
+    <link href="/dosbox/dos7/js-dos.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 </head>
 <body>
@@ -21,8 +22,8 @@
             </div>
 
             <!-- Middle Column (Canvas) -->
-            <div class="flex items-center justify-center text-white pointer-events-none">
-                <canvas id="canvas" class="p-2 pointer-events-none bg-black"></canvas>
+            <div id="root" class="flex items-center justify-center text-white pointer-events-none">
+                <!-- <canvas id="canvas" class="p-2 pointer-events-none bg-black"></canvas> -->
             </div>
 
             <!-- Right Column (Buttons) -->
@@ -62,14 +63,15 @@
         </div>
 
     </section>
+    <script src="/dosbox/dos7/js-dos.js"></script>
     <script type="module">
 
-        import {DosGame} from "/index.js";
+        import {DosGame} from "/index7.js";
         import {emergeGamingSDK} from '/lib/emergamingSDK.js'
         import {processScreenshot, setupOcr} from "/lib/ocr.js";
         import {sopwith_digits} from "/games/dos/sopwith/digits.js";
 
-        let canvas = document.getElementById('canvas');
+        let canvas = document.getElementById('root');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
         let startButtonDesktop = document.getElementById('startButtonDesktop');
         let startButtonMobile = document.getElementById('startButtonMobile');
@@ -80,57 +82,62 @@
         let buttonBomb = document.getElementById('ctlButtonBomb');
         let buttonHome = document.getElementById('ctlButtonHome');
         let buttonFire = document.getElementById('ctlButtonFire');
+        let buttonInvert = document.getElementById('ctlButtonInvert');
 
         let mode = 'none'
 
-        let gameConfig = {
-            zipFile : 'sopwith.zip',
-            execCmdArray : ['-c','SOPWITH.EXE'],
-            cycles: '800'
-        }
+        // let gameConfig = {
+        //     zipFile : 'sopwith.zip',
+        //     execCmdArray : ['-c','SOPWITH.EXE'],
+        //     cycles: '800'
+        // }
 
         const startButtonClicked = () => {
 
             startButtonOverlay.remove();
 
-            let dosGame = new DosGame(window.Dos, gameConfig, canvas);
-            dosGame.start().then(() => {
+            let dosGame = new DosGame(window.Dos, document.getElementById("root"), emulators);
+                dosGame.start7("sopwith7.jsdos").then(() =>{
 
                 emergeGamingSDK.startLevel();
 
                 let startX = 16; let startY = 192; let charWidth = 7; let charHeight = 7; let charSpacing = 1; let numChars = 5;
-                setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, sopwith_digits);
+                //setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, sopwith_digits);
+                dosGame.autoKeyPress(83,150).then(() => {
+                        dosGame.autoKeyPress(51, 150)
+                })
 
-                setTimeout(() => {
-                    dosGame.autoKeyPress(83,150).then(() => {
-                        dosGame.autoKeyPress(51)
-                        dosGame.setGeneralPixelCallback((colours) => {
-                            if (colours.join() === '#ff55ff,#ff55ff,#ff55ff' && mode !== 'gameover') {
-                                processScreenshot(canvas.toDataURL('img/png')).then((_score) => {
-                                    mode = 'gameover'
-                                    //console.log(_score);
-                                    emergeGamingSDK.endLevel("Score: " +_score);
-                                    setTimeout(() => {location.reload()},750)
-                                });
-                            }
-                        });
-                        dosGame.addPixelListener(128,96, () => {});
-                        dosGame.addPixelListener(145,96, () => {});
-                        dosGame.addPixelListener(180,96, () => {});
-                    })
-                }, 150)
+                // setTimeout(() => {
+                //     dosGame.autoKeyPress(83,150).then(() => {
+                //         dosGame.autoKeyPress(51)
+                //         dosGame.setGeneralPixelCallback((colours) => {
+                //             if (colours.join() === '#ff55ff,#ff55ff,#ff55ff' && mode !== 'gameover') {
+                //                processScreenshot(canvas.toDataURL('img/png')).then((_score) => {
+                //     //                mode = 'gameover'
+                //                     //console.log(_score);
+                //       //              emergeGamingSDK.endLevel("Score: " +_score);
+                //         //            setTimeout(() => {location.reload()},750)
+                //                 });
+                //             }
+                //         });
+                //         dosGame.addPixelListener(128,96, () => {});
+                //         dosGame.addPixelListener(145,96, () => {});
+                //         dosGame.addPixelListener(180,96, () => {});
+                //     })
+                // }, 150)
 
                 dosGame.overrideDirectionAscii({
-                    'up': 190, // period
-                    'down':190, // period
+                    // 'up': 190, // period
+                    //'down':190, // period
                     'left':188, // comma
                     'right':191, // forward slash
                 })
-                dosGame.mapTouchToArrowKeys({directions:4});
+                dosGame.mapTouchToArrowKeys({directions:2});
                 dosGame.mapButtonToKey({element:buttonAccelerate, asciiCode:88}); // x
                 dosGame.mapButtonToKey({element:buttonHome, asciiCode:72}); // h
                 dosGame.mapButtonToKey({element:buttonBomb, asciiCode:66}); // b
                 dosGame.mapButtonToKey({element:buttonFire, asciiCode:32}); // space
+                dosGame.mapButtonToKey({element:buttonInvert, asciiCode:190}); // period
 
             })
         }
@@ -148,6 +155,6 @@
         startButtonForm.addEventListener('submit', startButtonClicked);
 
     </script>
-    <script src="/dosbox/js-dos.js"></script>
+    <script src="/dosbox/dos7/js-dos.js"></script>
 </body>
 </html>
