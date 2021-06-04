@@ -112,49 +112,6 @@
     }
   },
   "layers": {
-    "default": {
-      "name": "joystick+button",
-      "image": "layers-joystick-button.jpg",
-      "buttons": [
-        {
-          "action": "click",
-          "mapTo": 32,
-          "style": {
-            "left": "16px",
-            "bottom": "32px"
-          }
-        }
-      ],
-      "mapper": {
-        "88": 290
-      },
-      "gestures": [
-        {
-          "joystickId": 0,
-          "event": "dir:up",
-          "mapTo": 265
-        },
-        {
-          "joystickId": 0,
-          "event": "dir:down",
-          "mapTo": 264
-        },
-        {
-          "joystickId": 0,
-          "event": "dir:left",
-          "mapTo": 263
-        },
-        {
-          "joystickId": 0,
-          "event": "dir:right",
-          "mapTo": 262
-        },
-        {
-          "joystickId": 0,
-          "event": "end:release",
-          "mapTo": 0
-        }
-      ]
-    }
+    
   }
 }

@@ -25,10 +25,10 @@
       <script src="/dosbox/dos7/js-dos.js"></script>
       <script type=module>
         import {DosGame} from '/index7.js';
-          // emulators.pathPrefix = "/dosbox/dos7/";
-          // Dos(document.getElementById("root")).run("GDNT/wolf3d.jsdos");
-          let dosGame = new DosGame(window.Dos, document.getElementById("root"), emulators);
-          dosGame.start7("wsf/wolf3d.jsdos");
+          emulators.pathPrefix = "/dosbox/dos7/";
+          Dos(document.getElementById("root")).run("GDNT/wolf3d.jsdos");
+          // let dosGame = new DosGame(window.Dos, document.getElementById("root"), emulators);
+          // dosGame.start7("wsf/wolf3d.jsdos");
   
       </script>
     

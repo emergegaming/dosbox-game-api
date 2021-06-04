@@ -43,6 +43,51 @@ interface DirectionMapping {
  */
 export class DosGame {
 
+    private dos7ReverseKeyMapping = {
+        //any keys that have not been mapped are either never needed in dosbox games or are the same and dont need mappings
+            
+            97 : 65,
+            98 : 66,
+            99 : 67,
+            100 : 68,
+            101 : 69,
+            102 : 70,
+            103 : 71,
+            104 : 72,
+            105 : 73,
+            106 : 74,
+            107 : 75,
+            108 : 76,
+            109 : 77,
+            110 : 78,
+            111 : 79,
+            112 : 80,
+            113 : 81,
+            114 : 82,
+            115 : 83,
+            116 : 84,
+            117 : 85,
+            118 : 86,
+            119 : 87,
+            120 : 88,
+            121 : 89,
+            122 : 90,
+            18 : 342,
+            //18 : 346,
+            17 : 341,
+            //17 : 345,
+            16 : 340,
+            //16 : 344,
+            190 : 46,
+            188 : 44,
+            191 : 47,
+            263 : 37,
+            38 : 265,
+            40 : 264,
+            262 : 39
+            
+    }
+
     private dosRef: any;
     private options: GameOptions
     private canvas: HTMLCanvasElement
@@ -66,9 +111,9 @@ export class DosGame {
 
     private directionMapping:object = {
         'up': 38,
-        'down':40,
-        'left':37,
-        'right':39
+        'down': 40,
+        'left': 37,
+        'right': 39
     };
 
 
@@ -484,14 +529,14 @@ export class DosGame {
         let turnOff = was.filter(w => is.indexOf(w) === -1)
         let turnOn = is.filter(i => was.indexOf(i) === -1)
         turnOff.forEach((direction) => {
-            console.log("Key Up: " + this.getDirectionAscii(direction));
+            console.log("Key Up: " + this.getDirectionAscii(this.dos7ReverseKeyMapping[direction]));
 
             this.ci.sendKeyEvent(this.getDirectionAscii(direction), false);
 
         });
         turnOn.forEach((direction) => {
             //console.log(this.ci);
-            console.log("Key Down: " + this.getDirectionAscii(direction));
+            console.log("Key Down: " + this.getDirectionAscii(this.dos7ReverseKeyMapping[direction]));
 
             this.ci.sendKeyEvent(this.getDirectionAscii(direction), true);
         });
