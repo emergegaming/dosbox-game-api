@@ -110,10 +110,11 @@
                         mode = "preGame";
                         //console.log(mode);
                         dosGame.autoKeyPress(32, 10);
-                        loadingOverlay.remove();
                     }
                     else if (hexValue === "#55ffff" && mode === "preGame") {//inGame
                         mode = "inGame";
+                        loadingOverlay.remove();
+
                         //console.log(mode);
                     }
                     else if (hexValue === "#ffffff" && mode === "inGame") {//postGameSplash -> GameOver
@@ -121,7 +122,7 @@
                         //console.log(mode);
                         processScreenshot(lastCanvas).then((_score) => {
                             emergeGamingSDK.endLevel(_score);
-                            //console.log("Score: " + _score);
+                            console.log("Score: " + _score);
                             //console.log(lastCanvas);
                             setTimeout(() => location.reload(), 750);
                         });
