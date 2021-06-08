@@ -71,7 +71,7 @@
         import {arkanoid_digits} from "/games/dos/arkanoid/digits.js";
         import {DosGame} from '/index7.js';
 
-        let canvas = document.getElementById('root');
+        let divContainer = document.getElementById('root');
         let startButtonOverlay = document.getElementById('startButtonOverlay');
         let startButtonDesktop = document.getElementById('startButtonDesktop');
         let startButtonMobile = document.getElementById('startButtonMobile');
@@ -99,9 +99,17 @@
           // Dos(document.getElementById("root")).run("GDNT/wolf3d.jsdos");
           
 
-          let dosGame = new DosGame(window.Dos, document.getElementById("root"), emulators);
+          let dosGame = new DosGame(window.Dos, divContainer, emulators);
           dosGame.start7("asf.zip").then(() =>{
+            // let startX = 120; let startY = 188; let charWidth = 6; let charHeight = 9; let charSpacing = 2; let numChars = 9;
+            //     setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, digits);
 
+
+            dosGame.addPixelListener(235, 82, (hexValue) => {
+                console.log("HEXVALUE: " + hexValue);
+            });
+            dosGame.consoleScreenshots();
+            
             // const mapper = {
             //     103/*KBD_x*/: 37 /*KBD_f1*/,
             //     105/*KBD_x*/: 39 /*KBD_f1*/,

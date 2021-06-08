@@ -1,3 +1,5 @@
+import { webGl } from "emulators-ui/dist/types/graphics/webgl";
+
 interface GameOptions {
     cycles: number
     zipFile: string
@@ -106,7 +108,7 @@ export class DosGame {
     private buttons:ButtonMapping[] = []
     private origin:Origin = {x:null, y:null, id:null}
     private lastDirection:string[] = []
-    private canvasContext:CanvasRenderingContext2D
+    private canvasContext:WebGLRenderingContext
     private interval:number
     private pixelListeners:PixelListener[] = []
     private keysDown:string[] = []
@@ -116,6 +118,7 @@ export class DosGame {
     private dPadBounds:DOMRect;
     private touchEventListenersAdded:boolean = false;
     private reverseKeyMap = new Map();
+    
 
     private directionMapping:object = {
         'up': 38,
@@ -153,7 +156,9 @@ export class DosGame {
     constructor(dosRef:any, rootElement:HTMLElement, emulators:any, forceKeyPress:boolean = false) {
         this.dosRef = dosRef;
         //this.options = options;
-        //this.canvas = <HTMLCanvasElement>rootElement.firstChild
+        
+        //this.canvas = <HTMLCanvasElement>document.getElementsByClassName('emulator-canvas')[0]
+        // 
         this.rootElement = rootElement;
         this.forceKeyPress = forceKeyPress;
         this.emulators = emulators;
@@ -204,8 +209,16 @@ export class DosGame {
             
             this.emulators.pathPrefix = "/dosbox/dos7/";
             this.dosRef(this.rootElement).run(gameBundle).then((ci)=>{
-                console.log("CI:" + ci);
+                //console.log("CI:" + ci);
                 this.ci = ci;
+                
+                this.canvas = <any>this.rootElement.getElementsByTagName('canvas')[0];
+                //console.log("CANVAS:" + this.consoleScreenshot);
+                //(this.canvas.getContext("webgl", {preserveDrawingBuffer: true}))
+                // WebGL2RenderingContext.clearBuffer[fiuv]();
+                this.canvasContext = this.canvas.getContext("webgl");
+                console.log(this.canvasContext);
+                
                 resolve(ci);
             });
         })
@@ -318,8 +331,9 @@ export class DosGame {
     public addPixelListener(x:number, y:number, callback, delay:number = 1000) {
         if (!this.interval) this.interval = window.setInterval(this.doIntervalPoll.bind(this), delay)
         this.pixelListeners.push({x:x, y:y, callback:callback, lastColor:undefined})
+        console.log("Interval Poll called");
 
-        if (!this.canvasContext) this.canvasContext = this.canvas.getContext('2d');
+        //if (!this.canvasContext) this.canvasContext = this.canvas.getContext('2d');
     }
 
     public setGeneralPixelCallback(callback:(colours:string[]) => void) {
@@ -332,7 +346,17 @@ export class DosGame {
 
     public consoleScreenshots() {
         setInterval(() => {
-            console.log (this.canvas.toDataURL('img/png'));
+            let c = document.createElement('canvas');
+            c.width=320;
+            c.height=200;
+            const ctx = c.getContext('2d');       
+            this.ci.screenshot().then((imgData)=>{
+                ctx.putImageData(imgData, 0, 0);
+                console.log(c.toDataURL('img/png'));
+                console.log(imgData);
+            })
+            
+            
         }, 1500)
 
     }
@@ -354,13 +378,34 @@ export class DosGame {
         let colors:string[] = []
 
         this.pixelListeners.forEach((pl) => {
-            let pixelColor:ImageData = this.canvasContext.getImageData(pl.x, pl.y, 1, 1);
-            let colorValue:string = '#' + DosGame.getHexValue(pixelColor.data[0]) + DosGame.getHexValue(pixelColor.data[1]) + DosGame.getHexValue(pixelColor.data[2]);
-            colors.push(colorValue)
-            if (colorValue != pl.lastColor) {
-                pl.callback(colorValue);
-                pl.lastColor = colorValue;
-            }
+            // console.log(pl)
+        //    console.log(this.canvas.toDataURL('img/png'));
+        // this.ci.screenshot('img/png').then((dataURL) => {
+        //     console.log((dataURL).getImageData());
+        // });
+
+
+        
+            
+            //console.log(this.canvasContext);
+            //let pixelColor:ImageData = this.canvasContext.getImageData(pl.x, pl.y, 1, 1);
+            //var pixels = new Uint8Array(4);
+            //let pixelColor:Uint8Array = 
+            // this.canvasContext.readPixels(pl.x, pl.y, 1, 1, this.canvasContext.RGBA, this.canvasContext.UNSIGNED_BYTE, pixels);
+            // //console.log(pixels.toString());
+            // this.canvas.toBlob((blob) => {
+            //     console.log(URL.createDataURL(blob));
+            // }, 'img/png', 1)
+            
+            
+
+    
+            //let colorValue:string = '#' + DosGame.getHexValue(pixelColor.data[0]) + DosGame.getHexValue(pixelColor.data[1]) + DosGame.getHexValue(pixelColor.data[2]);
+            // colors.push(colorValue)
+            // if (colorValue != pl.lastColor) {
+            //     pl.callback(colorValue);
+            //     pl.lastColor = colorValue;
+            // }
         });
 
         if (this.generalPixelCallback) this.generalPixelCallback(colors);
@@ -567,14 +612,14 @@ export class DosGame {
         let turnOff = was.filter(w => is.indexOf(w) === -1)
         let turnOn = is.filter(i => was.indexOf(i) === -1)
         turnOff.forEach((direction) => {
-            console.log("Key Up: " + this.jsdosKeyCodeLookup(this.getDirectionAscii(direction)));
+            //console.log("Key Up: " + this.jsdosKeyCodeLookup(this.getDirectionAscii(direction)));
 
             this.ci.sendKeyEvent(this.jsdosKeyCodeLookup(this.getDirectionAscii(direction)), false);
 
         });
         turnOn.forEach((direction) => {
             //console.log(this.ci);
-            console.log("Key Down: " + this.jsdosKeyCodeLookup(this.getDirectionAscii(direction)));
+            //console.log("Key Down: " + this.jsdosKeyCodeLookup(this.getDirectionAscii(direction)));
 
             this.ci.sendKeyEvent(this.jsdosKeyCodeLookup(this.getDirectionAscii(direction)), true);
         });
