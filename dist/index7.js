@@ -142,12 +142,12 @@ var DosGame = /** @class */ (function () {
             var turnOff = was.filter(function (w) { return is.indexOf(w) === -1; });
             var turnOn = is.filter(function (i) { return was.indexOf(i) === -1; });
             turnOff.forEach(function (direction) {
-                console.log("Key Up: " + _this.jsdosKeyCodeLookup(_this.getDirectionAscii(direction)));
+                //console.log("Key Up: " + this.jsdosKeyCodeLookup(this.getDirectionAscii(direction)));
                 _this.ci.sendKeyEvent(_this.jsdosKeyCodeLookup(_this.getDirectionAscii(direction)), false);
             });
             turnOn.forEach(function (direction) {
                 //console.log(this.ci);
-                console.log("Key Down: " + _this.jsdosKeyCodeLookup(_this.getDirectionAscii(direction)));
+                //console.log("Key Down: " + this.jsdosKeyCodeLookup(this.getDirectionAscii(direction)));
                 _this.ci.sendKeyEvent(_this.jsdosKeyCodeLookup(_this.getDirectionAscii(direction)), true);
             });
         };
@@ -160,7 +160,8 @@ var DosGame = /** @class */ (function () {
         };
         this.dosRef = dosRef;
         //this.options = options;
-        //this.canvas = <HTMLCanvasElement>rootElement.firstChild
+        //this.canvas = <HTMLCanvasElement>document.getElementsByClassName('emulator-canvas')[0]
+        // 
         this.rootElement = rootElement;
         this.forceKeyPress = forceKeyPress;
         this.emulators = emulators;
@@ -214,8 +215,14 @@ var DosGame = /** @class */ (function () {
                 this.reverseKeyMap.set(72, 72); //H
                 this.emulators.pathPrefix = "/dosbox/dos7/";
                 this.dosRef(this.rootElement).run(gameBundle).then(function (ci) {
-                    console.log("CI:" + ci);
+                    //console.log("CI:" + ci);
                     _this.ci = ci;
+                    _this.canvas = _this.rootElement.getElementsByTagName('canvas')[0];
+                    //console.log("CANVAS:" + this.consoleScreenshot);
+                    //(this.canvas.getContext("webgl", {preserveDrawingBuffer: true}))
+                    // WebGL2RenderingContext.clearBuffer[fiuv]();
+                    _this.canvasContext = _this.canvas.getContext("webgl");
+                    console.log(_this.canvasContext);
                     resolve(ci);
                 });
                 return [2 /*return*/];
@@ -327,8 +334,8 @@ var DosGame = /** @class */ (function () {
         if (!this.interval)
             this.interval = window.setInterval(this.doIntervalPoll.bind(this), delay);
         this.pixelListeners.push({ x: x, y: y, callback: callback, lastColor: undefined });
-        if (!this.canvasContext)
-            this.canvasContext = this.canvas.getContext('2d');
+        console.log("Interval Poll called");
+        //if (!this.canvasContext) this.canvasContext = this.canvas.getContext('2d');
     };
     DosGame.prototype.setGeneralPixelCallback = function (callback) {
         this.generalPixelCallback = callback;
@@ -339,21 +346,41 @@ var DosGame = /** @class */ (function () {
     DosGame.prototype.consoleScreenshots = function () {
         var _this = this;
         setInterval(function () {
-            console.log(_this.canvas.toDataURL('img/png'));
+            var c = document.createElement('canvas');
+            c.width = 320;
+            c.height = 200;
+            var ctx = c.getContext('2d');
+            _this.ci.screenshot().then(function (imgData) {
+                ctx.putImageData(imgData, 0, 0);
+                console.log(c.toDataURL('img/png'));
+                console.log(imgData);
+            });
         }, 1500);
     };
     /***** P R I V A T E   M E T H O D S *****/
     DosGame.prototype.doIntervalPoll = function () {
-        var _this = this;
         var colors = [];
         this.pixelListeners.forEach(function (pl) {
-            var pixelColor = _this.canvasContext.getImageData(pl.x, pl.y, 1, 1);
-            var colorValue = '#' + DosGame.getHexValue(pixelColor.data[0]) + DosGame.getHexValue(pixelColor.data[1]) + DosGame.getHexValue(pixelColor.data[2]);
-            colors.push(colorValue);
-            if (colorValue != pl.lastColor) {
-                pl.callback(colorValue);
-                pl.lastColor = colorValue;
-            }
+            // console.log(pl)
+            //    console.log(this.canvas.toDataURL('img/png'));
+            // this.ci.screenshot('img/png').then((dataURL) => {
+            //     console.log((dataURL).getImageData());
+            // });
+            //console.log(this.canvasContext);
+            //let pixelColor:ImageData = this.canvasContext.getImageData(pl.x, pl.y, 1, 1);
+            //var pixels = new Uint8Array(4);
+            //let pixelColor:Uint8Array = 
+            // this.canvasContext.readPixels(pl.x, pl.y, 1, 1, this.canvasContext.RGBA, this.canvasContext.UNSIGNED_BYTE, pixels);
+            // //console.log(pixels.toString());
+            // this.canvas.toBlob((blob) => {
+            //     console.log(URL.createDataURL(blob));
+            // }, 'img/png', 1)
+            //let colorValue:string = '#' + DosGame.getHexValue(pixelColor.data[0]) + DosGame.getHexValue(pixelColor.data[1]) + DosGame.getHexValue(pixelColor.data[2]);
+            // colors.push(colorValue)
+            // if (colorValue != pl.lastColor) {
+            //     pl.callback(colorValue);
+            //     pl.lastColor = colorValue;
+            // }
         });
         if (this.generalPixelCallback)
             this.generalPixelCallback(colors);
