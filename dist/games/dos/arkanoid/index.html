@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Arkanoid</title>
-    <link rel="stylesheet" type="text/css" href="/css/tailwind-purged.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/tailwind.min.css"/>
     <link rel="stylesheet" type="text/css" href="/css/style.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 </head>
@@ -40,10 +40,7 @@
         <!-- Overlay to: Load and Start -->
         <div id="startButtonOverlay" class="flex fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-40" style="background-color: #101010">
             <form id="startButtonForm" onsubmit="return false">
-                <input type="image" src="arkanoid-loader-desktop.jpg" id="startButtonDesktop" class="h-64 outline-none"/>
-                <!-- <input type="image" src="safe-area-1600-900.png" id="startButtonMobile" class="h-64 outline-none"/> -->
-                <input type="image" src="arkanoid-loader-mobile.jpg" id="startButtonMobile" class="h-64 outline-none"/>
-
+                <input type="image" id="startButton" class="h-screen max-h-96 outline-none focus:outline-none"/>
             </form>
         </div>
 
@@ -138,12 +135,9 @@
         }
 
         if (DosGame.isTouch()){
-            startButtonDesktop.remove();
-            startButtonMobile.focus();
-        }
-        else{
-            startButtonMobile.remove();
-            startButtonDesktop.focus();
+            startButton.src = 'arkanoid-loader-mobile.jpg'
+        } else {
+            startButton.src = 'arkanoid-loader-desktop.jpg'
         }
 
 
