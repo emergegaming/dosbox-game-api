@@ -1,5 +1,6 @@
 import { webGl } from "emulators-ui/dist/types/graphics/webgl";
 
+
 interface GameOptions {
     cycles: number
     zipFile: string
@@ -314,6 +315,8 @@ export class DosGame {
      * @param y coord of pixel
      * @param callback
      * @param delay the number of ms to wait
+     * @param endX coord of when to stop reading pixels (can be set as 320 for full image)
+     * @param endY coord of when to stop reading pixels (can be set as 200 for full image)
      * @todo: This should really be called addPixelListener (i.e. more than one)
      * @deprecated use addPixelListener
      */
@@ -328,13 +331,37 @@ export class DosGame {
      * @param callback to callback every interval with the pixel colour.
      * @param delay the number of ms between callback intervals
      */
+    
     public addPixelListener(x:number, y:number, callback, delay:number = 1000) {
-        if (!this.interval) this.interval = window.setInterval(this.doIntervalPoll.bind(this), delay)
+        let endX = ++x;
+        let endY = ++y;
+        //console.log("X: " + endX + " Y: " + endY)
         this.pixelListeners.push({x:x, y:y, callback:callback, lastColor:undefined})
-        console.log("Interval Poll called");
+
+     
+
+        if (!this.interval) {
+            // console.log("Starting Poll");
+            let scope = this;
+            let whaTever = setInterval(function() {
+                // console.log("HIHIHIHIh")
+                scope.interval = scope.doIntervalPoll.bind(scope)(endX, endY)
+            }, 1000);
+            //  = window.setInterval(this.doIntervalPoll.bind(this)(endX, endY), delay)
+        }
+        console.log("PL Lenght; " + this.pixelListeners.length);
+        let i = 0;
+        this.pixelListeners.forEach(element => {
+
+            console.log("Pixel Listeners in the Array: " + this.pixelListeners[i]);
+            i++;
+        });
+        //console.log("Listeners: " + this.pixelListeners);
+
 
         //if (!this.canvasContext) this.canvasContext = this.canvas.getContext('2d');
     }
+    
 
     public setGeneralPixelCallback(callback:(colours:string[]) => void) {
         this.generalPixelCallback = callback;
@@ -344,7 +371,7 @@ export class DosGame {
         window.clearInterval(this.interval);
     }
 
-    public consoleScreenshots() {
+    public consoleScreenshots() {//writes the imgData to a canvas to allow the old index.ts code to still work
         setInterval(() => {
             let c = document.createElement('canvas');
             c.width=320;
@@ -373,40 +400,50 @@ export class DosGame {
 
     /***** P R I V A T E   M E T H O D S *****/
 
-    private doIntervalPoll() {
+    private doIntervalPoll(endX:number, endY:number) {
+        console.log("1");
+
+        //console.log("X: " + endX + " Y: " + endY)
+        let cp = document.createElement('canvas');
+            cp.width=1;
+            cp.height=1;
+        const ctxp = cp.getContext('2d');       
+            
+        
+        console.log("2");
 
         let colors:string[] = []
-
-        this.pixelListeners.forEach((pl) => {
-            // console.log(pl)
-        //    console.log(this.canvas.toDataURL('img/png'));
-        // this.ci.screenshot('img/png').then((dataURL) => {
-        //     console.log((dataURL).getImageData());
-        // });
-
-
-        
+        let pixelColor:ImageData;
+        console.log("3");
+        console.log("PL[0]: " + this.pixelListeners[0])
+        this.pixelListeners.forEach(pl => {
+            console.log("4");
+            this.ci.screenshot().then((imgData)=>{
+                console.log("5");
+                ctxp.putImageData(imgData, 0, 0, 1, 1, 1, 1);
+                // pixelColor = ctxp.getImageData(0,0,1,1);
+                console.log("CP 1x1 img: " + cp.toDataURL('img/png'))
+                //let colorValue:string = '#' + DosGame.getHexValue(pixelColor.data[0]) + DosGame.getHexValue(pixelColor.data[1]) + DosGame.getHexValue(pixelColor.data[2])+ DosGame.getHexValue(pixelColor.data[3]);
+                // colors.push(colorValue)
+                // console.log("Pixel Listener Screenshot: " + cp.toDataURL('img/png'));
+                // if (colorValue != pl.lastColor) {
+                //     pl.callback(colorValue);
+                //     pl.lastColor = colorValue;
+                // }
+                // console.log(ctxp);
+            })
+            // this.ci.screenshot().then((imgData)=>{
+            //     pixelColor = imgData.data;
+            //     console.log("DATA: " + pixelColor);
+            // })
             
-            //console.log(this.canvasContext);
-            //let pixelColor:ImageData = this.canvasContext.getImageData(pl.x, pl.y, 1, 1);
-            //var pixels = new Uint8Array(4);
-            //let pixelColor:Uint8Array = 
-            // this.canvasContext.readPixels(pl.x, pl.y, 1, 1, this.canvasContext.RGBA, this.canvasContext.UNSIGNED_BYTE, pixels);
-            // //console.log(pixels.toString());
-            // this.canvas.toBlob((blob) => {
-            //     console.log(URL.createDataURL(blob));
-            // }, 'img/png', 1)
             
             
-
-    
-            //let colorValue:string = '#' + DosGame.getHexValue(pixelColor.data[0]) + DosGame.getHexValue(pixelColor.data[1]) + DosGame.getHexValue(pixelColor.data[2]);
-            // colors.push(colorValue)
-            // if (colorValue != pl.lastColor) {
-            //     pl.callback(colorValue);
-            //     pl.lastColor = colorValue;
-            // }
+            //console.log("Colours: " + colorValue)
+            
+            console.log("UINT8 array: " + pixelColor)
         });
+
 
         if (this.generalPixelCallback) this.generalPixelCallback(colors);
     }

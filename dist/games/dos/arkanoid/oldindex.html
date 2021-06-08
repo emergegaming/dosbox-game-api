@@ -101,15 +101,34 @@
 
           let dosGame = new DosGame(window.Dos, divContainer, emulators);
           dosGame.start7("asf.zip").then(() =>{
-            // let startX = 120; let startY = 188; let charWidth = 6; let charHeight = 9; let charSpacing = 2; let numChars = 9;
-            //     setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, digits);
+            
 
-
+            console.log("Here");
             dosGame.addPixelListener(235, 82, (hexValue) => {
                 console.log("HEXVALUE: " + hexValue);
             });
-            dosGame.consoleScreenshots();
-            
+            dosGame.addPixelListener(235, 82, (hexValue) => {
+                console.log("HEXVALUE: " + hexValue);
+            });
+            dosGame.addPixelListener(235, 82, (hexValue) => {
+                console.log("HEXVALUE: " + hexValue);
+            });
+
+            // dosGame.consoleScreenshots();
+
+
+            dosGame.mapTouchToArrowKeys({directions: 2});
+            dosGame.mapButtonToKey({element:buttonB, asciiCode:32});
+            dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
+
+            dosGame.autoKeyPress(69, 100).then(() => {
+                dosGame.autoKeyPress(75, 100);
+            })
+        
+
+            // let startX = 120; let startY = 188; let charWidth = 6; let charHeight = 9; let charSpacing = 2; let numChars = 9;
+            //     setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, digits);
+
             // const mapper = {
             //     103/*KBD_x*/: 37 /*KBD_f1*/,
             //     105/*KBD_x*/: 39 /*KBD_f1*/,
@@ -123,18 +142,12 @@
                 // dosGame.overrideKey('left',103); // 103
                 // dosGame.overrideKey('right',105); // 105
                 // dosGame.mapDPadToArrowKeys
-                dosGame.mapTouchToArrowKeys({directions: 2});
+                
                 // dosGame.overrideKey('39',263); // 103
                 // dosGame.overrideKey('37',262); // 105
                 // // dosGame.maptouch
                 // dosGame.mapTouchToArrowKeys({directions: 8});
-                dosGame.mapButtonToKey({element:buttonB, asciiCode:32});
-                dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
-
-                dosGame.autoKeyPress(69, 100).then(() => {
-                    dosGame.autoKeyPress(75, 100);
-
-                })
+                
           });
   
             
