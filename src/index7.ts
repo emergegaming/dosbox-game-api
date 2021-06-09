@@ -332,7 +332,7 @@ export class DosGame {
      */
     
     public addPixelListener(x:number, y:number, callback, delay:number = 1000) {
-        let pixelLocation = x + (320*y);//function to find the index in the 1d array
+        let pixelLocation = x + (320*(y+1));//function to find the index in the 1d array CHANGE THIS
         //console.log("X: " + endX + " Y: " + endY)
         this.pixelListeners.push({x:x, y:y, callback:callback, lastColor:undefined})
 
@@ -344,7 +344,7 @@ export class DosGame {
             window.setInterval(() => {
                 // console.log("HIHIHIHIh")
                 scope.interval = scope.doIntervalPoll.bind(scope)(pixelLocation)
-            }, 1000);
+            }, delay);
             //  = window.setInterval(this.doIntervalPoll.bind(this)(endX, endY), delay)
         }
         console.log("PL Lenght; " + this.pixelListeners.length);
@@ -398,7 +398,7 @@ export class DosGame {
 
     /***** P R I V A T E   M E T H O D S *****/
 
-    private doIntervalPoll(pixelLocation:number) {
+    private doIntervalPoll(pixelLocation:number) {{
         
         
         console.log("1");
@@ -408,7 +408,7 @@ export class DosGame {
             // cp.width=320;
             // cp.height=200;
         // const ctxp = cp.getContext('2d');       
-            
+
         
         console.log("2");
 
@@ -416,28 +416,32 @@ export class DosGame {
         let pixelColor:ImageData;
         console.log("3");
         //console.log("PL[0]: " + this.pixelListeners[0])
-        //this.pixelListeners.forEach(pl => {
+        this.pixelListeners.forEach((pl) => {
             console.log("4");
             //this.consoleScreenshots();
-            
-                //console.log(imgData.data.toString());
-                // console.log(
-                //     imgData.data[pixelLocation], 
-                //     imgData.data[pixelLocation+1], 
-                //     imgData.data[pixelLocation+2], 
-                //     imgData.data[pixelLocation+3],
-                //     pixelLocation
-                //     )
+            this.ci.screenshot().then((imgData)=>{
+                console.log(imgData.data.toString());
+                console.log(
+                    imgData.data[pixelLocation], 
+                    imgData.data[pixelLocation+1], 
+                    imgData.data[pixelLocation+2], 
+                    imgData.data[pixelLocation+3],
+                    pixelLocation
+                    )
+                    let colorValue:string = (
+                        '#' + 
+                        DosGame.getHexValue(imgData.data[pixelLocation]) + 
+                        DosGame.getHexValue(imgData.data[pixelLocation+1]) + 
+                        DosGame.getHexValue(imgData.data[pixelLocation+2]));
+                        console.log(colorValue);
+            })
+                
                 // console.log("5");
                 // //ctxp.putImageData(imgData, 0, 0);
                 // // pixelColor = ctxp.getImageData(0,0,1,1);
                 // //console.log(cp.toDataURL('img/png'))
-                // let colorValue:string = (
-                //     '#' + 
-                //     DosGame.getHexValue(imgData.data[pixelLocation]) + 
-                //     DosGame.getHexValue(imgData.data[pixelLocation+1]) + 
-                //     DosGame.getHexValue(imgData.data[pixelLocation+2]));
-                //     console.log(colorValue);
+                
+                
                 // colors.push(colorValue)
                 // console.log("Pixel Listener Screenshot: " + cp.toDataURL('img/png'));
                 // if (colorValue != pl.lastColor) {
@@ -445,7 +449,9 @@ export class DosGame {
                 //     pl.lastColor = colorValue;
                 // }
                 // console.log(ctxp);
+            
             })
+        
             // this.ci.screenshot().then((imgData)=>{
             //     pixelColor = imgData.data;
             //     console.log("DATA: " + pixelColor);
@@ -459,8 +465,8 @@ export class DosGame {
         //});
 
 
-        if (this.generalPixelCallback) this.generalPixelCallback(colors);
-    }
+    //if (this.generalPixelCallback) this.generalPixelCallback(colors);
+    }}
 
     private static getHexValue(number:number):string {
         return ("00" + number.toString(16)).slice(-2)
