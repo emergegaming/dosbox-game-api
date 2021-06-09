@@ -5,53 +5,179 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link rel="stylesheet" type="text/css" href="/css/tailwind.min.css"/>
-</head>
-<body class="bg-black">
-
-    <div id="landscape" class="relative w-full h-screen flex items-center justify-center bg-no-repeat bg-center" style="background-image: url('table-landscape.png');background-size: auto 100%">
-    </div>
-    <div id="portrait" style="background-image: url('table-portrait.png');background-size: 100% auto" class="flex justify-center w-full h-screen bg-top bg-no-repeat">
-    </div>
-
-    <div id="canvasFrame" class="absolute top-0 flex justify-center w-full h-screen">
-        <canvas class="bg-blue-900"></canvas>
-    </div>
-
-    <style type="text/css">
-
-        /*
-            @TODO: Fix calcs to get EXACT 1.6 aspect ratio
-            @TODO: Hide everything on square
-        */
+    <style lang="css">
 
         @media screen and (orientation:portrait) {
-            #landscape {
-                display: none;
-            }
-            canvas {
-                margin-top: calc(100vw * 0.08);
-                width: calc(100vw * 0.84);
-                height: calc(100vw *0.52)
-            }
-            #canvasFrame {
-                align-items: start;
+            #gameCanvas {
+                width: 100%;
             }
         }
 
         @media screen and (orientation:landscape) {
-            #portrait {
-                display: none;
-            }
-            canvas {
-                width: calc(100vh * 1.27);
-                height:79%;
-                margin-left:calc(100vh * 0.08)
-            }
-            #canvasFrame {
-                align-items: center;
+            #gameCanvas {
+                margin: auto;
+                height:100%
             }
         }
 
     </style>
+</head>
+<body class="bg-black h-screen object-contain">
+    <canvas id="controlCanvas" class="w-full left-0 absolute top-0 h-screen"></canvas>
+    <canvas id="gameCanvas"></canvas>
+    <script type="module">
+
+        /** DOS **/
+
+        import {DosGame} from "/index.js";
+        let canvas = document.getElementById('gameCanvas');
+        let gameConfig = {
+            zipFile : 'sopwith.zip',
+            execCmdArray : ['-c','SOPWITH.EXE'],
+            cycles: '800'
+        }
+
+        let dosGame = new DosGame(window.Dos, gameConfig, canvas);
+        dosGame.start();
+
+        /** PIXI **/
+        let controlCanvas = document.getElementById('controlCanvas')
+        let app = new PIXI.Application({width: window.innerWidth, height: window.innerHeight, view: controlCanvas, transparent:true, autoResize:true, resizeTo:window});
+
+        /** PIXI:Graphics **/
+        let graphicsCircle = new PIXI.Graphics();
+        graphicsCircle.beginFill(0x33AAFF);
+        graphicsCircle.lineStyle(0);
+        graphicsCircle.drawCircle(0,0,30);
+        graphicsCircle.endFill();
+        graphicsCircle.interactive = false;
+
+        let graphicsRing = new PIXI.Graphics();
+        graphicsRing.lineStyle(8, 0x3355FF);
+        graphicsRing.drawCircle(0,0,50);
+        graphicsRing.interactive = false;
+
+        /** PIXI:Sprite **/
+        let circleTexture = app.renderer.generateTexture(graphicsCircle)
+        let circle = new PIXI.Sprite(circleTexture);
+        circle.anchor.set(0.5)
+        circle.visible = false;
+        circle.alpha = 0.5
+        app.stage.addChild(circle);
+
+        let ringTexture = app.renderer.generateTexture(graphicsRing);
+        let ring = new PIXI.Sprite(ringTexture)
+        ring.anchor.set(0.5)
+        ring.visible = false;
+        ring.alpha = 0.5
+        ring.blendMode = PIXI.BLEND_MODES.ADD;
+        app.stage.addChild(ring);
+
+        /** PIXI:Events **/
+
+        app.stage.interactive = true;
+
+        let justPressed = false;
+        let justReleased = false;
+        let buzzed = false
+        let mouseState = 'up';
+        let xc = 0, yc = 0;
+        let lastX = 0; let lastY = 0;
+
+        app.renderer.plugins.interaction.on('pointerup', () => {
+            mouseState = 'up'
+        });
+
+        app.renderer.plugins.interaction.on('pointerdown', (event) => {
+            xc = event.data.global.x;
+            yc = event.data.global.y;
+            mouseState = 'down'
+        });
+
+        app.renderer.plugins.interaction.on('pointermove', (event) => {
+            xc = event.data.global.x;
+            yc = event.data.global.y;
+        })
+
+        app.ticker.add(() => {
+
+            if (mouseState === 'down') {
+
+                circle.position.x = xc;
+                circle.position.y = yc;
+
+                let xr = ring.position.x;
+                let yr = ring.position.y;
+
+                let dx = xc - xr;
+                let dy = yc - yr;
+                let control = [];
+
+                let r = Math.hypot(dx, dy);
+                if (r > 5 && r < 50) {
+
+                    let rangeInner = dy * 0.38;
+                    let rangeOuter = dy * 2.61;
+                    if (dx < -Math.abs(rangeOuter)) {
+                        control = ['left']
+                    } else if (dy < 0 && dx < rangeInner) {
+                        control = ['up','left']
+                    } else if (dy < 0 && dx < Math.abs(rangeInner)) {
+                        control = ['up']
+                    } else if (dy < 0 && dx < -rangeOuter) {
+                        control = ['up','right']
+                    } else if (dx > Math.abs(rangeOuter)) {
+                        control = ['right']
+                    } else if (dy > 0 && dx < -Math.abs(rangeInner)) {
+                        control = ['down','left']
+                    } else if (dy > 0 && dx < rangeInner) {
+                        control = ['down']
+                    } else if (dy > 0 && dx < dy * rangeOuter) {
+                        control = ['down','right']
+                    } else {
+                        console.error ("Not a known angle / direction")
+                    }
+                    console.log (control);
+                }
+                if (r > 50) {
+
+                    let xDiff = xc - lastX;
+                    let yDiff = yc - lastY;
+                    ring.position.x += xDiff;
+                    ring.position.y += yDiff;
+
+                    //if (!buzzed) navigator.vibrate(30);
+
+                    buzzed = true;
+                } else {
+                    buzzed = false;
+                }
+
+                if (!justPressed) {
+                    circle.visible = true;
+                    ring.visible = true;
+                    ring.position.x = circle.position.x;
+                    ring.position.y = circle.position.y;
+                    justPressed = true;
+                    justReleased = false;
+                }
+            } else {
+                if (!justReleased) {
+                    justPressed = false;
+                    circle.visible = false;
+                    ring.visible = false
+                    justReleased = true;
+                    justPressed = false;
+                }
+            }
+
+            lastX = xc;
+            lastY = yc;
+
+        })
+
+    </script>
+    <script src="/dosbox/js-dos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.1.3/pixi.min.js"></script>
 </body>
 </html>
