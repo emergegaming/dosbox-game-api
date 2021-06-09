@@ -1,5 +1,5 @@
 import { webGl } from "emulators-ui/dist/types/graphics/webgl";
-
+// import {fs} from '../node_modules/file-system';
 
 interface GameOptions {
     cycles: number
@@ -119,7 +119,6 @@ export class DosGame {
     private dPadBounds:DOMRect;
     private touchEventListenersAdded:boolean = false;
     private reverseKeyMap = new Map();
-    
 
     private directionMapping:object = {
         'up': 38,
@@ -333,8 +332,7 @@ export class DosGame {
      */
     
     public addPixelListener(x:number, y:number, callback, delay:number = 1000) {
-        let endX = ++x;
-        let endY = ++y;
+        let pixelLocation = x + (320*y);//function to find the index in the 1d array
         //console.log("X: " + endX + " Y: " + endY)
         this.pixelListeners.push({x:x, y:y, callback:callback, lastColor:undefined})
 
@@ -343,9 +341,9 @@ export class DosGame {
         if (!this.interval) {
             // console.log("Starting Poll");
             let scope = this;
-            let whaTever = setInterval(function() {
+            window.setInterval(() => {
                 // console.log("HIHIHIHIh")
-                scope.interval = scope.doIntervalPoll.bind(scope)(endX, endY)
+                scope.interval = scope.doIntervalPoll.bind(scope)(pixelLocation)
             }, 1000);
             //  = window.setInterval(this.doIntervalPoll.bind(this)(endX, endY), delay)
         }
@@ -400,14 +398,16 @@ export class DosGame {
 
     /***** P R I V A T E   M E T H O D S *****/
 
-    private doIntervalPoll(endX:number, endY:number) {
+    private doIntervalPoll(pixelLocation:number) {
+        
+        
         console.log("1");
 
         //console.log("X: " + endX + " Y: " + endY)
-        let cp = document.createElement('canvas');
-            cp.width=1;
-            cp.height=1;
-        const ctxp = cp.getContext('2d');       
+        // let cp = document.createElement('canvas');//canvas to put the single pixel on
+            // cp.width=320;
+            // cp.height=200;
+        // const ctxp = cp.getContext('2d');       
             
         
         console.log("2");
@@ -415,15 +415,29 @@ export class DosGame {
         let colors:string[] = []
         let pixelColor:ImageData;
         console.log("3");
-        console.log("PL[0]: " + this.pixelListeners[0])
-        this.pixelListeners.forEach(pl => {
+        //console.log("PL[0]: " + this.pixelListeners[0])
+        //this.pixelListeners.forEach(pl => {
             console.log("4");
-            this.ci.screenshot().then((imgData)=>{
-                console.log("5");
-                ctxp.putImageData(imgData, 0, 0, 1, 1, 1, 1);
-                // pixelColor = ctxp.getImageData(0,0,1,1);
-                console.log("CP 1x1 img: " + cp.toDataURL('img/png'))
-                //let colorValue:string = '#' + DosGame.getHexValue(pixelColor.data[0]) + DosGame.getHexValue(pixelColor.data[1]) + DosGame.getHexValue(pixelColor.data[2])+ DosGame.getHexValue(pixelColor.data[3]);
+            //this.consoleScreenshots();
+            
+                //console.log(imgData.data.toString());
+                // console.log(
+                //     imgData.data[pixelLocation], 
+                //     imgData.data[pixelLocation+1], 
+                //     imgData.data[pixelLocation+2], 
+                //     imgData.data[pixelLocation+3],
+                //     pixelLocation
+                //     )
+                // console.log("5");
+                // //ctxp.putImageData(imgData, 0, 0);
+                // // pixelColor = ctxp.getImageData(0,0,1,1);
+                // //console.log(cp.toDataURL('img/png'))
+                // let colorValue:string = (
+                //     '#' + 
+                //     DosGame.getHexValue(imgData.data[pixelLocation]) + 
+                //     DosGame.getHexValue(imgData.data[pixelLocation+1]) + 
+                //     DosGame.getHexValue(imgData.data[pixelLocation+2]));
+                //     console.log(colorValue);
                 // colors.push(colorValue)
                 // console.log("Pixel Listener Screenshot: " + cp.toDataURL('img/png'));
                 // if (colorValue != pl.lastColor) {
@@ -441,8 +455,8 @@ export class DosGame {
             
             //console.log("Colours: " + colorValue)
             
-            console.log("UINT8 array: " + pixelColor)
-        });
+            //console.log("UINT8 array: " + pixelColor)
+        //});
 
 
         if (this.generalPixelCallback) this.generalPixelCallback(colors);
