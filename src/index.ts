@@ -82,10 +82,6 @@ export class DosGame {
      * @param forceKeyPress force simulateKeyPress instead of simulateKeyEvent
      * @see https://js-dos.com/
      */
-
-
-    
-
     constructor(dosRef:any, options:GameOptions, canvas:HTMLCanvasElement, forceKeyPress:boolean = false) {
         this.dosRef = dosRef
         this.options = options
@@ -93,9 +89,6 @@ export class DosGame {
         this.forceKeyPress = forceKeyPress;
     }
 
-
-
-    
 
     public start():Promise<any> {
         return new Promise((resolve) => {
@@ -469,11 +462,9 @@ export class DosGame {
         let turnOff = was.filter(w => is.indexOf(w) === -1)
         let turnOn = is.filter(i => was.indexOf(i) === -1)
         turnOff.forEach((direction) => {
-            console.log("Key Up: " + this.getDirectionAscii(direction));
             this.ci.simulateKeyEvent(this.getDirectionAscii(direction), false);
         });
         turnOn.forEach((direction) => {
-            console.log("Key Up: " + this.getDirectionAscii(direction));
             this.ci.simulateKeyEvent(this.getDirectionAscii(direction), true)
         });
     }
