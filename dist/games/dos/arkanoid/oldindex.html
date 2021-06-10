@@ -114,10 +114,11 @@
                 
 
                 if (mode === 'playing' && hexValue !== '#5555ff') {
-                        //processScreenshot(secondLastCanvas).then((_score) => {
-                            //emergeGamingSDK.endLevel(_score)
-                            //setTimeout(() => location.reload(), 750);
-                        //});
+                        processScreenshot(secondLastCanvas).then((_score) => {
+                            emergeGamingSDK.endLevel(_score)
+                            setTimeout(() => location.reload(), 750);
+                        });
+                        console.log("GAME OVER")
                         return;
                     }
                 switch(hexValue) {
@@ -138,7 +139,7 @@
                                 setTimeout(() => dosGame.autoKeyPress(32), 500);
                                 setTimeout(() => {
                                     loadingOverlay.remove()
-                                    //emergeGamingSDK.startLevel();
+                                    emergeGamingSDK.startLevel();
                                 }, 750);
                             }
                             break;
@@ -165,9 +166,9 @@
             dosGame.mapButtonToKey({element:buttonB, asciiCode:32});
             dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
 
-            dosGame.autoKeyPress(69, 100).then(() => {
-                dosGame.autoKeyPress(75, 100);
-            })
+            // dosGame.autoKeyPress(69, 100).then(() => {
+            //     dosGame.autoKeyPress(75, 100);
+            // })
         
 
 

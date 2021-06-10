@@ -332,10 +332,10 @@ export class DosGame {
      */
     
     public addPixelListener(x:number, y:number, callback, delay:number = 1000) {
-        let pixelLocation = x + (320*(y+1));//function to find the index in the 1d array CHANGE THIS
+        let pixelLocation = x + (320*(y));//function to find the index in the 1d array 
         //console.log("X: " + endX + " Y: " + endY)
         this.pixelListeners.push({x:x, y:y, callback:callback, lastColor:undefined})
-
+        
      
 
         if (!this.interval) {
@@ -399,42 +399,65 @@ export class DosGame {
     /***** P R I V A T E   M E T H O D S *****/
 
     private doIntervalPoll(pixelLocation:number) {{
-        
-        
-        console.log("1");
-
-        //console.log("X: " + endX + " Y: " + endY)
-        // let cp = document.createElement('canvas');//canvas to put the single pixel on
-            // cp.width=320;
-            // cp.height=200;
-        // const ctxp = cp.getContext('2d');       
-
-        
-        console.log("2");
-
         let colors:string[] = []
-        let pixelColor:ImageData;
-        console.log("3");
-        //console.log("PL[0]: " + this.pixelListeners[0])
-        this.pixelListeners.forEach((pl) => {
-            console.log("4");
-            //this.consoleScreenshots();
+        let c = document.createElement('canvas');
+            c.width=320;
+            c.height=200;
+            const ctx = c.getContext('2d');       
             this.ci.screenshot().then((imgData)=>{
-                console.log(imgData.data.toString());
-                console.log(
-                    imgData.data[pixelLocation], 
-                    imgData.data[pixelLocation+1], 
-                    imgData.data[pixelLocation+2], 
-                    imgData.data[pixelLocation+3],
-                    pixelLocation
-                    )
-                    let colorValue:string = (
-                        '#' + 
-                        DosGame.getHexValue(imgData.data[pixelLocation]) + 
-                        DosGame.getHexValue(imgData.data[pixelLocation+1]) + 
-                        DosGame.getHexValue(imgData.data[pixelLocation+2]));
-                        console.log(colorValue);
+                ctx.putImageData(imgData, 0, 0);
+                //console.log(c.toDataURL('img/png'));
+                let x = c.toDataURL('img/png');
+                // let newScreenShotCanvas = ctx;
+                //console.log(imgData);
+
+                this.pixelListeners.forEach((pl) => {
+                    let pixelColor:ImageData = ctx.getImageData(pl.x, pl.y, 1, 1);
+                    let colorValue:string = '#' + DosGame.getHexValue(pixelColor.data[0]) + DosGame.getHexValue(pixelColor.data[1]) + DosGame.getHexValue(pixelColor.data[2]);
+                    console.log("HEXVALUE: " + colorValue);
+                    colors.push(colorValue)
+                    if (colorValue != pl.lastColor) {
+                        pl.callback(colorValue);
+                        pl.lastColor = colorValue;
+                    }
+                });
             })
+       
+        
+        // console.log("1");
+
+        // //console.log("X: " + endX + " Y: " + endY)
+        // // let cp = document.createElement('canvas');//canvas to put the single pixel on
+        //     // cp.width=320;
+        //     // cp.height=200;
+        // // const ctxp = cp.getContext('2d');       
+
+        
+        // console.log("2");
+
+        // let colors:string[] = []
+        // let pixelColor:ImageData;
+        // console.log("3");
+        // //console.log("PL[0]: " + this.pixelListeners[0])
+        // this.pixelListeners.forEach((pl) => {
+        //     console.log("4");
+        //     //this.consoleScreenshots();
+        //     this.ci.screenshot().then((imgData)=>{
+        //         console.log(imgData.data.toString());
+        //         console.log(
+        //             imgData.data[pixelLocation], 
+        //             imgData.data[pixelLocation+1], 
+        //             imgData.data[pixelLocation+2], 
+        //             imgData.data[pixelLocation+3],
+        //             pixelLocation
+        //             )
+        //             let colorValue:string = (
+        //                 '#' + 
+        //                 DosGame.getHexValue(imgData.data[pixelLocation]) + 
+        //                 DosGame.getHexValue(imgData.data[pixelLocation+1]) + 
+        //                 DosGame.getHexValue(imgData.data[pixelLocation+2]));
+        //                 console.log(colorValue);
+        //     })
                 
                 // console.log("5");
                 // //ctxp.putImageData(imgData, 0, 0);
@@ -450,7 +473,7 @@ export class DosGame {
                 // }
                 // console.log(ctxp);
             
-            })
+            // })
         
             // this.ci.screenshot().then((imgData)=>{
             //     pixelColor = imgData.data;
