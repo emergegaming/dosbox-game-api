@@ -101,7 +101,8 @@
 
           let dosGame = new DosGame(window.Dos, divContainer, emulators);
           dosGame.start7("asf.zip").then(() =>{
-
+            let startX = 239; let startY = 61; let charWidth = 9; let charHeight = 9; let charSpacing = -1; let numChars = 6;
+            setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, arkanoid_digits);
             // setInterval(() => {
             //         thirdLastCanvas = secondLastCanvas;
             //         secondLastCanvas = lastCanvas;;
