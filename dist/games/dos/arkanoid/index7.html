@@ -86,8 +86,6 @@
                     lastCanvas = (dosGame.consoleSingleScreenShot(false, true));
                     dosGame.consoleSingleScreenShot(false, true);
                 }, 1000)
-
-            console.log("Here");
             dosGame.addPixelListener(235, 82, (hexValue) => {
                 if (mode === 'playing' && hexValue !== '#5555ff') {
                         console.log("before ending game and scoring")
@@ -95,7 +93,6 @@
                             emergeGamingSDK.endLevel(_score)
                             setTimeout(() => location.reload(), 750);
                         });
-                        console.log("GAME OVER")
                         return;
                     }
                 switch(hexValue) {
@@ -128,7 +125,7 @@
                             //do nothing
                     }
             }, true);
-         
+
             dosGame.mapTouchToArrowKeys({directions: 2});
             dosGame.mapButtonToKey({element:buttonB, asciiCode:32});
             dosGame.mapButtonToKey({element:buttonA, asciiCode:32});

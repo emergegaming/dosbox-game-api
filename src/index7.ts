@@ -269,7 +269,6 @@ export class DosGame {
                 scope.interval = scope.doIntervalPoll.bind(scope)(log)
             }, delay);
         }
-        console.log("PL Lenght; " + this.pixelListeners.length);
     }
     
     public setGeneralPixelCallback(callback:(colours:string[]) => void) {
@@ -279,9 +278,6 @@ export class DosGame {
     public stopPixelListener() {
         window.clearInterval(this.interval);
     }
-    greet():string { //the function returns a string 
-        return "Hello World" 
-     } 
     /**
     * @param log boolean for if you want to write out to the console
     * */
@@ -349,7 +345,7 @@ export class DosGame {
             })
        
 
-    //if (this.generalPixelCallback) this.generalPixelCallback(colors);
+    if (this.generalPixelCallback) this.generalPixelCallback(colors);
     }}
 
     private static getHexValue(number:number):string {
