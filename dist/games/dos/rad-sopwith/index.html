@@ -23,14 +23,17 @@
     </style>
 </head>
 <body class="bg-black h-screen object-contain">
-    <canvas id="controlCanvas" class="w-full left-0 absolute top-0 h-screen"></canvas>
-    <canvas id="gameCanvas"></canvas>
+    <div id="container">
+        <canvas id="controlCanvas" class="w-full left-0 absolute top-0 h-screen"></canvas>
+        <canvas id="gameCanvas"></canvas>
+    </div>
     <script type="module">
 
         /** DOS **/
 
         import {DosGame} from "/index.js";
         let canvas = document.getElementById('gameCanvas');
+        let container = document.getElementById('container');
 
         let gameConfig = {
             zipFile : 'sopwith.zip',
@@ -109,7 +112,7 @@
 
         let buttonTexture = app.renderer.generateTexture(graphicsButton);
         let buttons = [];
-        for (let i = 0; i < 4 ; i++) {
+        for (let i = 0; i < 5 ; i++) {
 
             let button = new PIXI.Sprite(buttonTexture);
             button.anchor.set(0.5)
@@ -121,8 +124,13 @@
             app.stage.addChild(buttons[i]);
         }
 
-        repositionButtons();
+        buttons[0].keyCode = 32;  // space (shoot)
+        buttons[1].keyCode = 66;  // b (bomb)
+        buttons[2].keyCode = 190; // . (invert)
+        buttons[3].keyCode = 72;  // h (home)
+        buttons[4].keyCode = 88;  // x (go)
 
+        repositionButtons();
 
         /** Variables **/
 
@@ -140,17 +148,27 @@
         /** Events **/
 
         app.stage.interactive = true;
-        app.renderer.plugins.interaction.on('pointerdown', (event) => {
+        app.renderer.plugins.interaction.on('pointerdown', (event) => { /** MOUSEDOWN **/
             let x = event.data.global.x;
             let y = event.data.global.y;
             if (x < screen.width / 2) {
                 xc = x;
                 yc = y;
                 mouseState = 'just-down'
+            } else {
+                for (let i = 0; i < 5; i++) {
+                    if (Math.abs(buttons[i].position.x - x) < 25 && Math.abs(buttons[i].position.y - y) < 25 ) {
+                        buttons[i].active = true;
+                        ci.simulateKeyEvent(buttons[i].keyCode, true);
+                    }
+                }
+            }
+            if (!document.fullscreenElement) {
+                container.requestFullscreen();
             }
         });
 
-        app.renderer.plugins.interaction.on('pointermove', (event) => {
+        app.renderer.plugins.interaction.on('pointermove', (event) => { /** MOUSEMOVE **/
             let x = event.data.global.x;
             let y = event.data.global.y;
             if (x < window.innerWidth / 2  && y < window.innerHeight && x > 0 && y > 0) {
@@ -162,8 +180,20 @@
             }
         })
 
-        app.renderer.plugins.interaction.on('pointerup', (event) => {
-            mouseState = 'just-up'
+        app.renderer.plugins.interaction.on('pointerup', (event) => { /** MOUSEUP **/
+            let x = event.data.global.x;
+            if (x < window.innerWidth / 2) {
+                mouseState = 'just-up'
+            } else {
+                for (let i = 0; i < 5; i++) {
+                    let b = buttons[i];
+                    if (b.active) {
+                        b.active = false;
+                        ci.simulateKeyEvent(b.keyCode, false);
+                    }
+                }
+            }
+
         });
 
         /** Main Loop **/
@@ -281,13 +311,13 @@
             let xStart = (window.innerWidth - 80)
             let yStart = window.innerHeight - 70;
 
-        console.log (xStart, yStart)
-            for (let i = 0; i < 4; i++) {
+            for (let i = 0; i < 5; i++) {
                 buttons[i].position.x = xStart;
-                buttons[i].position.y = yStart + (-i * 70);
+                buttons[i].position.y = yStart + (-i * 60);
                 buttons[i].visible = true;
             }
         }
+
 
         window.addEventListener("resize", () => {
             repositionButtons();
