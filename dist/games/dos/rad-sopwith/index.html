@@ -31,14 +31,38 @@
 
         import {DosGame} from "/index.js";
         let canvas = document.getElementById('gameCanvas');
+
         let gameConfig = {
             zipFile : 'sopwith.zip',
             execCmdArray : ['-c','SOPWITH.EXE'],
             cycles: '800'
         }
 
+        // let gameConfig = {
+        //     zipFile : '../alley-cat/AlleyCat.zip',
+        //     execCmdArray : ['-c','cd ALLEYCAT', '-c', 'CAT.EXE'],
+        //     cycles : 'fixed 3000',
+        // }
+
+        let ci;
+
         let dosGame = new DosGame(window.Dos, gameConfig, canvas);
-        dosGame.start();
+        dosGame.start().then((commandInterface) => {
+            ci = commandInterface;
+
+            /** Auto-press on startup **/
+
+            setTimeout(() => {
+                console.log("s")
+                ci.simulateKeyPress(83);
+            }, 500)
+
+            setTimeout(() => {
+                console.log("3")
+                ci.simulateKeyPress(51);
+            }, 1000)
+
+        });
 
         /** PIXI **/
         let controlCanvas = document.getElementById('controlCanvas')
@@ -57,6 +81,16 @@
         graphicsRing.drawCircle(0,0,50);
         graphicsRing.interactive = false;
 
+        let graphicsButton = new PIXI.Graphics();
+        graphicsButton.beginFill(0x33AAFF);
+        graphicsButton.lineStyle(0);
+        graphicsButton.drawCircle(0,0,20);
+        graphicsButton.endFill();
+
+        graphicsButton.lineStyle(4, 0x33CCCC);
+        graphicsButton.drawCircle(0,0,25);
+
+
         /** PIXI:Sprite **/
         let circleTexture = app.renderer.generateTexture(graphicsCircle)
         let circle = new PIXI.Sprite(circleTexture);
@@ -73,33 +107,81 @@
         ring.blendMode = PIXI.BLEND_MODES.ADD;
         app.stage.addChild(ring);
 
-        /** PIXI:Events **/
+        let buttonTexture = app.renderer.generateTexture(graphicsButton);
+        let buttons = [];
+        for (let i = 0; i < 4 ; i++) {
 
-        app.stage.interactive = true;
+            let button = new PIXI.Sprite(buttonTexture);
+            button.anchor.set(0.5)
+            button.alpha = 0.5;
+            button.x = 100;
+            button.visible = false;
 
-        let justPressed = false;
-        let justReleased = false;
-        let buzzed = false
-        let mouseState = 'up';
+            buttons.push(button)
+            app.stage.addChild(buttons[i]);
+        }
+
+        repositionButtons();
+
+
+        /** Variables **/
+
+        let mouseState = 'none';
         let xc = 0, yc = 0;
         let lastX = 0; let lastY = 0;
+        let lastDirection = [];
+        let directionMapping = {
+            'up': null,
+            'down':null,
+            'left':188,
+            'right':191
+        };
 
-        app.renderer.plugins.interaction.on('pointerup', () => {
-            mouseState = 'up'
-        });
+        /** Events **/
 
+        app.stage.interactive = true;
         app.renderer.plugins.interaction.on('pointerdown', (event) => {
-            xc = event.data.global.x;
-            yc = event.data.global.y;
-            mouseState = 'down'
+            let x = event.data.global.x;
+            let y = event.data.global.y;
+            if (x < screen.width / 2) {
+                xc = x;
+                yc = y;
+                mouseState = 'just-down'
+            }
         });
 
         app.renderer.plugins.interaction.on('pointermove', (event) => {
-            xc = event.data.global.x;
-            yc = event.data.global.y;
+            let x = event.data.global.x;
+            let y = event.data.global.y;
+            if (x < window.innerWidth / 2  && y < window.innerHeight && x > 0 && y > 0) {
+                xc = x;
+                yc = y;
+            } else {
+                xc = lastX;
+                yc = lastY;
+            }
         })
 
+        app.renderer.plugins.interaction.on('pointerup', (event) => {
+            mouseState = 'just-up'
+        });
+
+        /** Main Loop **/
+
         app.ticker.add(() => {
+
+            if (mouseState === 'just-down') {
+                circle.position.x = xc;
+                circle.position.y = yc;
+
+                circle.visible = true;
+                ring.visible = true;
+
+                ring.position.x = circle.position.x;
+                ring.position.y = circle.position.y;
+
+                mouseState = 'down'
+            }
 
             if (mouseState === 'down') {
 
@@ -114,8 +196,8 @@
                 let control = [];
 
                 let r = Math.hypot(dx, dy);
-                if (r > 5 && r < 50) {
 
+                if (r > 7 && r < 50) {
                     let rangeInner = dy * 0.38;
                     let rangeOuter = dy * 2.61;
                     if (dx < -Math.abs(rangeOuter)) {
@@ -137,43 +219,78 @@
                     } else {
                         console.error ("Not a known angle / direction")
                     }
-                    console.log (control);
+                    processDirectionChange(lastDirection, control)
+                    lastDirection = control;
                 }
-                if (r > 50) {
 
+                if (r > 50) {
                     let xDiff = xc - lastX;
                     let yDiff = yc - lastY;
                     ring.position.x += xDiff;
                     ring.position.y += yDiff;
-
-                    //if (!buzzed) navigator.vibrate(30);
-
-                    buzzed = true;
-                } else {
-                    buzzed = false;
                 }
+            }
 
-                if (!justPressed) {
-                    circle.visible = true;
-                    ring.visible = true;
-                    ring.position.x = circle.position.x;
-                    ring.position.y = circle.position.y;
-                    justPressed = true;
-                    justReleased = false;
-                }
-            } else {
-                if (!justReleased) {
-                    justPressed = false;
-                    circle.visible = false;
-                    ring.visible = false
-                    justReleased = true;
-                    justPressed = false;
-                }
+            if (mouseState === 'just-up') {
+
+                circle.visible = false;
+                ring.visible = false
+
+                mouseState = 'up'
+                processDirectionChange(lastDirection, [])
+                lastDirection = []
             }
 
             lastX = xc;
             lastY = yc;
 
+        })
+
+        function processDirectionChange (was, is) {
+
+            window.navigator.vibrate(20);
+
+            let turnOff = was.filter(w => is.indexOf(w) === -1)
+            let turnOn = is.filter(i => was.indexOf(i) === -1)
+
+            turnOff.forEach((direction) => {
+                console.log(direction + ' off');
+                let ascii = getDirectionAscii(direction)
+                if (ascii) ci.simulateKeyEvent(ascii, false);
+
+            });
+
+            turnOn.forEach((direction) => {
+                console.log(direction + ' on');
+                let ascii = getDirectionAscii(direction)
+                if (ascii) ci.simulateKeyEvent(ascii, true);
+            });
+        }
+
+        function getDirectionAscii(direction) {
+            return directionMapping[direction];
+        }
+
+        function nullIfEmpty(s) {
+            if (!s) return null;
+            if (s.length === 0) return null;
+            return s;
+        }
+
+        function repositionButtons() {
+            let xStart = (window.innerWidth - 80)
+            let yStart = window.innerHeight - 70;
+
+        console.log (xStart, yStart)
+            for (let i = 0; i < 4; i++) {
+                buttons[i].position.x = xStart;
+                buttons[i].position.y = yStart + (-i * 70);
+                buttons[i].visible = true;
+            }
+        }
+
+        window.addEventListener("resize", () => {
+            repositionButtons();
         })
 
     </script>
