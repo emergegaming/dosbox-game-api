@@ -76,7 +76,7 @@
         let keyPressCount = 0;
 
         const startButtonClicked = () => {
-            
+
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
@@ -98,24 +98,24 @@
                 //console.log(mode)
                 dosGame.autoKeyPress(32, 50);//press space to get past the splash screen
                 mode = 'DIFFICULTY'
-                        
+
                 dosGame.addPixelListener(2, 192, (hexValue) => {
 
-                if (mode === 'DIFFICULTY') {//gray 
+                if (mode === 'DIFFICULTY') {//gray
                     dosGame.autoKeyPress(6, 50).then(dosGame.autoKeyPress(13, 50));//select difficulty 6 and press enter
                     mode = 'SCOREBOARD'
                     //console.log(mode);
                     dosGame.autoKeyPress(32, 50);
                     mode = 'IN_GAME'
-                    
-                    //console.log(mode) 
-                    
-                                        
+
+                    //console.log(mode)
+
+
                 }
                 else if(hexValue === '#aaaaaa' && mode === 'IN_GAME') {//
                     loadingOverlay.remove();
-                    
-                    
+
+
                     //console.log(mode)
                     //dosGame.autoKeyPress();//
                 }
@@ -125,7 +125,7 @@
                     processScreenshot(lastCanvas).then((_score) => {
                     emergeGamingSDK.endLevel(_score)
                     console.log(_score)
-                    setTimeout(() => location.reload(), 500); 
+                    setTimeout(() => location.reload(), 500);
                     })
                 }
                 else{

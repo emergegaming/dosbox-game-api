@@ -76,7 +76,7 @@
         let keyPressCount = 0;
 
         const startButtonClicked = () => {
-            
+
             startButtonOverlay.remove();
             let dosGame = new DosGame(window.Dos, gameConfig, canvas);
             dosGame.start().then(() => {
@@ -88,7 +88,7 @@
                 dosGame.mapTouchToArrowKeys({directions:4});
                 dosGame.mapButtonToKey({element:buttonA, asciiCode:13});// shield
                 dosGame.mapButtonToKey({element:buttonB, asciiCode:16});// shoot
-                
+
                 setInterval(() => {
 
                     thirdLastCanvas = secondLastCanvas;
@@ -107,7 +107,7 @@
 
                 let keyPressCountInterval =
                         setInterval(() => {
-                            
+
                             // dosGame.autoKeyPress(17);
                             // dosGame.autoKeyPress(123);
                             // setTimeout(30);
@@ -116,7 +116,7 @@
                             ci.simulateKeyEvent(17, true);
                             ci.simulateKeyEvent(123, true);
                             setTimeout( () => {
-                                
+
                                 ci.simulateKeyEvent(123, false);
                                 ci.simulateKeyEvent(17, false);
 
@@ -127,12 +127,12 @@
                             //console.log("STOPPING INTERVAL" + keyPressCount);
                             window.clearInterval(keyPressCountInterval);
 
-                            
+
                             }
-                                
+
                         }, 150);
 
-                    
+
             })
         }
 

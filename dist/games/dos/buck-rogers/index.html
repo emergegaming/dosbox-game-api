@@ -96,14 +96,14 @@
                 setInterval(() => {
                     lastCanvas = canvas.toDataURL('img/png')
                 }, 1000)
-                
+
                 dosGame.mapDPadToArrowKeys(dPad);
                 dosGame.mapButtonToKey({element:buttonB, asciiCode:32});
-               
+
                 emergeGamingSDK.startLevel();
                 //setTimeout(() => loadingOverlay.remove(), 200)
                 mode = "none";
-               
+
                 dosGame.addPixelListener(213,3, (hexValue) => {
                     //console.log("HexValue: " + hexValue)
                     if (hexValue === "#000000" && mode === "none") {//preGameSplash
@@ -133,7 +133,7 @@
                     }
 
                 })
-                
+
             });
         }
 

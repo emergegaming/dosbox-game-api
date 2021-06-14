@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>RADICAL SOPWITH</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="/css/tailwind.min.css"/>
+
+</head>
+<body class="bg-black">
+    <section class="fixed w-full h-full z-50"></section>
+    <div id="landscape" class="flex w-full h-screen flex items-center justify-center bg-no-repeat bg-center" style="background-image: url('table-landscape.png');background-size: auto 100%">
+    </div>
+    <div id="portrait" class="flex justify-center w-full h-screen bg-top bg-no-repeat" style="background-image: url('table-portrait.png');background-size: 100% auto" >
+    </div>
+
+    <div id="canvasFrame" class="absolute top-0 flex justify-center w-full h-screen">
+        <canvas id="canvas" class="bg-blue-900"></canvas>
+    </div>
+
+    <div class="absolute" style="top:30%;left:0;width:239px;height:233px">
+        <img class="absolute top-0 left-0" src="joystick/centre.png" id="centre" width="239" height="233">
+        <img class="absolute top-0 left-0 hidden" src="joystick/up.png" id="up" width="239" height="233">
+        <img class="absolute top-0 left-0 hidden" src="joystick/up-right.png" id="up-right" width="239" height="233">
+        <img class="absolute top-0 left-0 hidden" src="joystick/right.png" id="right" width="239" height="233">
+        <img class="absolute top-0 left-0 hidden" src="joystick/down-right.png" id="down-right" width="239" height="233">
+        <img class="absolute top-0 left-0 hidden" src="joystick/down.png" id="down" width="239" height="233">
+        <img class="absolute top-0 left-0 hidden" src="joystick/down-left.png" id="down-left" width="239" height="233">
+        <img class="absolute top-0 left-0 hidden" src="joystick/left.png" id="left" width="239" height="233">
+        <img class="absolute top-0 left-0 hidden" src="joystick/up-left.png" id="up-left" width="239" height="233">
+    </div>
+
+    <style type="text/css">
+
+        /*
+            @TODO: Fix calcs to get EXACT 1.6 aspect ratio
+            @TODO: Hide everything on square
+        */
+
+        @media screen and (orientation:portrait) {
+            #landscape {
+                display: none;
+            }
+            canvas {
+                margin-top: calc(100vw * 0.08);
+                width: calc(100vw * 0.84);
+                height: calc(100vw *0.52)
+            }
+            #canvasFrame {
+                align-items: start;
+            }
+        }
+
+        @media screen and (orientation:landscape) {
+            #portrait {
+                display: none;
+            }
+            canvas {
+                width: calc(100vh * 1.27);
+                height:79%;
+                margin-left:calc(100vh * 0.08)
+            }
+            #canvasFrame {
+                align-items: center;
+            }
+        }
+
+        *:not(input):not(textarea) {
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            touch-action: none;
+            -webkit-text-size-adjust: none
+        }
+
+    </style>
+    <script type="module">
+
+        import {DosGame} from "/index.js";
+
+        let canvas = document.getElementById('canvas');
+
+        let gameConfig = {
+            zipFile : 'sopwith.zip',
+            execCmdArray : ['-c','SOPWITH.EXE'],
+            cycles: '800'
+        }
+        let dosGame = new DosGame(window.Dos, gameConfig, canvas);
+        dosGame.start();
+        dosGame.mapTouchToArrowKeys({directions:8})
+
+    </script>
+    <script src="/dosbox/js-dos.js"></script>
+</body>
+</html>
