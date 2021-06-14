@@ -6,14 +6,8 @@
     <link rel="stylesheet" type="text/css" href="/css/tailwind.min.css"/>
     <link rel="stylesheet" type="text/css" href="/css/style.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-
-    <!-- <link rel="stylesheet" href="../../../dosbox/dos7/js-dos.css">
-    <script src="../../../dosbox/dos7/wdosbox.js"></script> -->
-
-
     <link rel="stylesheet" type="text/css" href="/css/style.css"/>
     <link href="/dosbox/dos7/js-dos.css" rel="stylesheet">
-
 </head>
 <body>
     <section class="relative">
@@ -41,7 +35,7 @@
         </div>
 
         <!-- Overlay to: Show when loading -->
-        <div id="loadingOverlay" class="hidden flex orientation-notice fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-30" style="background-color: #101010">
+        <div id="loadingOverlay" class="flex orientation-notice fixed top-0 left-0 right-0 bottom-0 items-center justify-center z-30" style="background-color: #101010">
             <div class="text-white text-2xl">Loading...</div>
         </div>
 
@@ -51,7 +45,6 @@
                 <input type="image" src="arkanoid-loader-desktop.jpg" id="startButtonDesktop" class="h-64 outline-none"/>
                 <!-- <input type="image" src="safe-area-1600-900.png" id="startButtonMobile" class="h-64 outline-none"/> -->
                 <input type="image" src="arkanoid-loader-mobile.jpg" id="startButtonMobile" class="h-64 outline-none"/>
-
             </form>
         </div>
 
@@ -64,8 +57,6 @@
     <script src="/dosbox/dos7/js-dos.js"></script>
 
     <script type="module">
-        
-        
         import {emergeGamingSDK} from '/lib/emergamingSDK.js'
         import {processScreenshot, setupOcr} from "/lib/ocr.js";
         import {arkanoid_digits} from "/games/dos/arkanoid/digits.js";
@@ -83,42 +74,25 @@
 
         let lastCanvas, secondLastCanvas, thirdLastCanvas, mode = 'started'
 
-        // let gameConfig = {
-        //     zipFile : 'ARKANOID.ZIP',
-        //     execCmdArray : ['-c','ARKANOID.COM'],
-        //     cycles: '300'
-        // }
-
-
-
         const startButtonClicked = () => {
             startButtonOverlay.remove();
-      
-        
-        //   emulators.pathPrefix = "/dosbox/dos7/";
-          // Dos(document.getElementById("root")).run("GDNT/wolf3d.jsdos");
-          
-
-          let dosGame = new DosGame(window.Dos, divContainer, emulators);
-          dosGame.start7("asf.zip").then(() =>{
-
-            // setInterval(() => {
-            //         thirdLastCanvas = secondLastCanvas;
-            //         secondLastCanvas = lastCanvas;;
-            //         lastCanvas = console.screenshots()
-            //     }, 1000)
-            
-            
-            console.log("Here");
+            let dosGame = new DosGame(window.Dos, divContainer, emulators);
+            dosGame.start7("asf.zip").then(() =>{
+            let startX = 239; let startY = 61; let charWidth = 9; let charHeight = 9; let charSpacing = -1; let numChars = 6;
+            setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, arkanoid_digits);
+            setInterval(() => {
+                    thirdLastCanvas = secondLastCanvas;
+                    secondLastCanvas = lastCanvas;
+                    lastCanvas = (dosGame.consoleSingleScreenShot(false, true));
+                    dosGame.consoleSingleScreenShot(false, true);
+                }, 1000)
             dosGame.addPixelListener(235, 82, (hexValue) => {
-                
-
                 if (mode === 'playing' && hexValue !== '#5555ff') {
+                        console.log("before ending game and scoring")
                         processScreenshot(secondLastCanvas).then((_score) => {
                             emergeGamingSDK.endLevel(_score)
                             setTimeout(() => location.reload(), 750);
                         });
-                        console.log("GAME OVER")
                         return;
                     }
                 switch(hexValue) {
@@ -126,14 +100,12 @@
                             dosGame.autoKeyPress(69, 250).then( //Press: E -> K
                                 () => {dosGame.autoKeyPress(75, 250);})
                             mode = 'initialized'
-                            console.log(mode);
-
                             break;
                         }
                         case "#000000": { // TAITO Screen
                             if (mode === 'initialized') {
                                 mode = 'story';
-                                console.log(mode)
+                                loadingOverlay.remove();
                                 setTimeout(() => dosGame.autoKeyPress(32), 0);
                                 setTimeout(() => dosGame.autoKeyPress(32), 250);
                                 setTimeout(() => dosGame.autoKeyPress(32), 500);
@@ -147,56 +119,17 @@
 
                         case "#5555ff": {
                             mode = 'playing'
-                            console.log(mode)
-
                         }
 
                         default:
                             //do nothing
-                            console.log("Unrecognized color: " + hexValue)
-
                     }
-            });
-         
-
-            // dosGame.consoleScreenshots();
-
+            }, true);
 
             dosGame.mapTouchToArrowKeys({directions: 2});
             dosGame.mapButtonToKey({element:buttonB, asciiCode:32});
             dosGame.mapButtonToKey({element:buttonA, asciiCode:32});
-
-            // dosGame.autoKeyPress(69, 100).then(() => {
-            //     dosGame.autoKeyPress(75, 100);
-            // })
-        
-
-
-            // let startX = 120; let startY = 188; let charWidth = 6; let charHeight = 9; let charSpacing = 2; let numChars = 9;
-            //     setupOcr(startX, startY, charWidth, charHeight, charSpacing, numChars, digits);
-
-            // const mapper = {
-            //     103/*KBD_x*/: 37 /*KBD_f1*/,
-            //     105/*KBD_x*/: 39 /*KBD_f1*/,
-            // };
-            // emulatorsUi.controls.keyboard(layers, ci, mapper);
-            // dosGame.overrideDirectionAscii({
-            //         'left':103,
-            //         'right':105
-            //     });
-                // dosGame.overrideKey(' ', 112);
-                // dosGame.overrideKey('left',103); // 103
-                // dosGame.overrideKey('right',105); // 105
-                // dosGame.mapDPadToArrowKeys
-                
-                // dosGame.overrideKey('39',263); // 103
-                // dosGame.overrideKey('37',262); // 105
-                // // dosGame.maptouch
-                // dosGame.mapTouchToArrowKeys({directions: 8});
-                
-          });
-  
-            
+          }); 
         }
 
         if (DosGame.isTouch()){
@@ -207,8 +140,6 @@
             startButtonMobile.remove();
             startButtonDesktop.focus();
         }
-
-
 
         startButtonOverlay.addEventListener('click', startButtonClicked);
         startButtonForm.addEventListener('submit', startButtonClicked);

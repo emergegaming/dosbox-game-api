@@ -1,6 +1,3 @@
-import { webGl } from "emulators-ui/dist/types/graphics/webgl";
-// import {fs} from '../node_modules/file-system';
-
 interface GameOptions {
     cycles: number
     zipFile: string
@@ -46,64 +43,13 @@ interface DirectionMapping {
  */
 export class DosGame {
 
-    private dos7ReverseKeyMapping = {
-        //any keys that have not been mapped are either never needed in dosbox games or are the same and dont need mappings
-            
-            97 : 65,
-            98 : 66,
-            99 : 67,
-            100 : 68,
-            101 : 69,
-            102 : 70,
-            103 : 71,
-            104 : 72,
-            105 : 73,
-            106 : 74,
-            107 : 75,
-            108 : 76,
-            109 : 77,
-            110 : 78,
-            111 : 79,
-            112 : 80,
-            113 : 81,
-            114 : 82,
-            115 : 83,
-            116 : 84,
-            117 : 85,
-            118 : 86,
-            119 : 87,
-            120 : 88,
-            121 : 89,
-            122 : 90,
-            18 : 342,
-            //18 : 346,
-            17 : 341,
-            //17 : 345,
-            16 : 340,
-            //16 : 344,
-            190 : 46,
-            188 : 44,
-            191 : 47,
-            263 : 37,
-            265 : 38,
-            264 : 40,
-            262 : 39
-            
-    }
-
-    
-
-    
-    
-
-    
-
     private dosRef: any;
     private options: GameOptions
     private canvas: HTMLCanvasElement
     private rootElement: HTMLElement
     private emulators: any;
     private ci: any;
+    private retVal: any;
     private keysToReplace:KeyMapping[] = []
     private directions:Directions
     private buttons:ButtonMapping[] = []
@@ -136,7 +82,6 @@ export class DosGame {
         }
     }
 
-
     /**
      * Create a new DosGame object.
      * that this object requires the JSDos script to be loaded by the page.
@@ -150,24 +95,12 @@ export class DosGame {
      * @see https://js-dos.com/
      */
 
-
-    
-
     constructor(dosRef:any, rootElement:HTMLElement, emulators:any, forceKeyPress:boolean = false) {
         this.dosRef = dosRef;
-        //this.options = options;
-        
-        //this.canvas = <HTMLCanvasElement>document.getElementsByClassName('emulator-canvas')[0]
-        // 
         this.rootElement = rootElement;
         this.forceKeyPress = forceKeyPress;
         this.emulators = emulators;
-       
     }
-
-
-
-    
 
     public start():Promise<any> {
         return new Promise((resolve) => {
@@ -209,13 +142,8 @@ export class DosGame {
             
             this.emulators.pathPrefix = "/dosbox/dos7/";
             this.dosRef(this.rootElement).run(gameBundle).then((ci)=>{
-                //console.log("CI:" + ci);
                 this.ci = ci;
-                
                 this.canvas = <any>this.rootElement.getElementsByTagName('canvas')[0];
-                //console.log("CANVAS:" + this.consoleScreenshot);
-                //(this.canvas.getContext("webgl", {preserveDrawingBuffer: true}))
-                // WebGL2RenderingContext.clearBuffer[fiuv]();
                 this.canvasContext = this.canvas.getContext("webgl");
                 console.log(this.canvasContext);
                 
@@ -319,8 +247,8 @@ export class DosGame {
      * @todo: This should really be called addPixelListener (i.e. more than one)
      * @deprecated use addPixelListener
      */
-    public setPixelListener(x:number, y:number, callback, delay:number = 1000) {
-        this.addPixelListener(x, y, callback, delay);
+    public setPixelListener(x:number, y:number, callback, log:boolean) {
+        this.addPixelListener(x, y, callback, log);
     }
 
     /**
@@ -331,36 +259,18 @@ export class DosGame {
      * @param delay the number of ms between callback intervals
      */
     
-    public addPixelListener(x:number, y:number, callback, delay:number = 1000) {
-        let pixelLocation = x + (320*(y));//function to find the index in the 1d array 
-        //console.log("X: " + endX + " Y: " + endY)
+    public addPixelListener(x:number, y:number, callback, log:boolean) {
+        const delay:number = 1000
         this.pixelListeners.push({x:x, y:y, callback:callback, lastColor:undefined})
-        
-     
 
         if (!this.interval) {
-            // console.log("Starting Poll");
             let scope = this;
             window.setInterval(() => {
-                // console.log("HIHIHIHIh")
-                scope.interval = scope.doIntervalPoll.bind(scope)(pixelLocation)
+                scope.interval = scope.doIntervalPoll.bind(scope)(log)
             }, delay);
-            //  = window.setInterval(this.doIntervalPoll.bind(this)(endX, endY), delay)
         }
-        console.log("PL Lenght; " + this.pixelListeners.length);
-        let i = 0;
-        this.pixelListeners.forEach(element => {
-
-            console.log("Pixel Listeners in the Array: " + this.pixelListeners[i]);
-            i++;
-        });
-        //console.log("Listeners: " + this.pixelListeners);
-
-
-        //if (!this.canvasContext) this.canvasContext = this.canvas.getContext('2d');
     }
     
-
     public setGeneralPixelCallback(callback:(colours:string[]) => void) {
         this.generalPixelCallback = callback;
     }
@@ -368,20 +278,34 @@ export class DosGame {
     public stopPixelListener() {
         window.clearInterval(this.interval);
     }
-
-    public consoleScreenshots() {//writes the imgData to a canvas to allow the old index.ts code to still work
-        setInterval(() => {
-            let c = document.createElement('canvas');
-            c.width=320;
-            c.height=200;
-            const ctx = c.getContext('2d');       
-            this.ci.screenshot().then((imgData)=>{
-                ctx.putImageData(imgData, 0, 0);
+    /**
+    * @param log boolean for if you want to write out to the console
+    * */
+    public consoleSingleScreenShot(log: boolean, toData: boolean):any {
+        
+        let c = document.createElement('canvas');
+        c.width=320;
+        c.height=200;
+        const ctx = c.getContext('2d');       
+        this.ci.screenshot().then((imgData: ImageData)=>{
+            ctx.putImageData(imgData, 0, 0);
+            if(log){
                 console.log(c.toDataURL('img/png'));
-                console.log(imgData);
-            })
+            }
+            if (toData) {
+                this.retVal = c.toDataURL('img/png');
+            }
+            else{
+                this.retVal = imgData;
+            }
             
-            
+        })
+        return this.retVal;
+    }
+
+    public consoleScreenshots(log:boolean) {//writes the imgData to a canvas to allow the old index.ts code to still work
+        setInterval(() => {
+            this.consoleSingleScreenShot(log, true);
         }, 1500)
 
     }
@@ -398,7 +322,7 @@ export class DosGame {
 
     /***** P R I V A T E   M E T H O D S *****/
 
-    private doIntervalPoll(pixelLocation:number) {{
+    private doIntervalPoll(log: boolean) {{
         let colors:string[] = []
         let c = document.createElement('canvas');
             c.width=320;
@@ -406,15 +330,12 @@ export class DosGame {
             const ctx = c.getContext('2d');       
             this.ci.screenshot().then((imgData)=>{
                 ctx.putImageData(imgData, 0, 0);
-                //console.log(c.toDataURL('img/png'));
-                let x = c.toDataURL('img/png');
-                // let newScreenShotCanvas = ctx;
-                //console.log(imgData);
-
                 this.pixelListeners.forEach((pl) => {
                     let pixelColor:ImageData = ctx.getImageData(pl.x, pl.y, 1, 1);
                     let colorValue:string = '#' + DosGame.getHexValue(pixelColor.data[0]) + DosGame.getHexValue(pixelColor.data[1]) + DosGame.getHexValue(pixelColor.data[2]);
-                    console.log("HEXVALUE: " + colorValue);
+                    if (log) {
+                        console.log("HEXVALUE: " + colorValue);
+                    }
                     colors.push(colorValue)
                     if (colorValue != pl.lastColor) {
                         pl.callback(colorValue);
@@ -423,72 +344,8 @@ export class DosGame {
                 });
             })
        
-        
-        // console.log("1");
 
-        // //console.log("X: " + endX + " Y: " + endY)
-        // // let cp = document.createElement('canvas');//canvas to put the single pixel on
-        //     // cp.width=320;
-        //     // cp.height=200;
-        // // const ctxp = cp.getContext('2d');       
-
-        
-        // console.log("2");
-
-        // let colors:string[] = []
-        // let pixelColor:ImageData;
-        // console.log("3");
-        // //console.log("PL[0]: " + this.pixelListeners[0])
-        // this.pixelListeners.forEach((pl) => {
-        //     console.log("4");
-        //     //this.consoleScreenshots();
-        //     this.ci.screenshot().then((imgData)=>{
-        //         console.log(imgData.data.toString());
-        //         console.log(
-        //             imgData.data[pixelLocation], 
-        //             imgData.data[pixelLocation+1], 
-        //             imgData.data[pixelLocation+2], 
-        //             imgData.data[pixelLocation+3],
-        //             pixelLocation
-        //             )
-        //             let colorValue:string = (
-        //                 '#' + 
-        //                 DosGame.getHexValue(imgData.data[pixelLocation]) + 
-        //                 DosGame.getHexValue(imgData.data[pixelLocation+1]) + 
-        //                 DosGame.getHexValue(imgData.data[pixelLocation+2]));
-        //                 console.log(colorValue);
-        //     })
-                
-                // console.log("5");
-                // //ctxp.putImageData(imgData, 0, 0);
-                // // pixelColor = ctxp.getImageData(0,0,1,1);
-                // //console.log(cp.toDataURL('img/png'))
-                
-                
-                // colors.push(colorValue)
-                // console.log("Pixel Listener Screenshot: " + cp.toDataURL('img/png'));
-                // if (colorValue != pl.lastColor) {
-                //     pl.callback(colorValue);
-                //     pl.lastColor = colorValue;
-                // }
-                // console.log(ctxp);
-            
-            // })
-        
-            // this.ci.screenshot().then((imgData)=>{
-            //     pixelColor = imgData.data;
-            //     console.log("DATA: " + pixelColor);
-            // })
-            
-            
-            
-            //console.log("Colours: " + colorValue)
-            
-            //console.log("UINT8 array: " + pixelColor)
-        //});
-
-
-    //if (this.generalPixelCallback) this.generalPixelCallback(colors);
+    if (this.generalPixelCallback) this.generalPixelCallback(colors);
     }}
 
     private static getHexValue(number:number):string {
@@ -531,12 +388,10 @@ export class DosGame {
                     this.forceKeyPress ? this.ci.simulateKeyPress(keyCode, true) : this.ci.simulateKeyEvent(keyCode, true)
                     this.keysDown.push(event.key)
                 }
-
                 if (event.type === 'keyup' && this.keysDown.includes(event.key)) {
                     this.forceKeyPress ? this.ci.simulateKeyPress(keyCode, false) : this.ci.simulateKeyEvent(keyCode, false)
                     this.keysDown.splice(this.keysDown.indexOf(event.key),1);
                 }
-
                 event.stopImmediatePropagation();
                 event.stopPropagation();
                 event.preventDefault();
@@ -586,9 +441,7 @@ export class DosGame {
                                 }
                                 continue;
                             }
-
                         }
-
                         let mapping:ButtonMapping = this.buttons[j]
                         let rect = mapping.element.getBoundingClientRect()
                         let x1 = rect.x, x2 = rect.x + rect.width, y1 = rect.y, y2 = rect.y + rect.height;
@@ -685,22 +538,12 @@ export class DosGame {
      */
     private processDirectionChange = (was, is) => {
 
-    
-
-    
-
         let turnOff = was.filter(w => is.indexOf(w) === -1)
         let turnOn = is.filter(i => was.indexOf(i) === -1)
         turnOff.forEach((direction) => {
-            //console.log("Key Up: " + this.jsdosKeyCodeLookup(this.getDirectionAscii(direction)));
-
             this.ci.sendKeyEvent(this.jsdosKeyCodeLookup(this.getDirectionAscii(direction)), false);
-
         });
         turnOn.forEach((direction) => {
-            //console.log(this.ci);
-            //console.log("Key Down: " + this.jsdosKeyCodeLookup(this.getDirectionAscii(direction)));
-
             this.ci.sendKeyEvent(this.jsdosKeyCodeLookup(this.getDirectionAscii(direction)), true);
         });
     }
