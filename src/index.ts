@@ -111,7 +111,6 @@ export class DosGame {
     }
 
     public getCommandInterface():object {
-
         return this.ci;
     }
 
@@ -398,11 +397,11 @@ export class DosGame {
                         } else if (dx > Math.abs(rangeOuter)) {
                             control = ['right']
                         } else if (dy > 0 && dx < -Math.abs(rangeInner)) {
-                            control = ['down','right']
+                            control = ['down','left']
                         } else if (dy > 0 && dx < rangeInner) {
                             control = ['down']
                         } else if (dy > 0 && dx < dy * rangeOuter) {
-                            control = ['down','left']
+                            control = ['down','right']
                         } else {
                             console.error ("Not a known angle / direction")
                         }
@@ -459,6 +458,15 @@ export class DosGame {
      */
     private processDirectionChange = (was, is) => {
 
+
+        let hide = this.nullIfEmpty(was.join('-')) || "centre";
+        let show = this.nullIfEmpty(is.join('-')) || "centre";
+
+        if (hide !== show) {
+            document.getElementById(hide).style.display = 'none'
+            document.getElementById(show).style.display = 'block'
+        }
+
         let turnOff = was.filter(w => is.indexOf(w) === -1)
         let turnOn = is.filter(i => was.indexOf(i) === -1)
         turnOff.forEach((direction) => {
@@ -467,6 +475,12 @@ export class DosGame {
         turnOn.forEach((direction) => {
             this.ci.simulateKeyEvent(this.getDirectionAscii(direction), true)
         });
+    }
+
+    private nullIfEmpty = (s) => {
+        if (!s) return null;
+        if (s.length === 0) return null;
+        return s;
     }
 
     /**

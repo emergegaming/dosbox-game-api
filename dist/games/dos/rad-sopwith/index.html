@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>RADICAL SOPWITH</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="/css/tailwind.min.css"/>
+    <style lang="css">
+
+        @media screen and (orientation:portrait) {
+            #gameCanvas {
+                width: 100%;
+            }
+        }
+
+        @media screen and (orientation:landscape) {
+            #gameCanvas {
+                margin: auto;
+                height:100%
+            }
+        }
+
+    </style>
+</head>
+<body class="bg-black h-screen object-contain">
+    <div id="container">
+        <canvas id="controlCanvas" class="w-full left-0 absolute top-0 h-screen"></canvas>
+        <canvas id="gameCanvas"></canvas>
+    </div>
+    <script type="module">
+
+        /** DOS **/
+
+        import {DosGame} from "/index.js";
+        let canvas = document.getElementById('gameCanvas');
+        let container = document.getElementById('container');
+
+        let gameConfig = {
+            zipFile : 'sopwith.zip',
+            execCmdArray : ['-c','SOPWITH.EXE'],
+            cycles: '800'
+        }
+
+        // let gameConfig = {
+        //     zipFile : '../alley-cat/AlleyCat.zip',
+        //     execCmdArray : ['-c','cd ALLEYCAT', '-c', 'CAT.EXE'],
+        //     cycles : 'fixed 3000',
+        // }
+
+        let ci;
+
+        let dosGame = new DosGame(window.Dos, gameConfig, canvas);
+        dosGame.start().then((commandInterface) => {
+            ci = commandInterface;
+
+            /** Auto-press on startup **/
+
+            setTimeout(() => {
+                console.log("s")
+                ci.simulateKeyPress(83);
+            }, 500)
+
+            setTimeout(() => {
+                console.log("3")
+                ci.simulateKeyPress(51);
+            }, 1000)
+
+        });
+
+        /** PIXI **/
+        let controlCanvas = document.getElementById('controlCanvas')
+        let app = new PIXI.Application({width: window.innerWidth, height: window.innerHeight, view: controlCanvas, transparent:true, autoResize:true, resizeTo:window});
+
+        /** PIXI:Graphics **/
+        let graphicsCircle = new PIXI.Graphics();
+        graphicsCircle.beginFill(0x33AAFF);
+        graphicsCircle.lineStyle(0);
+        graphicsCircle.drawCircle(0,0,30);
+        graphicsCircle.endFill();
+        graphicsCircle.interactive = false;
+
+        let graphicsRing = new PIXI.Graphics();
+        graphicsRing.lineStyle(8, 0x3355FF);
+        graphicsRing.drawCircle(0,0,50);
+        graphicsRing.interactive = false;
+
+        let graphicsButton = new PIXI.Graphics();
+        graphicsButton.beginFill(0x33AAFF);
+        graphicsButton.lineStyle(0);
+        graphicsButton.drawCircle(0,0,20);
+        graphicsButton.endFill();
+
+        graphicsButton.lineStyle(4, 0x33CCCC);
+        graphicsButton.drawCircle(0,0,25);
+
+
+        /** PIXI:Sprite **/
+        let circleTexture = app.renderer.generateTexture(graphicsCircle)
+        let circle = new PIXI.Sprite(circleTexture);
+        circle.anchor.set(0.5)
+        circle.visible = false;
+        circle.alpha = 0.5
+        app.stage.addChild(circle);
+
+        let ringTexture = app.renderer.generateTexture(graphicsRing);
+        let ring = new PIXI.Sprite(ringTexture)
+        ring.anchor.set(0.5)
+        ring.visible = false;
+        ring.alpha = 0.5
+        ring.blendMode = PIXI.BLEND_MODES.ADD;
+        app.stage.addChild(ring);
+
+        let buttonTexture = app.renderer.generateTexture(graphicsButton);
+        let buttons = [];
+        for (let i = 0; i < 5 ; i++) {
+
+            let button = new PIXI.Sprite(buttonTexture);
+            button.anchor.set(0.5)
+            button.alpha = 0.5;
+            button.x = 100;
+            button.visible = false;
+
+            buttons.push(button)
+            app.stage.addChild(buttons[i]);
+        }
+
+        buttons[0].keyCode = 32;  // space (shoot)
+        buttons[1].keyCode = 66;  // b (bomb)
+        buttons[2].keyCode = 190; // . (invert)
+        buttons[3].keyCode = 72;  // h (home)
+        buttons[4].keyCode = 88;  // x (go)
+
+        repositionButtons();
+
+        /** Variables **/
+
+        let mouseState = 'none';
+        let xc = 0, yc = 0;
+        let lastX = 0; let lastY = 0;
+        let lastDirection = [];
+        let directionMapping = {
+            'up': null,
+            'down':null,
+            'left':188,
+            'right':191
+        };
+
+        /** Events **/
+
+        app.stage.interactive = true;
+        app.renderer.plugins.interaction.on('pointerdown', (event) => { /** MOUSEDOWN **/
+            let x = event.data.global.x;
+            let y = event.data.global.y;
+            if (x < screen.width / 2) {
+                xc = x;
+                yc = y;
+                mouseState = 'just-down'
+            } else {
+                for (let i = 0; i < 5; i++) {
+                    if (Math.abs(buttons[i].position.x - x) < 25 && Math.abs(buttons[i].position.y - y) < 25 ) {
+                        buttons[i].active = true;
+                        ci.simulateKeyEvent(buttons[i].keyCode, true);
+                    }
+                }
+            }
+            if (!document.fullscreenElement) {
+                container.requestFullscreen();
+            }
+        });
+
+        app.renderer.plugins.interaction.on('pointermove', (event) => { /** MOUSEMOVE **/
+            let x = event.data.global.x;
+            let y = event.data.global.y;
+            if (x < window.innerWidth / 2  && y < window.innerHeight && x > 0 && y > 0) {
+                xc = x;
+                yc = y;
+            } else {
+                xc = lastX;
+                yc = lastY;
+            }
+        })
+
+        app.renderer.plugins.interaction.on('pointerup', (event) => { /** MOUSEUP **/
+            let x = event.data.global.x;
+            if (x < window.innerWidth / 2) {
+                mouseState = 'just-up'
+            } else {
+                for (let i = 0; i < 5; i++) {
+                    let b = buttons[i];
+                    if (b.active) {
+                        b.active = false;
+                        ci.simulateKeyEvent(b.keyCode, false);
+                    }
+                }
+            }
+
+        });
+
+        /** Main Loop **/
+
+        app.ticker.add(() => {
+
+            if (mouseState === 'just-down') {
+                circle.position.x = xc;
+                circle.position.y = yc;
+
+                circle.visible = true;
+                ring.visible = true;
+
+                ring.position.x = circle.position.x;
+                ring.position.y = circle.position.y;
+
+                mouseState = 'down'
+            }
+
+            if (mouseState === 'down') {
+
+                circle.position.x = xc;
+                circle.position.y = yc;
+
+                let xr = ring.position.x;
+                let yr = ring.position.y;
+
+                let dx = xc - xr;
+                let dy = yc - yr;
+                let control = [];
+
+                let r = Math.hypot(dx, dy);
+
+                if (r > 7 && r < 50) {
+                    let rangeInner = dy * 0.38;
+                    let rangeOuter = dy * 2.61;
+                    if (dx < -Math.abs(rangeOuter)) {
+                        control = ['left']
+                    } else if (dy < 0 && dx < rangeInner) {
+                        control = ['up','left']
+                    } else if (dy < 0 && dx < Math.abs(rangeInner)) {
+                        control = ['up']
+                    } else if (dy < 0 && dx < -rangeOuter) {
+                        control = ['up','right']
+                    } else if (dx > Math.abs(rangeOuter)) {
+                        control = ['right']
+                    } else if (dy > 0 && dx < -Math.abs(rangeInner)) {
+                        control = ['down','left']
+                    } else if (dy > 0 && dx < rangeInner) {
+                        control = ['down']
+                    } else if (dy > 0 && dx < dy * rangeOuter) {
+                        control = ['down','right']
+                    } else {
+                        console.error ("Not a known angle / direction")
+                    }
+                    processDirectionChange(lastDirection, control)
+                    lastDirection = control;
+                }
+
+                if (r > 50) {
+                    let xDiff = xc - lastX;
+                    let yDiff = yc - lastY;
+                    ring.position.x += xDiff;
+                    ring.position.y += yDiff;
+                }
+            }
+
+            if (mouseState === 'just-up') {
+
+                circle.visible = false;
+                ring.visible = false
+
+                mouseState = 'up'
+                processDirectionChange(lastDirection, [])
+                lastDirection = []
+            }
+
+            lastX = xc;
+            lastY = yc;
+
+        })
+
+        function processDirectionChange (was, is) {
+
+            window.navigator.vibrate(20);
+
+            let turnOff = was.filter(w => is.indexOf(w) === -1)
+            let turnOn = is.filter(i => was.indexOf(i) === -1)
+
+            turnOff.forEach((direction) => {
+                console.log(direction + ' off');
+                let ascii = getDirectionAscii(direction)
+                if (ascii) ci.simulateKeyEvent(ascii, false);
+
+            });
+
+            turnOn.forEach((direction) => {
+                console.log(direction + ' on');
+                let ascii = getDirectionAscii(direction)
+                if (ascii) ci.simulateKeyEvent(ascii, true);
+            });
+        }
+
+        function getDirectionAscii(direction) {
+            return directionMapping[direction];
+        }
+
+        function nullIfEmpty(s) {
+            if (!s) return null;
+            if (s.length === 0) return null;
+            return s;
+        }
+
+        function repositionButtons() {
+            let xStart = (window.innerWidth - 80)
+            let yStart = window.innerHeight - 70;
+
+            for (let i = 0; i < 5; i++) {
+                buttons[i].position.x = xStart;
+                buttons[i].position.y = yStart + (-i * 60);
+                buttons[i].visible = true;
+            }
+        }
+
+
+        window.addEventListener("resize", () => {
+            repositionButtons();
+        })
+
+    </script>
+    <script src="/dosbox/js-dos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.1.3/pixi.min.js"></script>
+</body>
+</html>
