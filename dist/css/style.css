@@ -9,15 +9,12 @@
     background-image:url('/images/Background.svg');
 }
 
-#canvas {
+#canvasContainer, #canvasContainer canvas {
     height: calc((100vw - 260px) / 1.6);
     width: calc(100vw - 260px);
+   
 }
 
-.canvas7 {
-    height: calc((100vw - 260px) / 1.6);
-    width: calc(100vw - 260px);
-}
 
 .orientation-notice {
     background: #110000;

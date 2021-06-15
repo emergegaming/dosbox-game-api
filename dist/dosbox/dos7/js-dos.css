@@ -8,6 +8,7 @@
     -ms-user-select: none;
     user-select: none;
     touch-action: none;
+    top: 0;
 }
 
 .emulator-canvas, .emulator-video {
@@ -19,6 +20,7 @@
     -ms-user-select: none;
     user-select: none;
     touch-action: none;
+    top: 0;
 }
 
 .emulator-video {
