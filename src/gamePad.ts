@@ -11,6 +11,7 @@ export class GamePad {
     private gp: any;
     private gamepads: any;
 
+    public static Buttons = {bX: 0, bO: 1};
     
     constructor(){
         this.translateGamePad.set(0, "X")//space
@@ -43,10 +44,9 @@ export class GamePad {
             });
             function pollGamepads() {
                 var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
-                for (var i = 0; i < gamepads.length; i++) {
-                  this.gp = gamepads[i];
-                  clearInterval(interval);
-                }
+                
+                 this.gp = gamepads[1];
+            
               }
             if(!('GamepadEvent' in window)) {
                 // No gamepad events available, poll instead.
@@ -71,7 +71,7 @@ export class GamePad {
     
 }
 
-export class Buttons {
+class ButtonsImpl {
         
     public static bX = 0;
     public static bO = 1;

@@ -36,6 +36,7 @@
         <div id="canvasContainer" class="w-full left-0 absolute top-0 h-screen"></div>
     </div>
     <script src="/dosbox/dos7/js-dos.js"></script>
+    
     <script type="module">
 
         /** DOS **/
@@ -62,10 +63,177 @@
         //     cycles : 'fixed 3000',
         // }
 
-        let ci;
+        let ci, arrButtonsIs; 
+        let arrButtonsWas = [];
 
         let dosGame = new DosGame(window.Dos, canvasContainer, emulators);
             dosGame.start7("sopwith.jsdos").then(() =>{
+
+          let translateGamePad = new Map();
+      
+          translateGamePad.set(0, "X")//space
+          translateGamePad.set(1, "O")//up
+          translateGamePad.set(2, "◻")//down
+          translateGamePad.set(3, "△")//left
+          translateGamePad.set(4, "L1")//left
+          translateGamePad.set(5, "R1")//left
+          translateGamePad.set(6, "L2")//left
+          translateGamePad.set(7, "R2")//left
+          translateGamePad.set(8, "Back")//left
+          translateGamePad.set(9, "Start")//left
+          translateGamePad.set(10, "LSC")//left stick click
+          translateGamePad.set(11, "RSC")//right stick click
+          translateGamePad.set(12, "DPUp")//left
+          translateGamePad.set(13, "DPDown")//left
+          translateGamePad.set(14, "DPLeft")//left
+          translateGamePad.set(15, "DPRight")//left
+          translateGamePad.set(16, "Home")//left
+          translateGamePad.set(17, "TrackPad")//left
+      
+      
+      var rAF = window.mozRequestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.requestAnimationFrame;
+      
+      var rAFStop = window.mozCancelRequestAnimationFrame ||
+        window.webkitCancelRequestAnimationFrame ||
+        window.cancelRequestAnimationFrame;
+      
+      window.addEventListener("gamepadconnected", function() {
+        var gp = navigator.getGamepads()[0];
+        
+      
+        gameLoop();
+      });
+      
+      window.addEventListener("gamepaddisconnected", function() {
+        gamepadInfo.innerHTML = "Waiting for gamepad.";
+      
+        
+      });
+      
+      if(!('GamepadEvent' in window)) {
+        // No gamepad events available, poll instead.
+        var interval = setInterval(pollGamepads, 500);
+      }
+      
+      function pollGamepads() {
+        var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+        for (var i = 0; i < gamepads.length; i++) {
+          var gp = gamepads[i];
+          if(gp) {
+            
+            
+            clearInterval(interval);
+          }
+        }
+      }
+      
+      function buttonPressed(b) {
+        if (typeof(b) == "object") {
+          return b.pressed;
+        }
+        return b == 1.0;
+      }
+      
+      function gameLoop() {
+        var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+        if (!gamepads)
+          return;
+
+        let arrButtonsIs =  gamepads[0].buttons;
+      
+        var gp = gamepads[0];
+        let bX = 0;
+        let bO = 1;
+        let bSq = 2;
+        let bTr = 3;
+        let bL1 = 4;
+        let bR1 = 5;
+        let bL2 = 6;
+        let bR2 = 7;
+        let bBack = 8;
+        let bStart = 9;
+        let bLSC = 10;
+        let bRSC = 11;
+        let bDPUp = 12;
+        let bDPDown = 13;
+        let bDPLeft = 14;
+        let bDPRight = 15;
+        let bHome = 16;
+        let bTrackPad = 17;
+
+        
+        
+
+        processControllerChange(arrButtonsWas, arrButtonsIs);
+        arrButtonsWas = arrButtonsIs;
+
+
+      
+        if (buttonPressed(gp.buttons[bX])) {
+          console.log(translateGamePad.get(bX));
+         
+        } else if (buttonPressed(gp.buttons[2])) {
+          console.log(translateGamePad.get(bSq));
+          
+        } else if(buttonPressed(gp.buttons[1])) {
+          console.log(translateGamePad.get(bO));
+          
+        } else if(buttonPressed(gp.buttons[3])) {
+          console.log(translateGamePad.get(bTr));
+          
+        } else if(buttonPressed(gp.buttons[4])) {
+          console.log(translateGamePad.get(bL1));
+         
+        } else if(buttonPressed(gp.buttons[5])) {
+          console.log(translateGamePad.get(bR1));
+          
+        } else if(buttonPressed(gp.buttons[6])) {
+          console.log(translateGamePad.get(bL2));
+          
+        } else if(buttonPressed(gp.buttons[7])) {
+          console.log(translateGamePad.get(bR2));
+         
+        } else if(buttonPressed(gp.buttons[8])) {
+          console.log(translateGamePad.get(bBack));
+          
+        } else if(buttonPressed(gp.buttons[9])) {
+          console.log(translateGamePad.get(bStart));
+         
+        } else if(buttonPressed(gp.buttons[10])) {
+          console.log(translateGamePad.get(bLSC));
+         
+        } else if(buttonPressed(gp.buttons[11])) {
+          console.log(translateGamePad.get(bRSC));
+          
+        } else if(buttonPressed(gp.buttons[12])) {
+          console.log(translateGamePad.get(bDPUp));
+         
+        } else if(buttonPressed(gp.buttons[13])) {
+          console.log(translateGamePad.get(bDPDown));
+          
+        } else if(buttonPressed(gp.buttons[14])) {
+          console.log(translateGamePad.get(bDPLeft));
+          //dosGame.autoKeyPress(88, 2);
+        } else if(!buttonPressed(gp.buttons[14])) {
+            dosGame.ci.sendKeyEvent(88, false);
+        } else if(buttonPressed(gp.buttons[15])) {
+          console.log(translateGamePad.get(bDPRight));
+         
+        } else if(buttonPressed(gp.buttons[16])) {
+          console.log(translateGamePad.get(bHome));
+          
+        } else if(buttonPressed(gp.buttons[17])) {
+          console.log(translateGamePad.get(bTrackPad));
+          
+        }
+      
+    
+        var start = rAF(gameLoop);
+      };
+      
+      
             //ci = commandInterface;
 
         const layers = emulatorsUi.dom.layers(document.getElementById("gameContainer"));
@@ -286,7 +454,7 @@
             if (mouseState === 'just-up') {
 
                 circle.visible = false;
-                ring.visible = false
+                ring.visible = false;
 
                 mouseState = 'up'
                 processDirectionChange(lastDirection, [])
@@ -320,6 +488,28 @@
                 if (ascii) dosGame.ci.sendKeyEvent(dosGame.reverseKeyMap.get(ascii), true);
             });
         }
+        function processControllerChange (was, is) {
+
+            
+
+            let turnOff = was.filter(w => is.indexOf(w) === -1)
+            let turnOn = is.filter(i => was.indexOf(i) === -1)
+
+            turnOff.forEach((direction) => {
+                console.log(direction + ' off');
+                let ascii = getDirectionAscii(direction)
+                console.log(ascii)
+                if (ascii) dosGame.ci.sendKeyEvent(dosGame.reverseKeyMap.get(ascii), false);
+
+            });
+
+            turnOn.forEach((direction) => {
+                console.log(direction + ' on');
+                let ascii = getDirectionAscii(direction)
+                console.log(ascii)
+                if (ascii) dosGame.ci.sendKeyEvent(dosGame.reverseKeyMap.get(ascii), true);
+            });
+            }
 
         function getDirectionAscii(direction) {
             return directionMapping[direction];
@@ -348,6 +538,9 @@
         })
 
     </script>
+    <script>
+        
+      </script>
     <script src="/dosbox/dos7/js-dos.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.1.3/pixi.min.js"></script>
 </body>

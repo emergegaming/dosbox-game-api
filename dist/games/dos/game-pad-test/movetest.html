@@ -72,7 +72,7 @@ var rAFStop = window.mozCancelRequestAnimationFrame ||
 
 window.addEventListener("gamepadconnected", function() {
   var gp = navigator.getGamepads()[0];
-  gamepadInfo.innerHTML = "Gamepad connected at index " + gp.index + ": " + gp.id + ". It has " + gp.buttons.length + " buttons and " + gp.axes.length + " axes.";
+  
 
   gameLoop();
 });
@@ -80,7 +80,7 @@ window.addEventListener("gamepadconnected", function() {
 window.addEventListener("gamepaddisconnected", function() {
   gamepadInfo.innerHTML = "Waiting for gamepad.";
 
-  rAFStop(start);
+  
 });
 
 if(!('GamepadEvent' in window)) {
@@ -93,8 +93,8 @@ function pollGamepads() {
   for (var i = 0; i < gamepads.length; i++) {
     var gp = gamepads[i];
     if(gp) {
-      gamepadInfo.innerHTML = "Gamepad connected at index " + gp.index + ": " + gp.id + ". It has " + gp.buttons.length + " buttons and " + gp.axes.length + " axes.";
-      gameLoop();
+      
+      
       clearInterval(interval);
     }
   }
@@ -134,7 +134,7 @@ function gameLoop() {
 
   if (buttonPressed(gp.buttons[bX])) {
     console.log(translateGamePad.get(bX));
-    dsoGame.sendKeyevent
+    
     b--;
   } else if (buttonPressed(gp.buttons[2])) {
     console.log(translateGamePad.get(bSq));
@@ -158,34 +158,34 @@ function gameLoop() {
     console.log(translateGamePad.get(bR2));
     a--;
   } else if(buttonPressed(gp.buttons[8])) {
-    console.log(translateGamePad.get(bR2));
+    console.log(translateGamePad.get(bBack));
     a--;
   } else if(buttonPressed(gp.buttons[9])) {
-    console.log(translateGamePad.get(bR2));
+    console.log(translateGamePad.get(bStart));
     a--;
   } else if(buttonPressed(gp.buttons[10])) {
-    console.log(translateGamePad.get(bR2));
+    console.log(translateGamePad.get(bLSC));
     a--;
   } else if(buttonPressed(gp.buttons[11])) {
-    console.log(translateGamePad.get(bR2));
+    console.log(translateGamePad.get(bRSC));
     a--;
   } else if(buttonPressed(gp.buttons[12])) {
-    console.log(translateGamePad.get(bR2));
+    console.log(translateGamePad.get(bDPUp));
     a--;
   } else if(buttonPressed(gp.buttons[13])) {
-    console.log(translateGamePad.get(bR2));
+    console.log(translateGamePad.get(bDPDown));
     a--;
   } else if(buttonPressed(gp.buttons[14])) {
-    console.log(translateGamePad.get(bR2));
+    console.log(translateGamePad.get(bDPLeft));
     a--;
   } else if(buttonPressed(gp.buttons[15])) {
-    console.log(translateGamePad.get(bR2));
+    console.log(translateGamePad.get(bDPRight));
     a--;
   } else if(buttonPressed(gp.buttons[16])) {
-    console.log(translateGamePad.get(bR2));
+    console.log(translateGamePad.get(bHome));
     a--;
   } else if(buttonPressed(gp.buttons[17])) {
-    console.log(translateGamePad.get(bR2));
+    console.log(translateGamePad.get(bTrackPad));
     a--;
   }
 

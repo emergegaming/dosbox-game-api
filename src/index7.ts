@@ -41,6 +41,7 @@ interface DirectionMapping {
  * @Author Mark van Wyk
  * @copyright Emerge Gaming @copy; 2021
  */
+
 export class DosGame {
 
     private dosRef: any;
@@ -66,21 +67,9 @@ export class DosGame {
     private touchEventListenersAdded:boolean = false;
     private reverseKeyMap = new Map();
 
-    private directionMapping:object = {
-        'up': 38,
-        'down': 40,
-        'left': 37,
-        'right': 39
-    };
+    
 
-    private jsdosKeyCodeLookup(inputCode: number){ //helper function to throw a warning when a key is pressed that is not mapped
-        let result = this.reverseKeyMap.get(inputCode);
-        if (result != undefined){
-            return result;    
-        } else {
-            console.warn('%c That Key is not Mapped, check index7.ts -> start7()', 'background: #000000; color: #00ff00');
-        }
-    }
+    
 
     /**
      * Create a new DosGame object.
@@ -102,8 +91,27 @@ export class DosGame {
         this.emulators = emulators;
     }
 
+    private directionMapping:object = {
+        'up': 38,
+        'down': 40,
+        'left': 37,
+        'right': 39
+    };
+
+    private jsdosKeyCodeLookup(inputCode: number){ //helper function to throw a warning when a key is pressed that is not mapped
+        let result = this.reverseKeyMap.get(inputCode);
+        if (result != undefined){
+            return result;    
+        } else {
+            console.warn('%c That Key is not Mapped, check index7.ts -> start7()', 'background: #000000; color: #00ff00');
+        }
+    }
+
     public start():Promise<any> {
+        
         return new Promise((resolve) => {
+            
+            
             this.dosRef(this.canvas, {
                 cycles: this.options.cycles,
                 wdosboxUrl: '/dosbox/wdosbox.js',
