@@ -57,18 +57,7 @@ export class GamePad {
         })
            
     }
-    public doIntervalPoll(navigator){
-        this.gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
-        if (!this.gamepads)
-            return;
-    }
-    public buttonPressed(b) {
-        if (typeof(b) == "object") {
-          return b.pressed;
-        }
-        return b == 1.0;
-      }
-    
+        
 }
 
 class ButtonsImpl {

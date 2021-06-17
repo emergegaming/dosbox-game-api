@@ -65,44 +65,28 @@
 
         let ci, arrButtonsIs; 
         let arrButtonsWas = [];
+        var gamepads;
 
         let dosGame = new DosGame(window.Dos, canvasContainer, emulators);
             dosGame.start7("sopwith.jsdos").then(() =>{
 
+              
           let translateGamePad = new Map();
       
-          translateGamePad.set(0, "X")//space
-          translateGamePad.set(1, "O")//up
-          translateGamePad.set(2, "◻")//down
-          translateGamePad.set(3, "△")//left
-          translateGamePad.set(4, "L1")//left
-          translateGamePad.set(5, "R1")//left
-          translateGamePad.set(6, "L2")//left
-          translateGamePad.set(7, "R2")//left
-          translateGamePad.set(8, "Back")//left
-          translateGamePad.set(9, "Start")//left
-          translateGamePad.set(10, "LSC")//left stick click
-          translateGamePad.set(11, "RSC")//right stick click
-          translateGamePad.set(12, "DPUp")//left
-          translateGamePad.set(13, "DPDown")//left
-          translateGamePad.set(14, "DPLeft")//left
-          translateGamePad.set(15, "DPRight")//left
-          translateGamePad.set(16, "Home")//left
-          translateGamePad.set(17, "TrackPad")//left
+          translateGamePad.set(0, 32)
+          translateGamePad.set(1, 66)
+          translateGamePad.set(2, 72)
+          translateGamePad.set(3, 190)
+          translateGamePad.set(5, 88)
+          translateGamePad.set(14, 37)
+          translateGamePad.set(15, 39)
+          
       
-      
-      var rAF = window.mozRequestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        window.requestAnimationFrame;
-      
-      var rAFStop = window.mozCancelRequestAnimationFrame ||
-        window.webkitCancelRequestAnimationFrame ||
-        window.cancelRequestAnimationFrame;
+  
       
       window.addEventListener("gamepadconnected", function() {
         var gp = navigator.getGamepads()[0];
-        
-      
+
         gameLoop();
       });
       
@@ -121,6 +105,7 @@
         var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
         for (var i = 0; i < gamepads.length; i++) {
           var gp = gamepads[i];
+          //console.log("POLLING GAMEPADS")
           if(gp) {
             
             
@@ -137,13 +122,15 @@
       }
       
       function gameLoop() {
-        var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+        gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
         if (!gamepads)
           return;
 
-        let arrButtonsIs =  gamepads[0].buttons;
+        // console.log(gamepads)
+
+        //let arrButtonsIs =  gamepads[0].buttons;
       
-        var gp = gamepads[0];
+        //var gp = gamepads[0];
         let bX = 0;
         let bO = 1;
         let bSq = 2;
@@ -166,71 +153,71 @@
         
         
 
-        processControllerChange(arrButtonsWas, arrButtonsIs);
-        arrButtonsWas = arrButtonsIs;
+        // processControllerChange(arrButtonsWas, arrButtonsIs);
+        // arrButtonsWas = arrButtonsIs;
 
 
       
-        if (buttonPressed(gp.buttons[bX])) {
-          console.log(translateGamePad.get(bX));
+        // if (buttonPressed(gp.buttons[bX])) {
+        //   console.log(translateGamePad.get(bX));
          
-        } else if (buttonPressed(gp.buttons[2])) {
-          console.log(translateGamePad.get(bSq));
+        // } else if (buttonPressed(gp.buttons[2])) {
+        //   console.log(translateGamePad.get(bSq));
           
-        } else if(buttonPressed(gp.buttons[1])) {
-          console.log(translateGamePad.get(bO));
+        // } else if(buttonPressed(gp.buttons[1])) {
+        //   console.log(translateGamePad.get(bO));
           
-        } else if(buttonPressed(gp.buttons[3])) {
-          console.log(translateGamePad.get(bTr));
+        // } else if(buttonPressed(gp.buttons[3])) {
+        //   console.log(translateGamePad.get(bTr));
           
-        } else if(buttonPressed(gp.buttons[4])) {
-          console.log(translateGamePad.get(bL1));
+        // } else if(buttonPressed(gp.buttons[4])) {
+        //   console.log(translateGamePad.get(bL1));
          
-        } else if(buttonPressed(gp.buttons[5])) {
-          console.log(translateGamePad.get(bR1));
+        // } else if(buttonPressed(gp.buttons[5])) {
+        //   console.log(translateGamePad.get(bR1));
           
-        } else if(buttonPressed(gp.buttons[6])) {
-          console.log(translateGamePad.get(bL2));
+        // } else if(buttonPressed(gp.buttons[6])) {
+        //   console.log(translateGamePad.get(bL2));
           
-        } else if(buttonPressed(gp.buttons[7])) {
-          console.log(translateGamePad.get(bR2));
+        // } else if(buttonPressed(gp.buttons[7])) {
+        //   console.log(translateGamePad.get(bR2));
          
-        } else if(buttonPressed(gp.buttons[8])) {
-          console.log(translateGamePad.get(bBack));
+        // } else if(buttonPressed(gp.buttons[8])) {
+        //   console.log(translateGamePad.get(bBack));
           
-        } else if(buttonPressed(gp.buttons[9])) {
-          console.log(translateGamePad.get(bStart));
+        // } else if(buttonPressed(gp.buttons[9])) {
+        //   console.log(translateGamePad.get(bStart));
          
-        } else if(buttonPressed(gp.buttons[10])) {
-          console.log(translateGamePad.get(bLSC));
+        // } else if(buttonPressed(gp.buttons[10])) {
+        //   console.log(translateGamePad.get(bLSC));
          
-        } else if(buttonPressed(gp.buttons[11])) {
-          console.log(translateGamePad.get(bRSC));
+        // } else if(buttonPressed(gp.buttons[11])) {
+        //   console.log(translateGamePad.get(bRSC));
           
-        } else if(buttonPressed(gp.buttons[12])) {
-          console.log(translateGamePad.get(bDPUp));
+        // } else if(buttonPressed(gp.buttons[12])) {
+        //   console.log(translateGamePad.get(bDPUp));
          
-        } else if(buttonPressed(gp.buttons[13])) {
-          console.log(translateGamePad.get(bDPDown));
+        // } else if(buttonPressed(gp.buttons[13])) {
+        //   console.log(translateGamePad.get(bDPDown));
           
-        } else if(buttonPressed(gp.buttons[14])) {
-          console.log(translateGamePad.get(bDPLeft));
-          //dosGame.autoKeyPress(88, 2);
-        } else if(!buttonPressed(gp.buttons[14])) {
-            dosGame.ci.sendKeyEvent(88, false);
-        } else if(buttonPressed(gp.buttons[15])) {
-          console.log(translateGamePad.get(bDPRight));
+        // } else if(buttonPressed(gp.buttons[14])) {
+        //   console.log(translateGamePad.get(bDPLeft));
+        //   //dosGame.autoKeyPress(88, 2);
+        // } else if(!buttonPressed(gp.buttons[14])) {
+        //     dosGame.ci.sendKeyEvent(88, false);
+        // } else if(buttonPressed(gp.buttons[15])) {
+        //   console.log(translateGamePad.get(bDPRight));
          
-        } else if(buttonPressed(gp.buttons[16])) {
-          console.log(translateGamePad.get(bHome));
+        // } else if(buttonPressed(gp.buttons[16])) {
+        //   console.log(translateGamePad.get(bHome));
           
-        } else if(buttonPressed(gp.buttons[17])) {
-          console.log(translateGamePad.get(bTrackPad));
+        // } else if(buttonPressed(gp.buttons[17])) {
+        //   console.log(translateGamePad.get(bTrackPad));
           
-        }
+        // }
       
     
-        var start = rAF(gameLoop);
+       // var start = rAF(gameLoop);
       };
       
       
@@ -390,6 +377,32 @@
 
         app.ticker.add(() => {
 
+
+            // var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+            // if (!gamepads)
+            //   return;
+
+            // gamepads.forEach(gp => {
+            //   if (gp.index === 0) {
+            //     console.log(gp.buttons);
+            //   }
+            // });
+            
+            // console.log(gamepads[0]);
+            // console.log(gamepads[1]);
+            setTimeout(() => {
+                console.log(gamepads[0].buttons)    
+            }, 3000);
+            
+            
+
+            let arrButtonsIs =  gamepads[0].buttons;
+          
+            
+            processControllerChange(arrButtonsWas, arrButtonsIs);
+            arrButtonsWas = arrButtonsIs;
+          
+
             if (mouseState === 'just-down') {
                 circle.position.x = xc;
                 circle.position.y = yc;
@@ -489,27 +502,36 @@
             });
         }
         function processControllerChange (was, is) {
+        let changes = is.map((item, index) => item.pressed !== was[index].pressed ? {keyCode:translateGamePad.get(index), action:item.pressed} : null).filter((item) => item);
+        changes.forEach(requiredKeyPress => {
+            console.log ('sendKeyEvent(' + requiredKeyPress.keyCode + ', ' + requiredKeyPress.action + ')');
+        })
+        //   console.log("ProcessControllerChange");
+        //   console.log(was);
+        //   console.log(is);
 
             
 
-            let turnOff = was.filter(w => is.indexOf(w) === -1)
-            let turnOn = is.filter(i => was.indexOf(i) === -1)
+        //   let turnOff = is.map((isItem, index) => isItem.pressed !== was[index].pressed  && is[index].pressed === false ? index : false).filter((i) => i !== false);
+        //   let turnOn = was.map((wasItem, index) => wasItem.pressed !== is[index].pressed && is[index].pressed === true ? index : false).filter((i) => i !== false);
 
-            turnOff.forEach((direction) => {
-                console.log(direction + ' off');
-                let ascii = getDirectionAscii(direction)
-                console.log(ascii)
-                if (ascii) dosGame.ci.sendKeyEvent(dosGame.reverseKeyMap.get(ascii), false);
+        //     turnOff.forEach((button) => {
+        //       let tButton = translateGamePad.get(button);
+        //         //console.log(tButton + ' off');
+        //         //let ascii = getDirectionAscii(direction)
+        //         //console.log(tButton)
+        //         if (button) console.log(tButton)//dosGame.ci.sendKeyEvent(tButton, false);
 
-            });
+        //     });
 
-            turnOn.forEach((direction) => {
-                console.log(direction + ' on');
-                let ascii = getDirectionAscii(direction)
-                console.log(ascii)
-                if (ascii) dosGame.ci.sendKeyEvent(dosGame.reverseKeyMap.get(ascii), true);
-            });
-            }
+        //     turnOn.forEach((button) => {
+        //       let tButton = translateGamePad.get(button);
+        //         //console.log(tButton + ' off');
+        //         //let ascii = getDirectionAscii(direction)
+        //         //console.log(tButton)
+        //         if (button) console.log(tButton)//dosGame.ci.sendKeyEvent(tButton, false);
+        //     });
+        }
 
         function getDirectionAscii(direction) {
             return directionMapping[direction];
