@@ -24,8 +24,10 @@
         }
 
         .emulator-canvas {
-            top: 0 !important;
-        }
+    top: 0 !important;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+}
 
     </style>
 </head>
@@ -63,24 +65,27 @@
         //     cycles : 'fixed 3000',
         // }
 
-        let ci, arrButtonsIs; 
+        let ci; 
         let arrButtonsWas = [];
+        let arrButtonsIs = [];
         var gamepads;
+        let translateGamePad = new Map();
+      
+            
 
         let dosGame = new DosGame(window.Dos, canvasContainer, emulators);
             dosGame.start7("sopwith.jsdos").then(() =>{
 
               
-          let translateGamePad = new Map();
-      
-          translateGamePad.set(0, 32)
-          translateGamePad.set(1, 66)
-          translateGamePad.set(2, 72)
-          translateGamePad.set(3, 190)
-          translateGamePad.set(5, 88)
-          translateGamePad.set(14, 37)
-          translateGamePad.set(15, 39)
-          
+        
+            translateGamePad.set(0, 32)
+            translateGamePad.set(1, 66)
+            translateGamePad.set(2, 72)
+            translateGamePad.set(3, 190)
+            translateGamePad.set(5, 88)
+            translateGamePad.set(14, 188)
+            translateGamePad.set(15, 191)
+            
       
   
       
@@ -226,19 +231,19 @@
         const layers = emulatorsUi.dom.layers(document.getElementById("gameContainer"));
 
         for (let index = 0; index < layers.length; index++) {
-            console.log(layers[index]);
+            //console.log(layers[index]);
             
             
         }
             /** Auto-press on startup **/
 
             setTimeout(() => {
-                console.log("s")
+                //console.log("s")
                 dosGame.autoKeyPress(83);
             }, 500)
 
             setTimeout(() => {
-                console.log("3")
+                //console.log("3")
                 dosGame.autoKeyPress(51);
             }, 1000)
 
@@ -373,14 +378,27 @@
 
         });
 
-        /** Main Loop **/
+        function getGamepadState(gamePads) {
+            let temp = gamePads[0].buttons;
+            let state = [];
+            let tLength = temp.length;
+            for (let i = 0; i < tLength; i++) {
+                state[i] = temp[i].pressed;
+            }
+            return state;
+        }
 
+        /** Main Loop **/
+        
+        //arrButtonsWas = arrButtonsIs;
         app.ticker.add(() => {
 
 
-            // var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
-            // if (!gamepads)
-            //   return;
+            var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+            if (!gamepads)
+              return;
+            
+
 
             // gamepads.forEach(gp => {
             //   if (gp.index === 0) {
@@ -390,18 +408,28 @@
             
             // console.log(gamepads[0]);
             // console.log(gamepads[1]);
-            setTimeout(() => {
-                console.log(gamepads[0].buttons)    
-            }, 3000);
-            
+            //let arrButtonsIs = [];
+
             
 
-            let arrButtonsIs =  gamepads[0].buttons;
-          
+            if (gamepads.length > 0) {
+                //debugger
+               //console.log("AAAAAAAA")
+
+                
+                if (arrButtonsIs.length > 0 && arrButtonsWas.length > 0) {
+                    arrButtonsIs = getGamepadState(gamepads);
+                    processControllerChange(arrButtonsWas, arrButtonsIs);
+                    arrButtonsWas = arrButtonsIs.slice(0);    
+                }
+                else {
+                    arrButtonsIs = getGamepadState(gamepads);
+                    arrButtonsWas = arrButtonsIs.slice(0);    
+                }
+                
+            }
+
             
-            processControllerChange(arrButtonsWas, arrButtonsIs);
-            arrButtonsWas = arrButtonsIs;
-          
 
             if (mouseState === 'just-down') {
                 circle.position.x = xc;
@@ -487,25 +515,57 @@
             let turnOn = is.filter(i => was.indexOf(i) === -1)
 
             turnOff.forEach((direction) => {
-                console.log(direction + ' off');
+                //console.log(direction + ' off');
                 let ascii = getDirectionAscii(direction)
-                console.log(ascii)
+                //console.log(ascii)
                 if (ascii) dosGame.ci.sendKeyEvent(dosGame.reverseKeyMap.get(ascii), false);
 
             });
 
             turnOn.forEach((direction) => {
-                console.log(direction + ' on');
+                //console.log(direction + ' on');
                 let ascii = getDirectionAscii(direction)
-                console.log(ascii)
+                //console.log(ascii)
                 if (ascii) dosGame.ci.sendKeyEvent(dosGame.reverseKeyMap.get(ascii), true);
             });
         }
         function processControllerChange (was, is) {
-        let changes = is.map((item, index) => item.pressed !== was[index].pressed ? {keyCode:translateGamePad.get(index), action:item.pressed} : null).filter((item) => item);
-        changes.forEach(requiredKeyPress => {
-            console.log ('sendKeyEvent(' + requiredKeyPress.keyCode + ', ' + requiredKeyPress.action + ')');
-        })
+            // console.log(is);
+            // console.log(was);
+        let changes = [];
+        
+        
+        if (is && was) {
+            
+        // console.log("WAS: ", was)
+        // console.log("IS: ", is)
+
+            
+            //changes = is.map((item, index) => {(item !== was[index] ? item : null)}); 
+            
+            for (let i = 0; i < is.length; i++) {
+                if (is[i] !== was[i]) {
+                    // console.log(i);
+                    changes.push({keyCode:(translateGamePad.get(i)), action:(is[i])});
+                }
+                
+            }
+        }
+//{keyCode:(translateGamePad.get(index)), action:(item)}
+
+            
+        //console.log("IS: " + is[0].pressed, "WAS: " + was[0])
+        //console.log("CHANGES", changes);
+        if (changes.length>0) {
+            //console.log(changes);
+         
+            changes.forEach(requiredKeyPress => {
+                dosGame.ci.sendKeyEvent(dosGame.reverseKeyMap.get(requiredKeyPress.keyCode), requiredKeyPress.action);
+                //console.log (dosGame.reverseKeyMap.get(requiredKeyPress.keyCode), requiredKeyPress.action);
+            })   
+        }
+
+        
         //   console.log("ProcessControllerChange");
         //   console.log(was);
         //   console.log(is);

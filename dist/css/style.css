@@ -15,6 +15,11 @@
    
 }
 
+.emulator-canvas {
+    top: 0 !important;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+}
 
 .orientation-notice {
     background: #110000;
