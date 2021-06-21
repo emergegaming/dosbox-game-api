@@ -8,114 +8,68 @@
     <style lang="css">
 
         @media screen and (orientation:portrait) {
-            #canvasContainer, #canvasContainer canvas {
+            #gameCanvas {
                 width: 100%;
-                position: absolute;
-                top: 0;
             }
         }
 
         @media screen and (orientation:landscape) {
-            #canvasContainer {
-                background-color: #000000;
+            #gameCanvas {
+                margin: auto;
+                height:100%
             }
-            #canvasContainer canvas {
-                margin-right: 200px;
-                height:100vh;
-            }
-        }
-
-        .emulator-canvas {
-            top: 0 !important;
-            image-rendering: pixelated;
-            image-rendering: -moz-crisp-edges;
         }
 
     </style>
 </head>
 <body class="bg-black h-screen object-contain">
-    <div id="gameContainer">
-        <canvas id="controlCanvas" class="w-full left-0 absolute h-screen z-50"></canvas>
-        <!-- <canvas id="gameCanvas"></canvas> -->
-        <div id="canvasContainer" class="w-full left-0 absolute top-0 h-screen"></div>
+    <div id="container">
+        <canvas id="controlCanvas" class="w-full left-0 absolute top-0 h-screen"></canvas>
+        <canvas id="gameCanvas"></canvas>
     </div>
-    <script src="/dosbox/dos7/js-dos.js"></script>
     <script type="module">
 
         /** DOS **/
 
-        import {DosGame} from "/index7.js";
+        import {DosGame} from "/index.js";
+        let canvas = document.getElementById('gameCanvas');
+        let container = document.getElementById('container');
 
-        let canvasContainer = document.getElementById('canvasContainer');
+        let gameConfig = {
+            zipFile : 'sopwith.zip',
+            execCmdArray : ['-c','SOPWITH.EXE'],
+            cycles: '800'
+        }
 
-        let dosGame = new DosGame(window.Dos, canvasContainer, emulators);
-            dosGame.start7("sopwith.jsdos").then(() => {
+        // let gameConfig = {
+        //     zipFile : '../alley-cat/AlleyCat.zip',
+        //     execCmdArray : ['-c','cd ALLEYCAT', '-c', 'CAT.EXE'],
+        //     cycles : 'fixed 3000',
+        // }
+
+        let ci;
+
+        let dosGame = new DosGame(window.Dos, gameConfig, canvas);
+        dosGame.start().then((commandInterface) => {
+            ci = commandInterface;
 
             /** Auto-press on startup **/
 
             setTimeout(() => {
                 console.log("s")
-                dosGame.autoKeyPress(83);
+                ci.simulateKeyPress(83);
             }, 500)
 
             setTimeout(() => {
                 console.log("3")
-                dosGame.autoKeyPress(51);
+                ci.simulateKeyPress(51);
             }, 1000)
 
         });
 
-        // buttons[2].keyCode = 190; // . (invert)
-        // buttons[3].keyCode = 72;  // h (home)
-        // buttons[4].keyCode = 88;  // x (go)
-
-
-        /** Define Buttons **/
-        let buttons = [
-            {
-                'icon': '/images/icons/fire.svg',
-                'colour' : 0xff0000,
-                'press': () => pressKey(32, true),
-                'release': () => pressKey(32, false),
-            },
-            {
-                'icon': '/images/icons/bomb.svg',
-                'colour' : 0xff7700,
-                'press': () => pressKey(66, true),
-                'release': () => pressKey(66, false),
-            },
-            {
-                'icon': '/images/icons/accelerate.svg',
-                'colour' : 0x00ff00,
-                'press': () => pressKey(88, true),
-                'release': () => pressKey(88, false)
-            },
-            {
-                'icon': '/images/icons/home.svg',
-                'colour' : 0x0077ff,
-                'press': () => pressKey(72, true),
-                'release': () => pressKey(72, false)
-            },
-            {
-                'icon': '/images/icons/invert.svg',
-                'colour' : 0xff00ff,
-                'press': () => pressKey(190, true),
-                'release': () => pressKey(190, false)
-            }
-        ]
-
-
-        /** DISABLE Keyboard Scrolling / Search **/
-        document.addEventListener('keydown',(e) => {
-            if (e.key === '/') e.preventDefault();
-            if (e.key === ' ') e.preventDefault();
-        })
-
         /** PIXI **/
         let controlCanvas = document.getElementById('controlCanvas')
-        let app = new PIXI.Application({width: window.innerWidth, height: window.innerHeight, view: controlCanvas, transparent:true, autoResize:true, resizeTo:window, antialias:true});
-
-        let glowFilter = new PIXI.filters.GlowFilter({distance:25, outerStrength:2})
+        let app = new PIXI.Application({width: window.innerWidth, height: window.innerHeight, view: controlCanvas, transparent:true, autoResize:true, resizeTo:window});
 
         /** PIXI:Graphics **/
         let graphicsCircle = new PIXI.Graphics();
@@ -129,6 +83,16 @@
         graphicsRing.lineStyle(8, 0x3355FF);
         graphicsRing.drawCircle(0,0,50);
         graphicsRing.interactive = false;
+
+        let graphicsButton = new PIXI.Graphics();
+        graphicsButton.beginFill(0x33AAFF);
+        graphicsButton.lineStyle(0);
+        graphicsButton.drawCircle(0,0,20);
+        graphicsButton.endFill();
+
+        graphicsButton.lineStyle(4, 0x33CCCC);
+        graphicsButton.drawCircle(0,0,25);
+
 
         /** PIXI:Sprite **/
         let circleTexture = app.renderer.generateTexture(graphicsCircle)
@@ -146,38 +110,25 @@
         ring.blendMode = PIXI.BLEND_MODES.ADD;
         app.stage.addChild(ring);
 
-        for (let i = 0; i < buttons.length ; i++) {
-
-            let graphicsButton = new PIXI.Graphics();
-            graphicsButton.beginFill(buttons[i].colour);
-            graphicsButton.lineStyle(0);
-            graphicsButton.drawCircle(0,0,20);
-            graphicsButton.endFill();
-
-            graphicsButton.lineStyle(4, buttons[i].colour);
-            graphicsButton.drawCircle(0,0,25);
-
-            let buttonTexture = app.renderer.generateTexture(graphicsButton);
+        let buttonTexture = app.renderer.generateTexture(graphicsButton);
+        let buttons = [];
+        for (let i = 0; i < 5 ; i++) {
 
             let button = new PIXI.Sprite(buttonTexture);
             button.anchor.set(0.5)
+            button.alpha = 0.5;
+            button.x = 100;
+            button.visible = false;
 
-            let svgTexture = new PIXI.Texture.from(buttons[i].icon);
-
-            let svgSprite = new PIXI.Sprite(svgTexture);
-            svgSprite.anchor.set(0.5);
-
-            let buttonContainer = new PIXI.Container();
-            buttonContainer.addChild(button);
-            buttonContainer.addChild(svgSprite);
-
-
-            buttonContainer.get
-
-            buttonContainer.alpha = 0.5;
-            buttons[i].sprite = buttonContainer
-            app.stage.addChild(buttonContainer);
+            buttons.push(button)
+            app.stage.addChild(buttons[i]);
         }
+
+        buttons[0].keyCode = 32;  // space (shoot)
+        buttons[1].keyCode = 66;  // b (bomb)
+        buttons[2].keyCode = 190; // . (invert)
+        buttons[3].keyCode = 72;  // h (home)
+        buttons[4].keyCode = 88;  // x (go)
 
         repositionButtons();
 
@@ -205,17 +156,15 @@
                 yc = y;
                 mouseState = 'just-down'
             } else {
-                for (let i = 0; i < buttons.length; i++) {
-                    if (Math.abs(buttons[i].sprite.position.x - x) < 25 && Math.abs(buttons[i].sprite.position.y - y) < 25 ) {
+                for (let i = 0; i < 5; i++) {
+                    if (Math.abs(buttons[i].position.x - x) < 25 && Math.abs(buttons[i].position.y - y) < 25 ) {
                         buttons[i].active = true;
-                        buttons[i].sprite.alpha = 1
-                        buttons[i].press();
-                        window.navigator.vibrate(20);
-                        buttons[i].sprite.filters = [
-                            glowFilter
-                        ]
+                        ci.simulateKeyEvent(buttons[i].keyCode, true);
                     }
                 }
+            }
+            if (!document.fullscreenElement) {
+                container.requestFullscreen();
             }
         });
 
@@ -236,19 +185,15 @@
             if (x < window.innerWidth / 2) {
                 mouseState = 'just-up'
             } else {
-                for (let i = 0; i < buttons.length; i++) {
+                for (let i = 0; i < 5; i++) {
                     let b = buttons[i];
                     if (b.active) {
                         b.active = false;
-                        console.log ('release')
-                        window.navigator.vibrate(3);
-                        buttons[i].sprite.alpha = 0.5
-                        buttons[i].release();
-                        buttons[i].sprite.filters = [
-                        ]
+                        ci.simulateKeyEvent(b.keyCode, false);
                     }
                 }
             }
+
         });
 
         /** Main Loop **/
@@ -333,21 +278,22 @@
 
         function processDirectionChange (was, is) {
 
+            window.navigator.vibrate(20);
+
             let turnOff = was.filter(w => is.indexOf(w) === -1)
             let turnOn = is.filter(i => was.indexOf(i) === -1)
 
             turnOff.forEach((direction) => {
                 console.log(direction + ' off');
-                window.navigator.vibrate(3);
                 let ascii = getDirectionAscii(direction)
-                if (ascii) dosGame.ci.sendKeyEvent(DosGame.jsdosKeyCodeLookup(ascii), false);
+                if (ascii) ci.simulateKeyEvent(ascii, false);
+
             });
 
             turnOn.forEach((direction) => {
                 console.log(direction + ' on');
-                window.navigator.vibrate(20);
                 let ascii = getDirectionAscii(direction)
-                if (ascii) dosGame.ci.sendKeyEvent(DosGame.jsdosKeyCodeLookup(ascii), true);
+                if (ascii) ci.simulateKeyEvent(ascii, true);
             });
         }
 
@@ -362,30 +308,23 @@
         }
 
         function repositionButtons() {
-            let xStart = (window.innerWidth - 60)
-            let yStart = window.innerHeight - 40;
+            let xStart = (window.innerWidth - 80)
+            let yStart = window.innerHeight - 70;
 
-            for (let i = 0; i < buttons.length ; i++) {
-                let offSet = (i % 2 * -1 - 1) * 35;
-                console.log (offSet);
-                buttons[i].sprite.position.x = xStart + offSet;
-                buttons[i].sprite.position.y = yStart + (-i * 50) ;
-                buttons[i].sprite.visible = true;
+            for (let i = 0; i < 5; i++) {
+                buttons[i].position.x = xStart;
+                buttons[i].position.y = yStart + (-i * 60);
+                buttons[i].visible = true;
             }
         }
 
-        function pressKey(keyCode, isPressed) {
-            dosGame.ci.sendKeyEvent(DosGame.jsdosKeyCodeLookup(keyCode), isPressed);
-        }
 
         window.addEventListener("resize", () => {
             repositionButtons();
         })
 
     </script>
-    <script src="/dosbox/dos7/js-dos.js"></script>
+    <script src="/dosbox/js-dos.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.1.3/pixi.min.js"></script>
-    <script src="/lib/pixi-filters.js"></script>
-
 </body>
 </html>
