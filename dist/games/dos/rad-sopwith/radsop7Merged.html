@@ -48,8 +48,66 @@
 
         let canvasContainer = document.getElementById('canvasContainer');
 
+        let ci; 
+        let arrButtonsWas = [];
+        let arrButtonsIs = [];
+        let gamepads;
+        let translateGamePad = new Map();
+        let isChromium = window.chrome;
+        let winNav = window.navigator;
+        let vendorName = winNav.vendor;
+        let isOpera = typeof window.opr !== "undefined";
+        let isIEedge = winNav.userAgent.indexOf("Edge") > -1;
+        let isIOSChrome = winNav.userAgent.match("CriOS");
+
+
         let dosGame = new DosGame(window.Dos, canvasContainer, emulators);
             dosGame.start7("sopwith.jsdos").then(() => {
+
+                translateGamePad.set(0, 32)
+            translateGamePad.set(1, 66)
+            translateGamePad.set(2, 72)
+            translateGamePad.set(3, 190)
+            translateGamePad.set(5, 88)
+            translateGamePad.set(14, 188)
+            translateGamePad.set(15, 191)
+    
+            window.addEventListener("gamepadconnected", function() {
+                var gp = navigator.getGamepads()[0];
+                gameLoop();
+            });
+            
+            window.addEventListener("gamepaddisconnected", function() {
+                gamepadInfo.innerHTML = "Waiting for gamepad.";
+            });
+            
+            if(!('GamepadEvent' in window)) {
+                var interval = setInterval(pollGamepads, 500);
+            }
+            
+            function pollGamepads() {
+                var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+                for (var i = 0; i < gamepads.length; i++) {
+                var gp = gamepads[i];
+                    if(gp) {
+                        clearInterval(interval);
+                    }
+                }
+            }
+            
+            function buttonPressed(b) {
+                if (typeof(b) == "object") {
+                return b.pressed;
+                }
+                return b == 1.0;
+            }
+            
+            function gameLoop() {
+                gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+                if (!gamepads)
+                return;
+            };
+
 
             /** Auto-press on startup **/
 
@@ -178,6 +236,14 @@
             buttons[i].sprite = buttonContainer
             app.stage.addChild(buttonContainer);
         }
+        
+        /** Controller Button Mappings **/
+
+        buttons[0].keyCode = 32;  // space (shoot)
+        buttons[1].keyCode = 66;  // b (bomb)
+        buttons[2].keyCode = 190; // . (invert)
+        buttons[3].keyCode = 72;  // h (home)
+        buttons[4].keyCode = 88;  // x (go)
 
         repositionButtons();
 
@@ -251,9 +317,45 @@
             }
         });
 
+        function getGamepadState(gamePads) {
+            let temp = gamePads[0].buttons;
+                let state = [];
+                let tLength = temp.length;
+                for (let i = 0; i < tLength; i++) {
+                    state[i] = temp[i].pressed;
+                }
+                return state;
+        }
+
         /** Main Loop **/
 
         app.ticker.add(() => {
+            var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+            if (!gamepads)
+            return;
+                
+            if(isChromium && gamepads[0]){ //if browser is chrome and the gamepad has been initialised 
+                    if (arrButtonsIs.length > 0 && arrButtonsWas.length > 0) {
+                        arrButtonsIs = getGamepadState(gamepads);
+                        processControllerChange(arrButtonsWas, arrButtonsIs);
+                        arrButtonsWas = arrButtonsIs.slice(0);    
+                    }
+                    else {
+                        arrButtonsIs = getGamepadState(gamepads);
+                        arrButtonsWas = arrButtonsIs.slice(0);    
+                    }   
+            }
+            else if (gamepads[0]) { //if the browser is anyting else(firefox, safari atm) then wait for the gamepad to be connected 
+                    if (arrButtonsIs.length > 0 && arrButtonsWas.length > 0) {
+                        arrButtonsIs = getGamepadState(gamepads);
+                        processControllerChange(arrButtonsWas, arrButtonsIs);
+                        arrButtonsWas = arrButtonsIs.slice(0);    
+                    }
+                    else {
+                        arrButtonsIs = getGamepadState(gamepads);
+                        arrButtonsWas = arrButtonsIs.slice(0);    
+                    }
+            }
 
             if (mouseState === 'just-down') {
                 circle.position.x = xc;
@@ -349,6 +451,27 @@
                 let ascii = getDirectionAscii(direction)
                 if (ascii) dosGame.ci.sendKeyEvent(DosGame.jsdosKeyCodeLookup(ascii), true);
             });
+        }
+
+        function processControllerChange (was, is) {
+        let changes = [];
+
+        if (is && was) {
+
+            for (let i = 0; i < is.length; i++) {
+                if (is[i] !== was[i]) {
+                    changes.push({keyCode:(translateGamePad.get(i)), action:(is[i])});
+                }
+                
+            }
+        }
+
+        if (changes.length>0) {
+
+            changes.forEach(requiredKeyPress => {
+                dosGame.ci.sendKeyEvent(DosGame.reverseKeyMap[requiredKeyPress.keyCode], requiredKeyPress.action);
+            })   
+        }
         }
 
         function getDirectionAscii(direction) {
