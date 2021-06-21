@@ -518,7 +518,7 @@
                 //console.log(direction + ' off');
                 let ascii = getDirectionAscii(direction)
                 //console.log(ascii)
-                if (ascii) dosGame.ci.sendKeyEvent(dosGame.reverseKeyMap.get(ascii), false);
+                if (ascii) dosGame.ci.sendKeyEvent(DosGame.reverseKeyMap[ascii], false);
 
             });
 
@@ -526,7 +526,7 @@
                 //console.log(direction + ' on');
                 let ascii = getDirectionAscii(direction)
                 //console.log(ascii)
-                if (ascii) dosGame.ci.sendKeyEvent(dosGame.reverseKeyMap.get(ascii), true);
+                if (ascii) dosGame.ci.sendKeyEvent(DosGame.reverseKeyMap[ascii], true);
             });
         }
         function processControllerChange (was, is) {
