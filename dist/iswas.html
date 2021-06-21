@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Is Was</title>
+    <script>
+
+        let was = [
+            {pressed:true},
+            {pressed:false},
+            {pressed:false},
+            {pressed:false},
+        ]
+
+        let is = [
+            {pressed:false},
+            {pressed:false},
+            {pressed:false},
+            {pressed:true}
+        ]
+
+        let key = {
+            '0' : 'left',
+            '1' : 'right',
+            '2' : 'up',
+            '3' : 'down'
+        }
+
+        let changes = is.map((item, index) => item.pressed !== was[index].pressed ? {keyCode:key[index], action:item.pressed} : null).filter((item) => item);
+
+        changes.forEach(requiredKeyPress => {
+            console.log ('sendKeyEvent(' + requiredKeyPress.keyCode + ', ' + requiredKeyPress.action + ')');
+        })
+
+
+
+
+        // let turnOff = was.map(function (isItem, index) {if (isItem.pressed !== was[index].pressed  && is[index].pressed === true) return index}).filter((i) => i !== false);
+        // let turnOn = is.map(function (isItem, index) {if (isItem.pressed !== was[index].pressed  && is[index].pressed === false) return index}).filter((i) => i !== false);
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>

@@ -64,7 +64,21 @@ export class DosGame {
     private dPadMode:boolean = false;
     private dPadBounds:DOMRect;
     private touchEventListenersAdded:boolean = false;
-    private reverseKeyMap = new Map();
+    private static reverseKeyMap = {
+        32:32,  //space
+        38:265, //up
+        40:264, //down
+        37:263, //left
+        39:262, //right
+        18:342, //alt
+        16:340, //shift
+        66:66,  //B
+        88:88,  //X
+        188:44, //comma
+        190:46, //fullstop or period
+        191:47, //forward-slash
+        72:72   //H
+    }
 
     private directionMapping:object = {
         'up': 38,
@@ -73,10 +87,10 @@ export class DosGame {
         'right': 39
     };
 
-    private jsdosKeyCodeLookup(inputCode: number){ //helper function to throw a warning when a key is pressed that is not mapped
-        let result = this.reverseKeyMap.get(inputCode);
+    private static jsdosKeyCodeLookup(inputCode: number){ //helper function to throw a warning when a key is pressed that is not mapped
+        let result = DosGame.reverseKeyMap[inputCode];
         if (result != undefined){
-            return result;    
+            return result;
         } else {
             console.warn('%c That Key is not Mapped, check index7.ts -> start7()', 'background: #000000; color: #00ff00');
         }
@@ -123,30 +137,12 @@ export class DosGame {
     }
 
     public start7(gameBundle: string):Promise<any> {
-        return new Promise(async (resolve)=>{
-
-            this.reverseKeyMap.set(32, 32)//space
-            this.reverseKeyMap.set(38, 265)//up
-            this.reverseKeyMap.set(40, 264)//down
-            this.reverseKeyMap.set(37, 263)//left
-            this.reverseKeyMap.set(39, 262)//right
-            this.reverseKeyMap.set(18, 342)//alt
-            this.reverseKeyMap.set(16, 340)//shift
-            this.reverseKeyMap.set(66, 66)//B
-            this.reverseKeyMap.set(88, 88)//X
-            this.reverseKeyMap.set(188, 44)//comma
-            this.reverseKeyMap.set(190, 46)//fullstop or period
-            this.reverseKeyMap.set(191, 47)//forward-slash
-            this.reverseKeyMap.set(72, 72)//H
-            
-            
+        return new Promise(async (resolve) => {
             this.emulators.pathPrefix = "/dosbox/dos7/";
             this.dosRef(this.rootElement).run(gameBundle).then((ci)=>{
                 this.ci = ci;
                 this.canvas = <any>this.rootElement.getElementsByTagName('canvas')[0];
                 this.canvasContext = this.canvas.getContext("webgl");
-                console.log(this.canvasContext);
-                
                 resolve(ci);
             });
         })
@@ -216,7 +212,7 @@ export class DosGame {
      * @param buttonMapping the keyCode and asciiCode mapping.
      */
     public mapButtonToKey(buttonMapping:ButtonMapping):void {
-        this.buttons.push({element: buttonMapping.element, asciiCode: this.jsdosKeyCodeLookup(buttonMapping.asciiCode)})
+        this.buttons.push({element: buttonMapping.element, asciiCode: DosGame.reverseKeyMap[buttonMapping.asciiCode]})
         if (!this.directions) {
             this.addTouchEventListeners()
         }
@@ -258,7 +254,7 @@ export class DosGame {
      * @param callback to callback every interval with the pixel colour.
      * @param delay the number of ms between callback intervals
      */
-    
+
     public addPixelListener(x:number, y:number, callback, log:boolean) {
         const delay:number = 1000
         this.pixelListeners.push({x:x, y:y, callback:callback, lastColor:undefined})
@@ -270,7 +266,7 @@ export class DosGame {
             }, delay);
         }
     }
-    
+
     public setGeneralPixelCallback(callback:(colours:string[]) => void) {
         this.generalPixelCallback = callback;
     }
@@ -282,11 +278,11 @@ export class DosGame {
     * @param log boolean for if you want to write out to the console
     * */
     public consoleSingleScreenShot(log: boolean, toData: boolean):any {
-        
+
         let c = document.createElement('canvas');
         c.width=320;
         c.height=200;
-        const ctx = c.getContext('2d');       
+        const ctx = c.getContext('2d');
         this.ci.screenshot().then((imgData: ImageData)=>{
             ctx.putImageData(imgData, 0, 0);
             if(log){
@@ -298,7 +294,7 @@ export class DosGame {
             else{
                 this.retVal = imgData;
             }
-            
+
         })
         return this.retVal;
     }
@@ -327,7 +323,7 @@ export class DosGame {
         let c = document.createElement('canvas');
             c.width=320;
             c.height=200;
-            const ctx = c.getContext('2d');       
+            const ctx = c.getContext('2d');
             this.ci.screenshot().then((imgData)=>{
                 ctx.putImageData(imgData, 0, 0);
                 this.pixelListeners.forEach((pl) => {
@@ -343,7 +339,7 @@ export class DosGame {
                     }
                 });
             })
-       
+
 
     if (this.generalPixelCallback) this.generalPixelCallback(colors);
     }}
@@ -541,10 +537,10 @@ export class DosGame {
         let turnOff = was.filter(w => is.indexOf(w) === -1)
         let turnOn = is.filter(i => was.indexOf(i) === -1)
         turnOff.forEach((direction) => {
-            this.ci.sendKeyEvent(this.jsdosKeyCodeLookup(this.getDirectionAscii(direction)), false);
+            this.ci.sendKeyEvent(DosGame.reverseKeyMap[this.getDirectionAscii(direction)], false);
         });
         turnOn.forEach((direction) => {
-            this.ci.sendKeyEvent(this.jsdosKeyCodeLookup(this.getDirectionAscii(direction)), true);
+            this.ci.sendKeyEvent(DosGame.reverseKeyMap[this.getDirectionAscii(direction)], true);
         });
     }
 
