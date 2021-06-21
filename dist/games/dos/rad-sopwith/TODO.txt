@@ -1,0 +1,4 @@
+Have to remove all the layers
+Remove the zip file
+Remove the old index file
+
