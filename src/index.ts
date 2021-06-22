@@ -462,10 +462,10 @@ export class DosGame {
         let hide = this.nullIfEmpty(was.join('-')) || "centre";
         let show = this.nullIfEmpty(is.join('-')) || "centre";
 
-        if (hide !== show) {
-            document.getElementById(hide).style.display = 'none'
-            document.getElementById(show).style.display = 'block'
-        }
+        // if (hide !== show) {
+        //     document.getElementById(hide).style.display = 'none'
+        //     document.getElementById(show).style.display = 'block'
+        // }
 
         let turnOff = was.filter(w => is.indexOf(w) === -1)
         let turnOn = is.filter(i => was.indexOf(i) === -1)
