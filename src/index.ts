@@ -380,9 +380,7 @@ export class DosGame {
                     let control = []
                     let dx = movingTouch.clientX - this.origin.x;
                     let dy = movingTouch.clientY - this.origin.y;
-
-                    console.log (dx, dy);
-
+                    
                     if (dx === 0 && dy === 0 || isNaN(dx) || isNaN(dy)) return
 
                     let rangeInner:number = dy * 0.38;
