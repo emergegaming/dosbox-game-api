@@ -78,7 +78,8 @@ export class DosGame {
         188:44, //comma
         190:46, //fullstop or period
         191:47, //forward-slash
-        72:72   //H
+        72:7,   //H
+        17:341  //lCtrl
     }
 
     
