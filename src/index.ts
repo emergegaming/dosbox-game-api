@@ -380,6 +380,9 @@ export class DosGame {
                     let control = []
                     let dx = movingTouch.clientX - this.origin.x;
                     let dy = movingTouch.clientY - this.origin.y;
+
+                    console.log (dx, dy);
+
                     if (dx === 0 && dy === 0 || isNaN(dx) || isNaN(dy)) return
 
                     let rangeInner:number = dy * 0.38;
@@ -458,17 +461,9 @@ export class DosGame {
      */
     private processDirectionChange = (was, is) => {
 
-
-        let hide = this.nullIfEmpty(was.join('-')) || "centre";
-        let show = this.nullIfEmpty(is.join('-')) || "centre";
-
-        // if (hide !== show) {
-        //     document.getElementById(hide).style.display = 'none'
-        //     document.getElementById(show).style.display = 'block'
-        // }
-
         let turnOff = was.filter(w => is.indexOf(w) === -1)
         let turnOn = is.filter(i => was.indexOf(i) === -1)
+
         turnOff.forEach((direction) => {
             this.ci.simulateKeyEvent(this.getDirectionAscii(direction), false);
         });
