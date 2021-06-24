@@ -1,3 +1,5 @@
+import { keyboard } from "emulators-ui/dist/types/controls/keyboard";
+
 interface GameOptions {
     cycles: number
     zipFile: string
@@ -27,14 +29,26 @@ interface Origin {
 interface PixelListener {
     x: number
     y: number
-    callback: (string) => void
+    callBack: (string:string) => string
     lastColor: string
 }
 
-interface DirectionMapping {
-    direction:string
-    asciiMapping:number
+// interface DirectionMapping {
+//     direction:string
+//     asciiMapping:number
+// }
+
+interface InputCode{
+    code: number
+
 }
+interface KeyMap {
+    [key: number]:number;
+}
+interface DirectionMapping{
+    [key: string]:number
+}
+
 
 /**
  * DosGame. Object and helper methods to make it easier to run DOS games in a browser using DOSBox
@@ -54,9 +68,9 @@ export class DosGame {
     private keysToReplace:KeyMapping[] = []
     private directions:Directions
     private buttons:ButtonMapping[] = []
-    private origin:Origin = {x:null, y:null, id:null}
+    private origin:Origin = {x:0, y:0, id:0}
     private lastDirection:string[] = []
-    private canvasContext:WebGLRenderingContext
+    private canvasContext:WebGLRenderingContext;
     private interval:number
     private pixelListeners:PixelListener[] = []
     private keysDown:string[] = []
@@ -65,8 +79,10 @@ export class DosGame {
     private dPadMode:boolean = false;
     private dPadBounds:DOMRect;
     private touchEventListenersAdded:boolean = false;
-    private static reverseKeyMap = {
-        32:32,  //space
+    
+
+    private static reverseKeyMap:KeyMap = {
+        32:32, //space
         38:265, //up
         40:264, //down
         37:263, //left
@@ -86,14 +102,16 @@ export class DosGame {
 
     
 
-    private static jsdosKeyCodeLookup(inputCode: number){ //helper function to throw a warning when a key is pressed that is not mapped
-        let result = DosGame.reverseKeyMap[inputCode];
-        if (result != undefined){
-            return result;
-        } else {
-            console.warn('%c That Key is not Mapped, check index7.ts -> start7()', 'background: #000000; color: #00ff00');
-        }
-    }
+    // private static jsdosKeyCodeLookup(inputCode){ //helper function to throw a warning when a key is pressed that is not mapped
+    //     let result = DosGame.reverseKeyMap.filter((k,v)=> {
+    //         k === inputCode
+    //     });
+    //     if (result != undefined){
+    //         return result;
+    //     } else {
+    //         console.warn('%c That Key is not Mapped, check index7.ts -> start7()', 'background: #000000; color: #00ff00');
+    //     }
+    // }
 
     /**
      * Create a new DosGame object.
@@ -115,21 +133,21 @@ export class DosGame {
         this.emulators = emulators;
     }
 
-    private directionMapping:object = {
+    private directionMapping:DirectionMapping = {
         'up': 38,
         'down': 40,
         'left': 37,
         'right': 39
     };
 
-    private jsdosKeyCodeLookup(inputCode: number){ //helper function to throw a warning when a key is pressed that is not mapped
-        let result = DosGame.reverseKeyMap[inputCode];
-        if (result != undefined){
-            return result;    
-        } else {
-            console.warn('%c That Key is not Mapped, check index7.ts -> start7()', 'background: #000000; color: #00ff00');
-        }
-    }
+    // private jsdosKeyCodeLookup(inputCode: number){ //helper function to throw a warning when a key is pressed that is not mapped
+    //     let result = DosGame.reverseKeyMap[inputCode];
+    //     if (result != undefined){
+    //         return result;    
+    //     } else {
+    //         console.warn('%c That Key is not Mapped, check index7.ts -> start7()', 'background: #000000; color: #00ff00');
+    //     }
+    // }
 
     public start():Promise<any> {
         
@@ -141,9 +159,9 @@ export class DosGame {
                 wdosboxUrl: '/dosbox/wdosbox.js',
                 onprogress: () => {},
                 log: () => {}
-            }).ready((fs, main) => {
+            }).ready((fs:any, main:any) => {
                 fs.extract(this.options.zipFile).then(() => {
-                    main(this.options.execCmdArray).then((ci) => {
+                    main(this.options.execCmdArray).then((ci:any) => {
                         this.ci = ci;
                         resolve(ci);
                         window.focus();
@@ -157,7 +175,7 @@ export class DosGame {
     public start7(gameBundle: string):Promise<any> {
         return new Promise(async (resolve) => {
             this.emulators.pathPrefix = "/dosbox/dos7/";
-            this.dosRef(this.rootElement).run(gameBundle).then((ci)=>{
+            this.dosRef(this.rootElement).run(gameBundle).then((ci:any)=>{
                 this.ci = ci;
                 this.canvas = <any>this.rootElement.getElementsByTagName('canvas')[0];
                 this.canvasContext = this.canvas.getContext("webgl");
@@ -172,16 +190,16 @@ export class DosGame {
     }
 
 
-    public startWithConf(dosboxConf):Promise<any> {
+    public startWithConf(dosboxConf:any):Promise<any> {
         return new Promise((resolve) => {
             this.options.execCmdArray.push('-conf');
             this.options.execCmdArray.push('dosbox.conf')
             this.dosRef(this.canvas, {
                 wdosboxUrl: '/dosbox/wdosbox.js',
-            }).ready((fs, main) => {
+            }).ready((fs:any, main:any) => {
                 fs.extract(this.options.zipFile).then(() => {
                     fs.createFile("dosbox.conf", dosboxConf);
-                    main(this.options.execCmdArray).then((ci) => {
+                    main(this.options.execCmdArray).then((ci:any) => {
                         this.ci = ci
                         resolve(ci)
                         window.focus();
@@ -219,9 +237,10 @@ export class DosGame {
      * Use the D-Pad instead of the touch dragging (joystick)
      * @param dPadElem the HTMLElement of the bounding (div) of the D-Pad container. Used to assess where the finder is.
      */
-    public mapDPadToArrowKeys(dPadElem):void {
+    public mapDPadToArrowKeys(dPadElem:any):void {
 
-        this.dPadBounds = dPadElem.getBoundingClientRect();this.dPadMode = true;
+        this.dPadBounds = dPadElem.getBoundingClientRect();
+        this.dPadMode = true;
         this.addTouchEventListeners();
     }
 
@@ -261,7 +280,7 @@ export class DosGame {
      * @todo: This should really be called addPixelListener (i.e. more than one)
      * @deprecated use addPixelListener
      */
-    public setPixelListener(x:number, y:number, callback, log:boolean) {
+    public setPixelListener(x:number, y:number, callback:PixelListener, log:boolean) {
         this.addPixelListener(x, y, callback, log);
     }
 
@@ -273,9 +292,9 @@ export class DosGame {
      * @param delay the number of ms between callback intervals
      */
 
-    public addPixelListener(x:number, y:number, callback, log:boolean) {
+    public addPixelListener(x:number, y:number, callback:PixelListener, log:boolean) {
         const delay:number = 1000
-        this.pixelListeners.push({x:x, y:y, callback:callback, lastColor:undefined})
+        this.pixelListeners.push({x:x, y:y, callBack:callback.callBack, lastColor:undefined})//ASK MARK!!!!!!!
 
         if (!this.interval) {
             let scope = this;
@@ -330,7 +349,7 @@ export class DosGame {
             (navigator.msMaxTouchPoints > 0));
     }
 
-    public overrideDirectionAscii = (directionAscii:object) => {
+    public overrideDirectionAscii = (directionAscii:DirectionMapping) => {
         this.directionMapping = directionAscii;
     }
 
@@ -342,7 +361,7 @@ export class DosGame {
             c.width=320;
             c.height=200;
             const ctx = c.getContext('2d');
-            this.ci.screenshot().then((imgData)=>{
+            this.ci.screenshot().then((imgData:ImageData)=>{
                 ctx.putImageData(imgData, 0, 0);
                 this.pixelListeners.forEach((pl) => {
                     let pixelColor:ImageData = ctx.getImageData(pl.x, pl.y, 1, 1);
@@ -352,7 +371,7 @@ export class DosGame {
                     }
                     colors.push(colorValue)
                     if (colorValue != pl.lastColor) {
-                        pl.callback(colorValue);
+                        pl.callBack(colorValue);
                         pl.lastColor = colorValue;
                     }
                 });
@@ -471,7 +490,7 @@ export class DosGame {
                 let movingTouch:Touch = event.changedTouches[i]
                 if (movingTouch.clientX < 200) {
 
-                    let control = []
+                    let control:string[] = []
                     let dx = movingTouch.clientX - this.origin.x;
                     let dy = movingTouch.clientY - this.origin.y;
                     if (dx === 0 && dy === 0 || isNaN(dx) || isNaN(dy)) return
@@ -550,14 +569,14 @@ export class DosGame {
      * @param was the array from the previous iteration (eg: ['left', 'up'])
      * @param is the array from the previous iteration (eg: ['up'])
      */
-    private processDirectionChange = (was, is) => {
+    private processDirectionChange = (was:string[], is:string[]) => {
 
         let turnOff = was.filter(w => is.indexOf(w) === -1)
         let turnOn = is.filter(i => was.indexOf(i) === -1)
-        turnOff.forEach((direction) => {
+        turnOff.forEach((direction:string) => {
             this.ci.sendKeyEvent(DosGame.reverseKeyMap[this.getDirectionAscii(direction)], false);
         });
-        turnOn.forEach((direction) => {
+        turnOn.forEach((direction:string) => {
             this.ci.sendKeyEvent(DosGame.reverseKeyMap[this.getDirectionAscii(direction)], true);
         });
     }
@@ -575,9 +594,9 @@ export class DosGame {
      * Convert radians tp degrees
      * @param rad the angle in radians
      */
-    private radToDeg = (rad) => {
-        return Math.round(rad * 180 / Math.PI);
-    }
+    // private radToDeg = (rad) => {
+    //     return Math.round(rad * 180 / Math.PI);
+    // }
 
     /**
      * Set the starting point (touch)
