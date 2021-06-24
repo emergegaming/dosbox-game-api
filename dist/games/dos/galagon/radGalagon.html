@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>RADICAL SOPWITH</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="/css/tailwind.min.css"/>
+    <style lang="css">
+
+        @media screen and (orientation:portrait) {
+            #canvasContainer, #canvasContainer canvas {
+                width: 100%;
+                position: absolute;
+                top: 0;
+            }
+        }
+
+        @media screen and (orientation:landscape) {
+            #canvasContainer {
+                background-color: #000000;
+            }
+            #canvasContainer canvas {
+                margin-right: 200px;
+                height:100vh;
+            }
+        }
+
+        .emulator-canvas {
+            top: 0 !important;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+        }
+
+    </style>
+</head>
+<body class="bg-black h-screen object-contain">
+    <div id="gameContainer">
+        <canvas id="controlCanvas" class="w-full left-0 absolute h-screen z-50"></canvas>
+        <!-- <canvas id="gameCanvas"></canvas> -->
+        <div id="canvasContainer" class="w-full left-0 absolute top-0 h-screen"></div>
+    </div>
+    <script src="/dosbox/dos7/js-dos.js"></script>
+    <script type="module">
+
+        /** DOS **/
+
+        import {DosGame} from "/index7.js";
+
+        let canvasContainer = document.getElementById('canvasContainer');
+
+        let ci; 
+        let arrButtonsWas = [];
+        let arrButtonsIs = [];
+        let gamepads;
+        let translateGamePad = new Map();
+        let isChromium = window.chrome;
+        let winNav = window.navigator;
+        let vendorName = winNav.vendor;
+        let isOpera = typeof window.opr !== "undefined";
+        let isIEedge = winNav.userAgent.indexOf("Edge") > -1;
+        let isIOSChrome = winNav.userAgent.match("CriOS");
+
+
+        let dosGame = new DosGame(window.Dos, canvasContainer, emulators);
+            dosGame.start7("dangerous-dave.jsdos").then(() => {
+
+            translateGamePad.set(14, 37)//left
+            translateGamePad.set(15, 39)//right
+            translateGamePad.set(0, 38)//up 
+            translateGamePad.set(12, 38)//up 
+            translateGamePad.set(13, 40)//down 
+            translateGamePad.set(7, 17)//shoot 
+            translateGamePad.set(4, 18)//jetpack
+
+            
+    
+            window.addEventListener("gamepadconnected", function() {
+                var gp = navigator.getGamepads()[0];
+                gameLoop();
+            });
+            
+            window.addEventListener("gamepaddisconnected", function() {
+                gamepadInfo.innerHTML = "Waiting for gamepad.";
+            });
+            
+            if(!('GamepadEvent' in window)) {
+                var interval = setInterval(pollGamepads, 500);
+            }
+            
+            function pollGamepads() {
+                var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+                for (var i = 0; i < gamepads.length; i++) {
+                var gp = gamepads[i];
+                    if(gp) {
+                        clearInterval(interval);
+                    }
+                }
+            }
+            
+            function buttonPressed(b) {
+                if (typeof(b) == "object") {
+                return b.pressed;
+                }
+                return b == 1.0;
+            }
+            
+            function gameLoop() {
+                gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+                if (!gamepads)
+                return;
+            };
+
+
+            /** Auto-press on startup **/
+
+            // setTimeout(() => {
+            //     console.log("s")
+            //     dosGame.autoKeyPress(83);
+            // }, 500)
+
+            // setTimeout(() => {
+            //     console.log("3")
+            //     dosGame.autoKeyPress(51);
+            // }, 1000)
+
+        });
+
+        // buttons[2].keyCode = 190; // . (invert)
+        // buttons[3].keyCode = 72;  // h (home)
+        // buttons[4].keyCode = 88;  // x (go)
+
+
+        /** Define Buttons **/
+        let buttons = [
+            {
+                'icon': '/images/icons/fire.svg',
+                'colour' : 0xff0000,
+                'press': () => pressKey(32, true),
+                'release': () => pressKey(32, false),
+            },
+            {
+                'icon': '/images/icons/bomb.svg',
+                'colour' : 0xff7700,
+                'press': () => pressKey(66, true),
+                'release': () => pressKey(66, false),
+            },
+            {
+                'icon': '/images/icons/accelerate.svg',
+                'colour' : 0x00ff00,
+                'press': () => pressKey(88, true),
+                'release': () => pressKey(88, false)
+            },
+            {
+                'icon': '/images/icons/home.svg',
+                'colour' : 0x0077ff,
+                'press': () => pressKey(72, true),
+                'release': () => pressKey(72, false)
+            },
+            {
+                'icon': '/images/icons/invert.svg',
+                'colour' : 0xff00ff,
+                'press': () => pressKey(190, true),
+                'release': () => pressKey(190, false)
+            }
+        ]
+
+
+        /** DISABLE Keyboard Scrolling / Search **/
+        document.addEventListener('keydown',(e) => {
+            if (e.key === '/') e.preventDefault();
+            if (e.key === ' ') e.preventDefault();
+        })
+
+        /** PIXI **/
+        let controlCanvas = document.getElementById('controlCanvas')
+        let app = new PIXI.Application({width: window.innerWidth, height: window.innerHeight, view: controlCanvas, transparent:true, autoResize:true, resizeTo:window, antialias:true});
+
+        let glowFilter = new PIXI.filters.GlowFilter({distance:25, outerStrength:2})
+
+        /** PIXI:Graphics **/
+        let graphicsCircle = new PIXI.Graphics();
+        graphicsCircle.beginFill(0x33AAFF);
+        graphicsCircle.lineStyle(0);
+        graphicsCircle.drawCircle(0,0,30);
+        graphicsCircle.endFill();
+        graphicsCircle.interactive = false;
+
+        let graphicsRing = new PIXI.Graphics();
+        graphicsRing.lineStyle(8, 0x3355FF);
+        graphicsRing.drawCircle(0,0,50);
+        graphicsRing.interactive = false;
+
+        /** PIXI:Sprite **/
+        let circleTexture = app.renderer.generateTexture(graphicsCircle)
+        let circle = new PIXI.Sprite(circleTexture);
+        circle.anchor.set(0.5)
+        circle.visible = false;
+        circle.alpha = 0.5
+        app.stage.addChild(circle);
+
+        let ringTexture = app.renderer.generateTexture(graphicsRing);
+        let ring = new PIXI.Sprite(ringTexture)
+        ring.anchor.set(0.5)
+        ring.visible = false;
+        ring.alpha = 0.5
+        ring.blendMode = PIXI.BLEND_MODES.ADD;
+        app.stage.addChild(ring);
+
+        for (let i = 0; i < buttons.length ; i++) {
+
+            let graphicsButton = new PIXI.Graphics();
+            graphicsButton.beginFill(buttons[i].colour);
+            graphicsButton.lineStyle(0);
+            graphicsButton.drawCircle(0,0,20);
+            graphicsButton.endFill();
+
+            graphicsButton.lineStyle(4, buttons[i].colour);
+            graphicsButton.drawCircle(0,0,25);
+
+            let buttonTexture = app.renderer.generateTexture(graphicsButton);
+
+            let button = new PIXI.Sprite(buttonTexture);
+            button.anchor.set(0.5)
+
+            let svgTexture = new PIXI.Texture.from(buttons[i].icon);
+
+            let svgSprite = new PIXI.Sprite(svgTexture);
+            svgSprite.anchor.set(0.5);
+
+            let buttonContainer = new PIXI.Container();
+            buttonContainer.addChild(button);
+            buttonContainer.addChild(svgSprite);
+
+
+            buttonContainer.get
+
+            buttonContainer.alpha = 0.5;
+            buttons[i].sprite = buttonContainer
+            app.stage.addChild(buttonContainer);
+        }
+        
+        /** Controller Button Mappings **/
+
+        // buttons[12].keyCode = 37;  // space (shoot)
+        // buttons[13].keyCode = 38;  // b (bomb)
+        // buttons[14].keyCode = 39; // . (invert)
+        // buttons[15].keyCode = 40;  // h (home)
+        
+
+        repositionButtons();
+
+        /** Variables **/
+
+        let mouseState = 'none';
+        let xc = 0, yc = 0;
+        let lastX = 0; let lastY = 0;
+        let lastDirection = [];
+        let directionMapping = {
+            'up': 265,
+            'down': 264,
+            'left':188,
+            'right':191
+        };
+
+        /** Events **/
+
+        app.stage.interactive = true;
+        app.renderer.plugins.interaction.on('pointerdown', (event) => { /** MOUSEDOWN **/
+            let x = event.data.global.x;
+            let y = event.data.global.y;
+            if (x < screen.width / 2) {
+                xc = x;
+                yc = y;
+                mouseState = 'just-down'
+            } else {
+                for (let i = 0; i < buttons.length; i++) {
+                    if (Math.abs(buttons[i].sprite.position.x - x) < 25 && Math.abs(buttons[i].sprite.position.y - y) < 25 ) {
+                        buttons[i].active = true;
+                        buttons[i].sprite.alpha = 1
+                        buttons[i].press();
+                        window.navigator.vibrate(20);
+                        buttons[i].sprite.filters = [
+                            glowFilter
+                        ]
+                    }
+                }
+            }
+        });
+
+        app.renderer.plugins.interaction.on('pointermove', (event) => { /** MOUSEMOVE **/
+            let x = event.data.global.x;
+            let y = event.data.global.y;
+            if (x < window.innerWidth / 2  && y < window.innerHeight && x > 0 && y > 0) {
+                xc = x;
+                yc = y;
+            } else {
+                xc = lastX;
+                yc = lastY;
+            }
+        })
+
+        app.renderer.plugins.interaction.on('pointerup', (event) => { /** MOUSEUP **/
+            let x = event.data.global.x;
+            if (x < window.innerWidth / 2) {
+                mouseState = 'just-up'
+            } else {
+                for (let i = 0; i < buttons.length; i++) {
+                    let b = buttons[i];
+                    if (b.active) {
+                        b.active = false;
+                        console.log ('release')
+                        window.navigator.vibrate(3);
+                        buttons[i].sprite.alpha = 0.5
+                        buttons[i].release();
+                        buttons[i].sprite.filters = [
+                        ]
+                    }
+                }
+            }
+        });
+
+        function getGamepadState(gamePads) {
+            let temp = gamePads[0].buttons;
+                let state = [];
+                let tLength = temp.length;
+                for (let i = 0; i < tLength; i++) {
+                    state[i] = temp[i].pressed;
+                }
+                return state;
+        }
+
+        /** Main Loop **/
+
+        app.ticker.add(() => {
+            var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+            if (!gamepads)
+            return;
+                
+            if(isChromium && gamepads[0]){ //if browser is chrome and the gamepad has been initialised 
+                    if (arrButtonsIs.length > 0 && arrButtonsWas.length > 0) {
+                        arrButtonsIs = getGamepadState(gamepads);
+                        
+                        processControllerChange(arrButtonsWas, arrButtonsIs);
+                        arrButtonsWas = arrButtonsIs.slice(0);    
+                    }
+                    else {
+                        arrButtonsIs = getGamepadState(gamepads);
+                        
+                        arrButtonsWas = arrButtonsIs.slice(0);    
+                    }   
+            }
+            else if (gamepads[0]) { //if the browser is anyting else(firefox, safari atm) then wait for the gamepad to be connected 
+                    if (arrButtonsIs.length > 0 && arrButtonsWas.length > 0) {
+                        arrButtonsIs = getGamepadState(gamepads);
+                        
+                        processControllerChange(arrButtonsWas, arrButtonsIs);
+                        arrButtonsWas = arrButtonsIs.slice(0);    
+                    }
+                    else {
+                        arrButtonsIs = getGamepadState(gamepads);
+                        
+                        arrButtonsWas = arrButtonsIs.slice(0);    
+                    }
+            }
+
+            if (mouseState === 'just-down') {
+                circle.position.x = xc;
+                circle.position.y = yc;
+
+                circle.visible = true;
+                ring.visible = true;
+
+                ring.position.x = circle.position.x;
+                ring.position.y = circle.position.y;
+
+                mouseState = 'down'
+            }
+
+            if (mouseState === 'down') {
+
+                circle.position.x = xc;
+                circle.position.y = yc;
+
+                let xr = ring.position.x;
+                let yr = ring.position.y;
+
+                let dx = xc - xr;
+                let dy = yc - yr;
+                let control = [];
+
+                let r = Math.hypot(dx, dy);
+
+                if (r > 7 && r < 50) {
+                    let rangeInner = dy * 0.38;
+                    let rangeOuter = dy * 2.61;
+                    if (dx < -Math.abs(rangeOuter)) {
+                        control = ['left']
+                    } else if (dy < 0 && dx < rangeInner) {
+                        control = ['up','left']
+                    } else if (dy < 0 && dx < Math.abs(rangeInner)) {
+                        control = ['up']
+                    } else if (dy < 0 && dx < -rangeOuter) {
+                        control = ['up','right']
+                    } else if (dx > Math.abs(rangeOuter)) {
+                        control = ['right']
+                    } else if (dy > 0 && dx < -Math.abs(rangeInner)) {
+                        control = ['down','left']
+                    } else if (dy > 0 && dx < rangeInner) {
+                        control = ['down']
+                    } else if (dy > 0 && dx < dy * rangeOuter) {
+                        control = ['down','right']
+                    } else {
+                        console.error ("Not a known angle / direction")
+                    }
+                    processDirectionChange(lastDirection, control)
+                    lastDirection = control;
+                }
+
+                if (r > 50) {
+                    let xDiff = xc - lastX;
+                    let yDiff = yc - lastY;
+                    ring.position.x += xDiff;
+                    ring.position.y += yDiff;
+                }
+            }
+
+            if (mouseState === 'just-up') {
+
+                circle.visible = false;
+                ring.visible = false
+
+                mouseState = 'up'
+                processDirectionChange(lastDirection, [])
+                lastDirection = []
+            }
+
+            lastX = xc;
+            lastY = yc;
+
+        })
+
+        function processDirectionChange (was, is) {
+
+            let turnOff = was.filter(w => is.indexOf(w) === -1)
+            let turnOn = is.filter(i => was.indexOf(i) === -1)
+
+            turnOff.forEach((direction) => {
+                console.log(direction + ' off');
+                window.navigator.vibrate(3);
+                let ascii = getDirectionAscii(direction)
+                if (ascii) dosGame.ci.sendKeyEvent(DosGame.jsdosKeyCodeLookup(ascii), false);
+            });
+
+            turnOn.forEach((direction) => {
+                console.log(direction + ' on');
+                window.navigator.vibrate(20);
+                let ascii = getDirectionAscii(direction)
+                if (ascii) dosGame.ci.sendKeyEvent(DosGame.jsdosKeyCodeLookup(ascii), true);
+            });
+        }
+
+        function processControllerChange (was, is) {
+        let changes = [];
+
+        if (is && was) {
+
+            for (let i = 0; i < is.length; i++) {
+                if (is[i] !== was[i]) {
+                    changes.push({keyCode:(translateGamePad.get(i)), action:(is[i])});
+                }
+                
+            }
+        }
+
+        if (changes.length>0) {
+
+            changes.forEach(requiredKeyPress => {
+                dosGame.ci.sendKeyEvent(DosGame.reverseKeyMap[requiredKeyPress.keyCode], requiredKeyPress.action);
+                console.log(DosGame.reverseKeyMap[requiredKeyPress.keyCode], requiredKeyPress.action);
+            })   
+        }
+        }
+
+        function getDirectionAscii(direction) {
+            return directionMapping[direction];
+        }
+
+        function nullIfEmpty(s) {
+            if (!s) return null;
+            if (s.length === 0) return null;
+            return s;
+        }
+
+        function repositionButtons() {
+            let xStart = (window.innerWidth - 60)
+            let yStart = window.innerHeight - 40;
+
+            for (let i = 0; i < buttons.length ; i++) {
+                let offSet = (i % 2 * -1 - 1) * 35;
+                console.log (offSet);
+                buttons[i].sprite.position.x = xStart + offSet;
+                buttons[i].sprite.position.y = yStart + (-i * 50) ;
+                buttons[i].sprite.visible = true;
+            }
+        }
+
+        function pressKey(keyCode, isPressed) {
+            dosGame.ci.sendKeyEvent(DosGame.jsdosKeyCodeLookup(keyCode), isPressed);
+        }
+
+        window.addEventListener("resize", () => {
+            repositionButtons();
+        })
+
+    </script>
+    <script src="/dosbox/dos7/js-dos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.1.3/pixi.min.js"></script>
+    <script src="/lib/pixi-filters.js"></script>
+
+</body>
+</html>
