@@ -2,7 +2,7 @@
     "compilerOptions":{ 
        "target":"es6",
        "moduleResolution":"node",
-       "module":"commonjs",
+       "module":"esnext",
        "declaration":false,
        "noLib":false,
        "emitDecoratorMetadata":true,
@@ -10,17 +10,17 @@
        "sourceMap":true,
        "pretty":true,
        "allowUnreachableCode":true,
-       "allowUnusedLabels":true,
-       "noImplicitAny":true,
-       "noImplicitReturns":true,
-       "noImplicitUseStrict":true,
+       "allowUnusedLabels":false,
+       "noImplicitAny":false,
+       "noImplicitReturns":false,
+       "noImplicitUseStrict":false,
        "outDir":"dist/",
        "baseUrl":"src/",
        "listFiles":false,
-       "noEmitHelpers":true,
-       "noImplicitThis":true,
+       "noEmitHelpers":false,
+       "noImplicitThis":false,
        "strictNullChecks":false,
-       "strictFunctionTypes":true
+       "strictFunctionTypes":false
 
     },
     "include":[ 
