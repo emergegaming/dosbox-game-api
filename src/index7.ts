@@ -79,26 +79,54 @@ export class DosGame {
     private dPadMode:boolean = false;
     private dPadBounds:DOMRect;
     private touchEventListenersAdded:boolean = false;
+    public static reverseKeyMap = new Map();
+
+
+
+
     
 
-    private static reverseKeyMap:KeyMap = {
-        32:32, //space
-        38:265, //up
-        40:264, //down
-        37:263, //left
-        39:262, //right
-        18:342, //alt
-        16:340, //shift
-        66:66,  //B
-        88:88,  //X
-        188:44, //comma
-        190:46, //fullstop or period
-        191:47, //forward-slash
-        72:7,   //H
-        17:341,  //lctrl
-        13:257, //enter
-        27:256  //escape
-    }
+    // private static reverseKeyMap:KeyMap = {
+    //     32:32, //space
+    //     38:265, //up
+    //     40:264, //down
+    //     37:263, //left
+    //     39:262, //right
+    //     18:342, //alt
+    //     16:340, //shift
+    //     66:66,  //B
+    //     88:88,  //X
+    //     188:44, //comma
+    //     190:46, //fullstop or period
+    //     191:47, //forward-slash
+    //     72:7,   //H
+    //     17:341,  //lctrl
+    //     13:257, //enter
+    //     27:256  //escape
+    // }
+
+    
+
+    
+
+    // private static reverseKeyMap:KeyMap = {
+    //     32:32, //space
+    //     38:265, //up
+    //     40:264, //down
+    //     37:263, //left
+    //     39:262, //right
+    //     18:342, //alt
+    //     16:340, //shift
+    //     66:66,  //B
+    //     88:88,  //X
+    //     188:44, //comma
+    //     190:46, //fullstop or period
+    //     191:47, //forward-slash
+    //     72:7,   //H
+    //     17:341,  //lctrl
+    //     13:257, //enter
+    //     27:256  //escape
+    // }
 
     
 
@@ -173,6 +201,24 @@ export class DosGame {
     }
 
     public start7(gameBundle: string):Promise<any> {
+
+        DosGame.reverseKeyMap.set(32, 32);   //space
+        DosGame.reverseKeyMap.set(38, 265);  //up
+        DosGame.reverseKeyMap.set(40, 264);  //down
+        DosGame.reverseKeyMap.set(37, 263);  //left
+        DosGame.reverseKeyMap.set(39, 262);  //right
+        DosGame.reverseKeyMap.set(18, 342);  //alt
+        DosGame.reverseKeyMap.set(16, 340);  //shift
+        DosGame.reverseKeyMap.set(66, 66);   //B
+        DosGame.reverseKeyMap.set(88, 88);   //X
+        DosGame.reverseKeyMap.set(188, 44);  //comma
+        DosGame.reverseKeyMap.set(190, 46);  //fullstop or period
+        DosGame.reverseKeyMap.set(191, 47);  //forward-slash
+        DosGame.reverseKeyMap.set(72, 7);    //H
+        DosGame.reverseKeyMap.set(17, 341);  //lctrl
+        DosGame.reverseKeyMap.set(13, 257);  //enter
+        DosGame.reverseKeyMap.set(27, 256);  //escape
+
         return new Promise(async (resolve) => {
             this.emulators.pathPrefix = "/dosbox/dos7/";
             this.dosRef(this.rootElement).run(gameBundle).then((ci:any)=>{
@@ -249,7 +295,7 @@ export class DosGame {
      * @param buttonMapping the keyCode and asciiCode mapping.
      */
     public mapButtonToKey(buttonMapping:ButtonMapping):void {
-        this.buttons.push({element: buttonMapping.element, asciiCode: DosGame.reverseKeyMap[buttonMapping.asciiCode]})
+        this.buttons.push({element: buttonMapping.element, asciiCode: DosGame.reverseKeyMap.get(buttonMapping.asciiCode)})
         if (!this.directions) {
             this.addTouchEventListeners()
         }
@@ -574,10 +620,10 @@ export class DosGame {
         let turnOff = was.filter(w => is.indexOf(w) === -1)
         let turnOn = is.filter(i => was.indexOf(i) === -1)
         turnOff.forEach((direction:string) => {
-            this.ci.sendKeyEvent(DosGame.reverseKeyMap[this.getDirectionAscii(direction)], false);
+            this.ci.sendKeyEvent(DosGame.reverseKeyMap.get(this.getDirectionAscii(direction)), false);
         });
         turnOn.forEach((direction:string) => {
-            this.ci.sendKeyEvent(DosGame.reverseKeyMap[this.getDirectionAscii(direction)], true);
+            this.ci.sendKeyEvent(DosGame.reverseKeyMap.get(this.getDirectionAscii(direction)), true);
         });
     }
 

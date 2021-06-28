@@ -450,14 +450,14 @@
                 console.log(direction + ' off');
                 window.navigator.vibrate(3);
                 let ascii = getDirectionAscii(direction)
-                if (ascii) dosGame.ci.sendKeyEvent(DosGame.jsdosKeyCodeLookup(ascii), false);
+                if (ascii) dosGame.ci.sendKeyEvent(DosGame.reverseKeyMap.get(ascii), false);
             });
 
             turnOn.forEach((direction) => {
                 console.log(direction + ' on');
                 window.navigator.vibrate(20);
                 let ascii = getDirectionAscii(direction)
-                if (ascii) dosGame.ci.sendKeyEvent(DosGame.jsdosKeyCodeLookup(ascii), true);
+                if (ascii) dosGame.ci.sendKeyEvent(DosGame.reverseKeyMap.get(ascii), true);
             });
         }
 
@@ -477,8 +477,8 @@
         if (changes.length>0) {
 
             changes.forEach(requiredKeyPress => {
-                dosGame.ci.sendKeyEvent(DosGame.reverseKeyMap[requiredKeyPress.keyCode], requiredKeyPress.action);
-                console.log(DosGame.reverseKeyMap[requiredKeyPress.keyCode], requiredKeyPress.action);
+                dosGame.ci.sendKeyEvent(DosGame.reverseKeyMap.get(requiredKeyPress.keyCode), requiredKeyPress.action);
+                console.log(DosGame.reverseKeyMap.get(requiredKeyPress.keyCode), requiredKeyPress.action);
             })   
         }
         }
@@ -507,7 +507,7 @@
         }
 
         function pressKey(keyCode, isPressed) {
-            dosGame.ci.sendKeyEvent(DosGame.jsdosKeyCodeLookup(keyCode), isPressed);
+            dosGame.sendKeyEvent(DosGame.jsdosKeyCodeLookup(keyCode), isPressed);
         }
 
         window.addEventListener("resize", () => {

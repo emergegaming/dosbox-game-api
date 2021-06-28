@@ -475,8 +475,8 @@
         if (changes.length>0) {
 
             changes.forEach(requiredKeyPress => {
-                dosGame.ci.sendKeyEvent(DosGame.reverseKeyMap[requiredKeyPress.keyCode], requiredKeyPress.action);
-                console.log(DosGame.reverseKeyMap[requiredKeyPress.keyCode], requiredKeyPress.action);
+                dosGame.ci.sendKeyEvent(DosGame.reverseKeyMap.get(requiredKeyPress.keyCode), requiredKeyPress.action);
+                console.log(DosGame.reverseKeyMap.get(requiredKeyPress.keyCode), requiredKeyPress.action);
             })   
         }
         }
@@ -505,7 +505,7 @@
         }
 
         function pressKey(keyCode, isPressed) {
-            dosGame.ci.sendKeyEvent(DosGame.jsdosKeyCodeLookup(keyCode), isPressed);
+            dosGame.ci.sendKeyEvent(DosGame.reverseKeyMap.get(keyCode), isPressed);
         }
 
         window.addEventListener("resize", () => {
