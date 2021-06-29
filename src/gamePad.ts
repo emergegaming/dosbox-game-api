@@ -1,13 +1,13 @@
 /**
- * GamePad. Object and helper to make using a controller easier in browsers 
+ * GamePad. Object and helper to make using a controller easier in browsers specifically with js-dos7
  * @Author Liam Searle
  * @copyright Emerge Gaming @copy; 2021
  */
 
 
 
-export class gpAPI {
-    private translateGamePad = new Map();
+export class GpApi {
+    public translateGamePad = new Map();
     private window: any;
     private interval:any;
     private gamePads:[Gamepad];
@@ -17,9 +17,8 @@ export class gpAPI {
 
 
 
-    constructor(window:any, gamePads:[Gamepad], DosApi:any){
+    constructor(window:any, DosApi:any){//, gamePads:[Gamepad]
         this.window = window;
-        this.gamePads = gamePads;
         this.DosApi = DosApi;
         
     }
@@ -33,6 +32,7 @@ export class gpAPI {
     public addEvtListener() {
             window.addEventListener("gamepadconnected", () => {
             this.gamePads[0] = navigator.getGamepads()[0];
+            
             this.gameLoop();
         });
     };
@@ -44,9 +44,9 @@ export class gpAPI {
     }
 
     private pollGamepadsHelper() {
-        var gamepads = navigator.getGamepads ? navigator.getGamepads() : (this.window.navigator.webkitGetGamepads ? this.window.navigator.webkitGetGamepads : []);
-        for (var i = 0; i < gamepads.length; i++) {
-        var gp = gamepads[i];
+        this.gamePads = navigator.getGamepads ? navigator.getGamepads() : (this.window.navigator.webkitGetGamepads ? this.window.navigator.webkitGetGamepads : []);
+        for (let i = 0; i < this.gamePads.length; i++) {
+        let gp = this.gamePads[i];
             if(gp) {
                 clearInterval(this.interval);
             }
@@ -72,30 +72,30 @@ export class gpAPI {
             return state;
     }
    
-    private processGamePad(){
-        var gamepads = navigator.getGamepads ? navigator.getGamepads() : (this.window.navigator.webkitGetGamepads ? this.window.navigator.webkitGetGamepads : []);
-        if (!gamepads)
+    public processGamePad(){
+        this.gamePads = navigator.getGamepads ? navigator.getGamepads() : (this.window.navigator.webkitGetGamepads ? this.window.navigator.webkitGetGamepads : []);
+        if (!this.gamePads)
             return;
             
-        if(this.window.chrome && gamepads[0]){ //if browser is chrome and the gamepad has been initialised 
+        if(this.window.chrome && this.gamePads[0]){ //if browser is chrome and the gamepad has been initialised 
             if (this.arrButtonsIs.length > 0 && this.arrButtonsWas.length > 0) {
-                this.arrButtonsIs = this.getGamepadState(gamepads);
+                this.arrButtonsIs = this.getGamepadState(this.gamePads);
                 processControllerChange(this.arrButtonsWas, this.arrButtonsIs);
                 this.arrButtonsWas = this.arrButtonsIs.slice(0);    
             }
             else {
-                this.arrButtonsIs = this.getGamepadState(gamepads);
+                this.arrButtonsIs = this.getGamepadState(this.gamePads);
                 this.arrButtonsWas = this.arrButtonsIs.slice(0);    
             }   
         }
-        else if (gamepads[0]) { //if the browser is anyting else(firefox, safari atm) then wait for the gamepad to be connected 
+        else if (this.gamePads[0]) { //if the browser is anyting else(firefox, safari atm) then wait for the gamepad to be connected 
             if (this.arrButtonsIs.length > 0 && this.arrButtonsWas.length > 0) {
-                this.arrButtonsIs = this.getGamepadState(gamepads);
+                this.arrButtonsIs = this.getGamepadState(this.gamePads);
                 processControllerChange(this.arrButtonsWas, this.arrButtonsIs);
                 this.arrButtonsWas = this.arrButtonsIs.slice(0);    
             }
             else {
-                this.arrButtonsIs = this.getGamepadState(gamepads);
+                this.arrButtonsIs = this.getGamepadState(this.gamePads);
                 this.arrButtonsWas = this.arrButtonsIs.slice(0);    
             }
         }
@@ -118,13 +118,5 @@ export class gpAPI {
         }
 
     }
-    
-    
-    
-
-
-
-    
-
 }
 
