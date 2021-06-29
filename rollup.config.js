@@ -10,5 +10,5 @@ export default {
         preferConst: true,
         sourcemap: true,
     },
-    plugins: [typescript({sourceMap:true, inlineSources:true}), terser(), serve({contentBase:'dist', port:8080})]
+    plugins: [typescript({sourceMap:true, inlineSources:true}), serve({contentBase:'dist', port:8080})]
 };

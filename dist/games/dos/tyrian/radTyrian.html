@@ -341,26 +341,22 @@
             if(isChromium && gamepads[0]){ //if browser is chrome and the gamepad has been initialised 
                     if (arrButtonsIs.length > 0 && arrButtonsWas.length > 0) {
                         arrButtonsIs = getGamepadState(gamepads);
-                        
                         processControllerChange(arrButtonsWas, arrButtonsIs);
                         arrButtonsWas = arrButtonsIs.slice(0);    
                     }
                     else {
                         arrButtonsIs = getGamepadState(gamepads);
-                        
                         arrButtonsWas = arrButtonsIs.slice(0);    
                     }   
             }
             else if (gamepads[0]) { //if the browser is anyting else(firefox, safari atm) then wait for the gamepad to be connected 
                     if (arrButtonsIs.length > 0 && arrButtonsWas.length > 0) {
                         arrButtonsIs = getGamepadState(gamepads);
-                        
                         processControllerChange(arrButtonsWas, arrButtonsIs);
                         arrButtonsWas = arrButtonsIs.slice(0);    
                     }
                     else {
                         arrButtonsIs = getGamepadState(gamepads);
-                        
                         arrButtonsWas = arrButtonsIs.slice(0);    
                     }
             }
@@ -464,23 +460,23 @@
         function processControllerChange (was, is) {
         let changes = [];
 
-        if (is && was) {
+            if (is && was) {
 
-            for (let i = 0; i < is.length; i++) {
-                if (is[i] !== was[i]) {
-                    changes.push({keyCode:(translateGamePad.get(i)), action:(is[i])});
+                for (let i = 0; i < is.length; i++) {
+                    if (is[i] !== was[i]) {
+                        changes.push({keyCode:(translateGamePad.get(i)), action:(is[i])});
+                    }
+                    
                 }
-                
             }
-        }
 
-        if (changes.length>0) {
+            if (changes.length>0) {
 
-            changes.forEach(requiredKeyPress => {
-                dosGame.ci.sendKeyEvent(DosGame.reverseKeyMap.get(requiredKeyPress.keyCode), requiredKeyPress.action);
-                console.log(DosGame.reverseKeyMap.get(requiredKeyPress.keyCode), requiredKeyPress.action);
-            })   
-        }
+                changes.forEach(requiredKeyPress => {
+                    dosGame.ci.sendKeyEvent(DosGame.reverseKeyMap.get(requiredKeyPress.keyCode), requiredKeyPress.action);
+                    console.log(DosGame.reverseKeyMap.get(requiredKeyPress.keyCode), requiredKeyPress.action);
+                })   
+            }
         }
 
         function getDirectionAscii(direction) {

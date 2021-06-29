@@ -53,7 +53,6 @@
         let arrButtonsWas = [];
         let arrButtonsIs = [];
         let gamepads;
-        //let translateGamePad = new Map();
 
         let dosGame = new DosGame(window.Dos, canvasContainer, emulators);
         let gpApi = new GpApi(window, dosGame);
@@ -72,6 +71,7 @@
         gpApi.addEvtListener();
         gpApi.pollGamePads();
         gpApi.gameLoop();
+        //gpApi.getGamepadState(gpApi.gamepads);
 
         });
 
@@ -263,22 +263,12 @@
             }
         });
 
-        function getGamepadState(gamePads) {
-            let temp = gamePads[0].buttons;
-                let state = [];
-                let tLength = temp.length;
-                for (let i = 0; i < tLength; i++) {
-                    state[i] = temp[i].pressed;
-                }
-                return state;
-        }
-
         /** Main Loop **/
 
-        gpApi.processGamePad();
+        
 
         app.ticker.add(() => {
-           
+            gpApi.processGamePad();   
 
             if (mouseState === 'just-down') {
                 circle.position.x = xc;
