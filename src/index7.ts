@@ -82,10 +82,6 @@ export class DosGame {
     public static reverseKeyMap = new Map();
 
 
-
-
-    
-
     // private static reverseKeyMap:KeyMap = {
     //     32:32, //space
     //     38:265, //up
@@ -103,42 +99,6 @@ export class DosGame {
     //     17:341,  //lctrl
     //     13:257, //enter
     //     27:256  //escape
-    // }
-
-    
-
-    
-
-    // private static reverseKeyMap:KeyMap = {
-    //     32:32, //space
-    //     38:265, //up
-    //     40:264, //down
-    //     37:263, //left
-    //     39:262, //right
-    //     18:342, //alt
-    //     16:340, //shift
-    //     66:66,  //B
-    //     88:88,  //X
-    //     188:44, //comma
-    //     190:46, //fullstop or period
-    //     191:47, //forward-slash
-    //     72:7,   //H
-    //     17:341,  //lctrl
-    //     13:257, //enter
-    //     27:256  //escape
-    // }
-
-    
-
-    // private static jsdosKeyCodeLookup(inputCode){ //helper function to throw a warning when a key is pressed that is not mapped
-    //     let result = DosGame.reverseKeyMap.filter((k,v)=> {
-    //         k === inputCode
-    //     });
-    //     if (result != undefined){
-    //         return result;
-    //     } else {
-    //         console.warn('%c That Key is not Mapped, check index7.ts -> start7()', 'background: #000000; color: #00ff00');
-    //     }
     // }
 
     /**
@@ -167,15 +127,6 @@ export class DosGame {
         'left': 37,
         'right': 39
     };
-
-    // private jsdosKeyCodeLookup(inputCode: number){ //helper function to throw a warning when a key is pressed that is not mapped
-    //     let result = DosGame.reverseKeyMap[inputCode];
-    //     if (result != undefined){
-    //         return result;    
-    //     } else {
-    //         console.warn('%c That Key is not Mapped, check index7.ts -> start7()', 'background: #000000; color: #00ff00');
-    //     }
-    // }
 
     public start():Promise<any> {
         
