@@ -68,9 +68,11 @@
             gpApi.translateGamePad.set(5, 18)//kit2
             gpApi.translateGamePad.set(1, 27)//esc
 
-        gpApi.addEvtListener();
-        gpApi.pollGamePads();
-        gpApi.gameLoop();
+
+        gpApi.initGamePad();
+        // gpApi.addEvtListener();
+        // gpApi.pollGamePads();
+        // gpApi.gameLoop();
         //gpApi.getGamepadState(gpApi.gamepads);
 
         });

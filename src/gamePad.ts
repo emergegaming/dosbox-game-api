@@ -26,6 +26,12 @@ export class GpApi {
         
     }
 
+    private initGamePad(){
+        this.addEvtListener();
+        this.pollGamePads();
+        this.gameLoop();
+    }
+
     private gameLoop() {
         this.gamePads = navigator.getGamepads ? navigator.getGamepads() : (this.window.navigator.webkitGetGamepads ? this.window.navigator.webkitGetGamepads : []);
         if (!this.gamePads)
